@@ -2,7 +2,7 @@
 ![Screenshot](screenshot.png)
 # Field Observatory theme for WordPress
 
-Visit wordpress at https://www.fieldobservatory.org.
+Visit Field Observatory at https://www.fieldobservatory.org.
 
 ## Authors:
 Antti Juntunen, Olli Niemitalo (Olli.Niemitalo@hamk.fi), Juuso Saarinen (Juuso.Saarinen@hamk.fi)
