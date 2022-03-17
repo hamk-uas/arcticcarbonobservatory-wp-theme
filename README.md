@@ -1,2 +1,4 @@
 # fieldobservatory-wp-theme
- Field Observatory wordpress theme
+ Field Observatory theme for WordPress
+
+None of the photos are released under an open license.

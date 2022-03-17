@@ -1,0 +1,1080 @@
+.ViewSite.loader footer {
+    display: none; /* Hide footer when charts are still being created in ViewSite */
+}
+
+#map {
+    position: relative;
+    display: flex;
+    top: 0px;
+    bottom: 2px;
+    margin-top: 10px;
+    width: 100%;
+    background-color: #d3cfca;
+    height: 99%; /* Map height for ViewSite*/
+}
+
+.Obfuscated #map {
+    background-color: #fffbd0; /* Yellow map background when no terrain shown */
+}
+
+.ViewAllSites #map {
+   	height: 65vh; /*  Map height for ViewAllSites */
+}
+
+.ViewSite .mapMainHeader {
+    display: none; /* Hide map main header for ViewSite */
+}
+
+.ViewAllSites .fieldInfoDiv {
+    display: none; /* Hide field info div for ViewAllSites */
+}
+
+.ViewSite #dataCredits {
+    padding: 0px 25px;
+}
+
+.ViewSite #dataCredits p {
+    font-size: 16px;
+    line-height: 20px;
+    padding-bottom: 0px;
+}
+
+.loader #dataCredits {
+    display: none; /* Hide data credits if we are still loading ViewSite*/
+}
+
+/* Disable geolocationing for obfuscated site locations */
+.Obfuscated.ViewSite .mapboxgl-ctrl-top-right {
+    display: none;
+}
+
+.ViewSite .mapboxgl-ctrl-geocoder {
+    display: none;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+    background-color: transparent;
+}
+
+.map-overlay fieldset {
+    background: transparent;
+    border: none;
+}
+
+.fieldInfoDiv {
+    width: 100%;
+    display: block;
+    float: left;
+    padding: 15px 25px;
+}
+.fieldInfoDiv h4 {
+    font-size: 18px;
+    color: #5E5E5E;
+    font-family: 'proxima-nova', sans-serif;
+    font-weight: 600;
+    margin: 0px;
+    margin-top: 10px;
+    word-spacing: 2px;
+    line-height: 28px;
+}
+
+.chart_gridcontainer {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    grid-gap: 25px;
+    /*padding: 5px;
+	margin: 5px;*/
+}
+
+.chart_gridcontainer_item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    /*margin-top: 25px;*/
+}
+
+    .chart_gridcontainer_item h4 {
+        color: #5E5E5E;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .chart_gridcontainer_item p {
+        padding: 5px 0px 5px 0px;
+        font-size: 18px;
+        color: #5E5E5E;
+        font-family: 'proxima-nova', sans-serif;
+        font-weight: 400;
+        margin: 0px;
+        word-spacing: 2px;
+        line-height: 18px;
+    }
+
+.chart_gridcontainer .fieldInfoDiv td {
+    font-size: 18px;
+    padding: 4px 16px 4px 0px;
+    color: #5E5E5E;
+}
+
+.chart_grid {
+    stroke: #000000;
+    stroke-opacity: 0.08;
+    stroke-width: 1;
+}
+
+.chart_path {
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    fill: none;
+}
+
+.chart_axis_line {
+    stroke: #CCCCCC;
+    stroke-width: 2;
+    fill: none;
+}
+
+.chart_axis_label {
+    font-size: 16px;
+}
+
+.chart_tick_label {
+    font: 14px sans-serif;
+}
+
+.chart_legend {
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    margin-left: 90px;
+    padding-left: 4px;
+    /*display: grid;
+    grid-auto-rows: max-content;*/
+    /*grid-template-columns: repeat(4, auto);*/
+    text-align: start;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chart_legend_element {
+    vertical-align: middle;
+    margin-top: 0px;
+    margin-right: 5px;
+    margin-bottom: 0px;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.chart_legend_text {
+    vertical-align: middle;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.chart_download {
+    margin-top: 20px;
+    margin-right: 5px;
+    margin-bottom: 30px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.chart_description {
+    margin-top: 20px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    text-align: left;
+}
+
+/*MAPVIEW CHART HANDLERS*/
+.ChartPanArea {
+    cursor: all-scroll;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+/*Map point popup style*/
+
+.mapboxgl-popup-content {
+    font: 200 15px/22px 'proxima-nova', sans-serif;
+    display: block;
+    width: auto;
+    background: #71CDB6;
+    color: #fff;
+    opacity: 1;
+    border-radius: 6px;
+    margin: 0px;
+    padding: 10px;
+    text-align: center;
+}
+
+.mapboxgl-popup-content p {
+    all: initial;
+    display: block;
+    text-align: center;
+    font: 200 16px/22px 'proxima-nova', sans-serif;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.ViewSite .mapboxgl-popup-content p {
+    font-size: 1.5rem;
+}
+
+.mapboxgl-popup-content h1 {
+    all: initial;
+    text-transform: uppercase;
+    display: block;
+    text-align: center;
+    font: 200 16px/32px 'proxima-nova', sans-serif;
+    color: #fff;
+    font-size: 2rem;
+}
+
+.mapboxgl-popup-content h2 {
+    all: initial;
+    display: block;
+    text-align: center;
+    font: 200 16px/20px 'proxima-nova', sans-serif;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.mapboxgl-popup-anchor-bottom > .mapboxgl-popup-tip {
+    border-top-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-bottom-left > .mapboxgl-popup-tip {
+    border-top-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-bottom-right > .mapboxgl-popup-tip {
+    border-top-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
+    border-bottom-width: 20px;
+    border-bottom-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-top-left > .mapboxgl-popup-tip {
+    border-bottom-width: 20px;
+    border-bottom-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-top-right > .mapboxgl-popup-tip {
+    border-bottom-width: 20px;
+    border-bottom-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-left > .mapboxgl-popup-tip {
+    border-right-color: #71CDB6;
+}
+
+.mapboxgl-popup-anchor-right > .mapboxgl-popup-tip {
+    border-left-color: #71CDB6;
+}
+
+.mapboxgl-container .leaflet-marker-icon {
+    cursor: pointer;
+}
+
+
+/*filter div*/
+.map-overlay {
+    position: absolute;
+    font: 16px/24px 'proxima-nova', sans-serif;
+    background-color: whitesmoke;
+    opacity: 0.9;
+    /* max-height: 100%; */
+    /* height: 50%; */
+    overflow: hidden;
+    /* width: 25%; */
+    width: auto;
+    height: auto;
+    margin: 15px;
+    padding: 15px;
+    animation: fadein 1.5s;
+    border-radius:4px;
+    z-index:8;
+}
+
+/*Filter places container on map*/
+.filterCheckBox {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+    /* Hide the browser's default checkbox */
+    .filterCheckBox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+    /* On mouse-over, add a grey background color */
+    .filterCheckBox :hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+    /* When the checkbox is checked, add a blue background */
+    .filterCheckBox input:checked ~ .checkmark {
+        background-color: #2196F3;
+    }
+        /* Show the checkmark when checked */
+        .filterCheckBox input:checked ~ .checkmark:after {
+            display: block;
+        }
+    /* Style the checkmark/indicator */
+    .filterCheckBox .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+    /* Create a custom checkbox */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+    }
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.map-overlay fieldset {
+    background: transparent;
+    border: none;
+}
+
+.mapboxgeohide {
+    display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ChartPanArea:hover {
+        opacity: 0.1;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ChartControls {
+        opacity: 0;
+        transition: 0.5s;
+    }
+
+    .ChartControls.Entered {
+        opacity: 1;
+    }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 10000px) {
+
+    .mapboxgl-ctrl-top-right {
+        /*margin-top: 5%;*/
+    }
+    mapboxgl-ctrl-top-left
+    {
+
+    }
+    .view {
+        height: 100%;
+        display: inline-table;
+        flex-direction: column;
+        margin: 110px 86px 30px 138px;
+    }
+    .chart_gridcontainer {
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        padding: 5px;
+        margin: 5px;
+    }
+
+}
+@media only screen and (min-width: 1920px) and (max-width: 10000px) {
+
+    /*MAPVIEW*/
+    .coordinates {
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        position: absolute;
+        bottom: 40px;
+        left: 10px;
+        padding: 5px 10px;
+        margin: 0;
+        font-size: 11px;
+        line-height: 18px;
+        border-radius: 3px;
+        display: none;
+    }
+
+    /*filter div*/
+    .map-overlay {
+        
+    }
+
+        .map-overlay fieldset {
+            display: none;
+            border: none;
+            margin: 0;
+        }
+
+        .map-overlay input {
+            display: block;
+            border: none;
+            width: 100%;
+            border-radius: 3px;
+            padding: 10px;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'proxima-nova', sans-serif;
+            font-size: 16px;
+            color: #8c806e;
+        }
+
+        .map-overlay .listing {
+            height: 90%;
+            overflow: auto;
+            max-height: 90%;
+            display:none;
+        }
+
+            .map-overlay .listing > * {
+                display: block;
+                padding: 5px 10px;
+                margin: 0;
+            }
+
+            .map-overlay .listing a {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                color: #404;
+                text-decoration: none;
+            }
+
+                .map-overlay .listing a:last-child {
+                    border: none;
+                }
+
+                .map-overlay .listing a:hover {
+                    background: #f0f0f0;
+                }
+
+
+    .mapboxgl-ctrl-top-right {
+        opacity: 1;
+        animation-delay: 2s;
+        animation-name: opacityzerotoone;
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+    }
+    mapboxgl-ctrl-top-left
+    {
+
+    }
+    .mapboxgl-ctrl-bottom-right {
+        opacity: 0;
+        animation-delay: 2s;
+        animation-name: opacityzerotoone;
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: slategray;
+        shape-rendering: crispEdges;
+    }
+
+    .chart_gridcontainer {
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .chart_gridcontainer_item {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        font-size: 15px;
+        text-align: center;
+    }
+
+        .chart_gridcontainer_item h4 {
+            color: #5E5E5E;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .chart_gridcontainer_item p {
+            padding: 5px 0px 5px 0px;
+            font-size: 18px;
+            color: #5E5E5E;
+            font-family: 'proxima-nova', sans-serif;
+            font-weight: 400;
+            margin: 0px;
+            word-spacing: 2px;
+            line-height: 18px;
+        }
+
+    .view {
+        height: 100%;
+        display: inline-table;
+        flex-direction: column;
+        margin-left: 138px;
+        margin-right: 138px;
+        margin-top: 105px;
+        margin-bottom: 30px;
+    }
+
+        .view h3 {
+            font-size: 36px;
+            color: #71CDB6;
+            font-family: 'proxima-nova', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            line-height: 38px;
+            letter-spacing: -0.4px;
+        }
+
+    .view-child {
+        height: 100%;
+    }
+
+        .view-child:first-child {
+            flex: 1;
+            height: 80%;
+        }
+
+        .view-child:last-child {
+            flex: 1;
+            height: 20%;
+        }
+
+    .fieldInfoDiv {
+        float: right;
+        padding: 15px 25px;
+    }
+
+    .mapWrapper {
+        display: flex;
+    }
+}
+@media only screen and (min-width: 1025px) and (max-width: 1200px) {
+
+   
+    .mapboxgl-ctrl-top-right {
+        /*margin-top: 8%;*/
+    }
+    mapboxgl-ctrl-top-left
+    {
+        margin-left:10px;
+    }
+   
+    .view {
+        height: 100%;
+        display: inline-table;
+        flex-direction: column;
+        margin-left: 0px;
+        margin-right: 0px;
+        margin-top: 95px;
+        margin-bottom: 30px;
+    }
+        .view h3 {
+            font-size: 29px;
+            color: #71CDB6;
+            font-family: 'proxima-nova', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            line-height: 34px;
+            letter-spacing: -0.4px;
+        }
+    
+    .mapMainHeader {
+       /* padding: 0px 0px;*/
+    }
+    .mapWrapper {
+        display: flex;
+        padding: 25px;
+    }
+    .chart_gridcontainer {
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        padding: 5px;
+        margin: 5px;
+    }
+    .popup {
+        position: absolute;
+        justify-content: center;
+        text-align: center;
+        cursor: no-drop;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        height: 100%;
+        width: 100%;
+        margin-top: 100px;
+        user-select: none;
+        /* margin: auto;*/
+    }
+
+        /* The actual popup */
+        .popup .popuptext {
+            
+            width: 270px;
+            background-color: red;
+            color: #fff;
+            font-size: 25px;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            /* position: absolute; */
+            z-index: 1;
+            margin-left: 0;
+        }
+
+}
+
+    /* Tablet Portrait size to standard 960 (devices and browsers) */
+    @media only screen and (min-width: 768px) and (max-width: 1024px) {
+
+        #afterMap {
+            margin-top: -25px;
+        }
+       
+        .mapboxgl-ctrl-top-right {
+            /*margin-top: 10%;*/
+        }
+        mapboxgl-ctrl-top-left{
+
+        }
+        
+        .view {
+            height: 100%;
+            display: inline-table;
+            flex-direction: column;
+            margin-left: 0px;
+            margin-right: 0px;
+            margin-top: 95px;
+            margin-bottom: 30px;
+        }
+            .view h3 {
+                font-size: 24px;
+                color: #71CDB6;
+                font-family: 'proxima-nova', sans-serif;
+                font-weight: bold;
+                text-transform: uppercase;
+                line-height: 24px;
+                letter-spacing: -0.4px;
+            }
+        .map-overlay {
+        
+        }
+
+        .mapMainHeader {
+            padding: 0px 25px;
+        }
+            .mapMainHeader p {
+                padding: 0px 50px 0px 0px;
+                font-size: 18px;
+                color: #5E5E5E;
+                font-family: 'proxima-nova', sans-serif;
+                font-weight: 400;
+                margin: 0px;
+                word-spacing: 2px;
+                line-height: 22px;
+                margin: 0px 0% 0px 0px;
+            }
+       
+        .mapWrapper {
+            display: flex;
+            padding: 25px;
+        }
+        .mapboxgl-ctrl-geocoder {
+            font-size: 18px;
+            line-height: 24px;
+            font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+            position: relative;
+            background-color: #fff;
+            width: 100%;
+            min-width: 128px;
+            z-index: 1;
+            border-radius: 4px;
+            transition: width .25s, min-width .25s;
+        }
+        .chart_gridcontainer {
+            display: grid;
+            grid-template-columns: repeat(1,1fr);
+            padding: 5px;
+            margin: 5px;
+        }
+        #map {
+            height: 300px; /* Map height for ViewSite*/
+        }
+        .popup {
+            width: 100%;
+        }
+            .popup .popuptext {
+                width: 270px;
+                background-color: red;
+                color: #fff;
+                font-size: 18px;
+                text-align: center;
+                border-radius: 6px;
+                padding: 8px 0;
+                /* position: absolute; */
+                z-index: 1;
+                /* bottom: 125%; */
+                /* left: 50%; */
+                /* margin-left: -80px; */
+                margin-left: 0;
+            }
+    }
+
+
+    /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+    @media only screen and (min-width: 480px) and (max-width: 767px) {
+
+        #afterMap {
+            margin-top: -25px;
+        }
+
+        .mapboxgl-ctrl-top-right {
+            /*margin-top: 8%;*/
+        }
+
+        .mapboxgl-ctrl-geocoder {
+            min-width: 100px;
+            max-width: 150px;
+        }
+
+        .map-overlay {
+        }
+
+         .view {
+            height: 100%;
+            display: inline-table;
+            flex-direction: column;
+            margin: 58px 0px 30px 0px; 
+        }
+            .view h3 {
+                font-size: 16px;
+                line-height: 16px;
+                margin-bottom: 0;
+            }
+            .view h4 {
+                font-size: 14px;
+                color: #5E5E5E;
+                margin: 0px;
+                line-height: 20px;
+                margin-top: 8px;
+                margin-bottom: 5px;
+            }
+        .mapMainHeader {
+            /*padding: 0px 25px;*/
+            margin-top: 25px;
+        }
+        .mapMainHeader p {
+            padding: 0px 0px 0px 0px;
+            font-size: 14px;
+            color: #5E5E5E;
+            font-family: 'proxima-nova', sans-serif;
+            font-weight: 400;
+            margin: 0px;
+            word-spacing: 2px;
+            line-height: 22px;
+            margin: 0;
+        }
+        .map-overlay {
+
+        }
+        .mapWrapper {
+            display: grid;
+        }
+        .fieldInfoDiv {
+            float: right;
+            padding: 0;
+            margin-bottom: 15px;
+
+        }
+            .fieldInfoDiv p {
+                font-size: 17px;
+                line-height: 24px;
+            }
+        .chart_gridcontainer {
+            display: grid;
+            grid-template-columns: repeat(1,1fr);
+            padding: 5px;
+            margin: 5px;
+        }
+        #map {
+            height: 300px; /* Map height for ViewSite*/
+        }
+        .popup {
+            width: 100%;
+        }
+        .popup .popuptext {
+           
+            /* width: 270px; */
+            background-color: red;
+            color: #fff;
+            font-size: 23px;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            /* position: absolute; */
+            z-index: 1;
+            /* bottom: 125%; */
+            /* left: 50%; */
+            margin-left:0;
+        }
+        }
+
+@media only screen and (max-width: 479px) {
+
+
+
+    #afterMap {
+        margin-top: -25px;
+    }
+
+    .mapboxgl-ctrl-top-right {
+        /*margin-top: 18%;*/
+    }
+
+    .mapboxgl-ctrl-geocoder {
+        min-width: 100px;
+        max-width: 150px;
+    }
+
+    .mapMainHeader {
+        padding: 0px 20px;
+            margin-top: 28px;
+    }
+
+        .mapMainHeader p {
+            padding: 15px 0px 0px 0px;
+            font-size: 12px;
+            color: #5E5E5E;
+            font-family: 'proxima-nova', sans-serif;
+            font-weight: 400;
+            margin: 0px;
+            word-spacing: 2px;
+            line-height: 12px;
+            margin: 0px 0 0px 0px;
+        }
+
+    .view {
+        height: 100%;
+        display: inline-table;
+        flex-direction: column;
+        margin: 64px 0px 15px 0px;
+    }
+
+        .view h3 {
+            font-size: 16px;
+            line-height: 16px;
+            margin-bottom:0;
+        }
+
+    .mapboxgl-ctrl-top-right {
+        /*margin-top: 0;*/
+        width: 50px;
+    }
+    mapboxgl-ctrl-top-left
+    {
+
+    }
+
+    .mapboxgl-ctrl-geocoder--icon-search {
+        position: absolute;
+        top: 13px;
+        left: 12px;
+        width: 16px;
+        height: 24px;
+    }
+
+    .mapboxgl-ctrl-geocoder--input {
+        font: inherit;
+        font-size: 12px;
+        padding: 0px 34px;
+    }
+
+    .map-overlay {
+        margin: 5px;
+        padding: 8px;
+        
+    }
+    .map-overlay h2 {
+        font-size:13px;
+        line-height: 20px;
+        margin-top: 5px;
+    }
+
+        .map-overlay fieldset {
+            display: none;
+            border: none;
+            margin: 0;
+        }
+        .map-overlay input
+        {
+            padding:7px;
+            font-size:12px;
+        }
+        .map-overlay input input {
+            font-size: 10px;
+        }
+
+        .map-overlay .listing {
+            height: 90%;
+            overflow: auto;
+            display:none;
+            /* max-height: 90%; */
+        }
+    .filterCheckBox {
+        font-size:10px;
+        padding-left: 22px;
+    	margin-bottom: 4px;
+    }
+        .filterCheckBox .checkmark:after {
+            left: 5px;
+            top: 2px;
+            width: 3px;
+            height: 6px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            -webkit-transform: rotate( 45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate( 45deg);
+        }
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 15px;
+        width: 15px;
+        background-color: #eee;
+    }
+    .mapboxgl-ctrl-geocoder--input {
+        height: 24px;
+    }
+
+    .mapboxgl-ctrl-geocoder--icon-search {
+        top: 2px;
+    }
+    .mapWrapper{
+        display:grid;
+        padding:0;
+    }
+    .mapBoxMap
+    {
+        width:100%;
+    }
+    .fieldInfoDiv {
+        width: 100%;
+        float: right;
+        padding: 0;
+    }
+        .fieldInfoDiv p {
+            font-size: 17px;
+            line-height: 24px;
+        }
+       
+    .chart_gridcontainer {
+        display: grid;
+        grid-template-columns: repeat(1,1fr);
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .view h4 {
+        font-size: 14px;
+        color: #5E5E5E;
+        margin: 0px;
+        line-height: 20px;
+        margin-top: 8px;
+        margin-bottom:5px;
+    }
+    .view p {
+        font-size: 16px;
+    }
+    
+    #map {
+        height: 300px; /* Map height for ViewSite*/
+    }
+
+    .popup {
+        width: 100%;
+        margin-top: 100px;
+        user-select: none;
+        /* margin: auto; */
+    }
+        .popup .popuptext {
+            /* width: 270px; */
+            background-color: red;
+            color: #fff;
+            font-size: 7px;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            /* position: absolute; */
+            z-index: 1;
+            /* bottom: 125%; */
+            /* left: 50%; */
+            /* margin-left: -80px; */
+            margin-left: 0;
+        }
+}
+    @media only screen and (max-width: 1199px) {
+
+       
+    }
+
+    @media only screen and (max-width: 767px) {
+      
+    }
+@media screen and (min-width: 640px) {
+
+    .mapboxgl-ctrl-geocoder {
+        width: 33.3333%;
+        font-size: 15px;
+        line-height: 20px;
+        max-width: 360px;
+    }
+    
+}
+@media screen and (max-width: 500px) {
+    .chart_legend {
+        margin-left: 10px;
+    }
+}
+
+
+.ViewAllSites .chart_gridcontainer {
+    grid-template-columns: repeat(1,1fr);
+}
