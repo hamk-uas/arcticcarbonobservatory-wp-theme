@@ -1,4 +1,15 @@
 # fieldobservatory-wp-theme
- Field Observatory theme for WordPress
+![Screenshot](screenshot.png)
+# Field Observatory theme for WordPress
 
-None of the photos are released under an open license.
+Visit Field Observatory at https://www.fieldobservatory.org.
+
+## Authors:
+Antti Juntunen, Olli Niemitalo (Olli.Niemitalo@hamk.fi), Juuso Saarinen (Juuso.Saarinen@hamk.fi)
+
+## Copyright
+Copyright Häme University of Applied Sciences
+
+## License
+The code will later be released under MIT license.
+None of the photos will be released under an open license.
