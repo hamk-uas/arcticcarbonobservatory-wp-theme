@@ -315,3 +315,7 @@ function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], 
     }
     return boundingBox;
 }
+
+function showTooltip(initiatorId, text) {
+    
+}
