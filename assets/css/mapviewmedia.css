@@ -1078,3 +1078,10 @@
 .ViewAllSites .chart_gridcontainer {
     grid-template-columns: repeat(1,1fr);
 }
+
+#circle_tooltip {
+    background: rgb(255, 249, 227);
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+}

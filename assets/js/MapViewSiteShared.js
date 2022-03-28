@@ -2083,7 +2083,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                         }
                         let dateObject = new Date(date);
                         let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                        drawingHtml += `<circle id="${circleId}" onmouseover="showTooltip('${circleId}', 'Show ${sourceCategory.dateToGeoTiffList[date].length} satellite images for ${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}')" onclick="setSatelliteImageDate(${date}, event)" onmousedown="preventDefault(event)" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}" />`;
+                        drawingHtml += `<circle id="${circleId}" onmouseout="hideTooltip();" onmousemove="showTooltip(evt, '${circleId}', 'Show ${sourceCategory.dateToGeoTiffList[date].length} satellite images for ${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}')" onclick="setSatelliteImageDate(${date}, event)" onmousedown="preventDefault(event)" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}" />`;
                         drawingHtml += `<text pointer-events="none" font-family="sans-serif" font-size="18px" ${(selected) ? 'font-weight="bold"' : ''} fill="${color}" text-anchor="middle" dominant-baseline="middle" x="${x.toFixed(1)}" y="${height / 2 + 2}">${sourceCategory.dateToGeoTiffList[date].length}</text>`;
                         if (date === v.satelliteImageDate && !cursorDrawn) {
                             drawingHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="${-v.dimensions.topMargin/2}" x2="${x.toFixed(1)}" y2="${height}" stroke="${v.chartColors[0]}" stroke-width="1" stroke-dasharray="4" />`;
@@ -2601,3 +2601,18 @@ function getDrawingHtmls(v, chartId, standalone = false) {
     return { drawingDefsHtml, drawingBackgroundHtml, drawingHtml };
 }
 
+function showTooltip(evt, initiatorId, text) {
+    let tooltip = document.getElementById("circle_tooltip");
+    tooltip.innerHTML = text;
+    tooltip.style.display = "block";
+    tooltip.style.left = evt.pageX + 10 + 'px';
+    tooltip.style.top = evt.pageY + 10 + 'px';
+
+    // Tooltip html element should be placed in the DOM
+    // <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+}
+
+function hideTooltip() {
+    let tooltip = document.getElementById("circle_tooltip");
+    tooltip.style.display = "none";
+}
