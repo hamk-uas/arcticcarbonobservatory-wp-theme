@@ -18,9 +18,9 @@ var chartsJson = {
                 {
                     "id": "ndviImage",
                     "title": "NDVI",
-                    "description": "NDVI measures the photosynthetic capacity of the vegetation. It is controlled by the amount of vegetation and the condition of the plants. 0-0.2 very little vegetation, 0.2-0.4 sparse vegetation, 0.4-0.6 moderate vegetation, 0.6-1.0 dense vegetation.",
-                    "description_fi": "NDVI arvioi kasvillisuuden fotosynteesipotentiaalia. NDVI:n suuruuteen vaikuttavat kasvillisuuden määrä ja kunto. 0-0.2 hyvin vähän kasvillisuutta, 0.2-0.4 harva kasvillisuus, 0.4-0.6 kohtalainen kasvillisuus, 0.6-1.0 tiheä kasvillisuus.",
-                    "description_sv": "NDVI mäter vegetationens fotosyntespotential.Värdet på NDVI påverkas av mängden och tillståndet av vegetationen. 0-0.2 väldigt liten mängd vegetation, 0.2-0.4 gles vegetation, 0.4-0.6 måttlig vegetation, 0.6-1.0 tät vegetation."
+                    "description": "NDVI measures the photosynthetic capacity of the vegetation. It is controlled by the amount of vegetation and the condition of the plants. 0–0.2 very little vegetation, 0.2–0.4 sparse vegetation, 0.4–0.6 moderate vegetation, 0.6–1.0 dense vegetation.",
+                    "description_fi": "NDVI arvioi kasvillisuuden fotosynteesipotentiaalia. NDVI:n suuruuteen vaikuttavat kasvillisuuden määrä ja kunto. 0–0.2 hyvin vähän kasvillisuutta, 0.2–0.4 harva kasvillisuus, 0.4–0.6 kohtalainen kasvillisuus, 0.6–1.0 tiheä kasvillisuus.",
+                    "description_sv": "NDVI mäter vegetationens fotosyntespotential.Värdet på NDVI påverkas av mängden och tillståndet av vegetationen. 0–0.2 väldigt liten mängd vegetation, 0.2–0.4 gles vegetation, 0.4–0.6 måttlig vegetation, 0.6–1.0 tät vegetation."
 
                 },
                 {
@@ -54,9 +54,9 @@ var chartsJson = {
             "title": "Cumulative normalized difference vegetation index",
             "title_fi": "Kumulatiivinen normalisoitu kasvillisuusindeksi",
             "title_sv": "Kumulativt normaliserad vegetationsindex",
-            "description": "Cumulative sum of NDVI for a predefined 244-day growing season 31.3. – 31.10.. Early growing season NDVI sum is a good predictor of yield. For days lacking satellite observations, NDVI was linearly interpolated from the surrounding satellite observations, or extrapolated from the last NDVI observation. The theoretical maximum at season end is 244. Error bars indicate 90 % confidence intervals.",
-            "description_fi": "Kumulatiivinen NDVI-summa etukäteen määritetyn kasvukauden ajalle (31.3. – 31.10, 244 päivää). Korkea NDVI-summa kasvukauden alussa on hyvä ennuste sadon määrälle. NDVI-arvo on lineaarisesti interpoloitu viereisistä havainnoista tai ekstrapoloitu viimeisestä havainnoista niille päiville, joille satelliittihavaintoa ei ole saatavilla. Teoreettinen maksimi NDVI-summalle on 244. Virhepalkit näyttävät 90% luottamusvälin.",
-            "description_sv": "Kumulativ NDVI-summa för en förutbestämd växtsäsong (31.3 –  31.10, 244 dagar). En hög NDVI-summa i början av växtsäsongen är ett bra tecken med tanke på skörden. NDVI-summan interpoleras linjärt från intilliggande observationer eller extrapoleras från de senaste observationerna för de dagar då satellitobservationer inte är tillgängliga. Det teoretiska maxvärdet för NDVI -summan är 244.  Felstaplarna anger konfidensintervall på 90%.",
+            "description": "Cumulative sum of NDVI for a predefined 244-day growing season 31.3.–31.10.. Early growing season NDVI sum is a good predictor of yield. For days lacking satellite observations, NDVI was linearly interpolated from the surrounding satellite observations, or extrapolated from the last NDVI observation. The theoretical maximum at season end is 244. Error bars indicate 90&nbsp;% confidence intervals.",
+            "description_fi": "Kumulatiivinen NDVI-summa etukäteen määritetyn kasvukauden ajalle (31.3.–31.10, 244 päivää). Korkea NDVI-summa kasvukauden alussa on hyvä ennuste sadon määrälle. NDVI-arvo on lineaarisesti interpoloitu viereisistä havainnoista tai ekstrapoloitu viimeisestä havainnoista niille päiville, joille satelliittihavaintoa ei ole saatavilla. Teoreettinen maksimi NDVI-summalle on 244. Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+            "description_sv": "Kumulativ NDVI-summa för en förutbestämd växtsäsong (31.3–31.10, 244 dagar). En hög NDVI-summa i början av växtsäsongen är ett bra tecken med tanke på skörden. NDVI-summan interpoleras linjärt från intilliggande observationer eller extrapoleras från de senaste observationerna för de dagar då satellitobservationer inte är tillgängliga. Det teoretiska maxvärdet för NDVI -summan är 244.  Felstaplarna anger konfidensintervall på 90&nbsp;%.",
             "yLabel": "cumulative NDVI (days)",
             "yLabel_fi": "kumulatiivinen NDVI",
             "yLabel_sv": "kumulativt NDVI (dagar)",
@@ -92,9 +92,9 @@ var chartsJson = {
             "title": "Normalized difference vegetation index (NDVI)",
             "title_fi": "Normalisoitu kasvillisuusindeksi (NDVI)",
             "title_sv": "Normaliserad vegetationsindex (NDVI)",
-            "description": "NDVI measures the photosynthetic capacity of the vegetation. It is controlled by the amount of vegetation and the condition of the plants. 0-0.2 very little vegetation, 0.2-0.4 sparse vegetation, 0.4-0.6 moderate vegetation, 0.6-1.0 dense vegetation. Error bars indicate 90 % confidence intervals.",
-            "description_fi": "NDVI arvioi kasvillisuuden fotosynteesipotentiaalia. NDVI:n suuruuteen vaikuttavat kasvillisuuden määrä ja kunto. 0-0.2 hyvin vähän kasvillisuutta, 0.2-0.4 harva kasvillisuus, 0.4-0.6 kohtalainen kasvillisuus, 0.6-1.0 tiheä kasvillisuus. Virhepalkit näyttävät 90% luottamusvälin.",
-            "description_sv": "NDVI mäter vegetationens fotosyntespotential.Värdet på NDVI påverkas av mängden och tillståndet av vegetationen. 0-0.2 väldigt liten mängd vegetation, 0.2-0.4 gles vegetation, 0.4-0.6 måttlig vegetation, 0.6-1.0 tät vegetation.  Felstaplarna anger konfidensintervall på 90%.",
+            "description": "NDVI measures the photosynthetic capacity of the vegetation. It is controlled by the amount of vegetation and the condition of the plants. 0–0.2 very little vegetation, 0.2–0.4 sparse vegetation, 0.4–0.6 moderate vegetation, 0.6–1.0 dense vegetation. Error bars indicate 90&nbsp;% confidence intervals.",
+            "description_fi": "NDVI arvioi kasvillisuuden fotosynteesipotentiaalia. NDVI:n suuruuteen vaikuttavat kasvillisuuden määrä ja kunto. 0–0.2 hyvin vähän kasvillisuutta, 0.2–0.4 harva kasvillisuus, 0.4–0.6 kohtalainen kasvillisuus, 0.6–1.0 tiheä kasvillisuus. Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+            "description_sv": "NDVI mäter vegetationens fotosyntespotential.Värdet på NDVI påverkas av mängden och tillståndet av vegetationen. 0–0.2 väldigt liten mängd vegetation, 0.2–0.4 gles vegetation, 0.4–0.6 måttlig vegetation, 0.6–1.0 tät vegetation.  Felstaplarna anger konfidensintervall på 90&nbsp;%.",
             "yLabel": "NDVI",
             "defaults": {
                 "yMin": 0,
@@ -126,9 +126,9 @@ var chartsJson = {
             "title": "Leaf area index (LAI)",
             "title_fi": "Lehtialaindeksi (LAI)",
             "title_sv": "Bladarealindex (LAI)",
-            "description": "Leaf area index describes the amount of vegetation canopy in the area. Measured as m² of leaf surface (top side) to land area. Error bars indicate 90 % confidence intervals.",
-            "description_fi": "Lehtialaindeksi mittaa lehtipinta-alan määrää alueella. Se määritellään kasvillisuuden yksipuolisena lehtipinta-alana maapinta-alaa kohden (yksikkö m² / m²). Virhepalkit näyttävät 90% luottamusvälin.",
-            "description_sv": "Bladarealindex mäter mängden bladyta på ett område. Det mäts som m² av bladytan (övre sidan) mot landytan. Felstaplarna anger konfidensintervall på 90%.",
+            "description": "Leaf area index describes the amount of vegetation canopy in the area. Measured as m² of leaf surface (top side) to land area. Error bars indicate 90&nbsp;% confidence intervals.",
+            "description_fi": "Lehtialaindeksi mittaa lehtipinta-alan määrää alueella. Se määritellään kasvillisuuden yksipuolisena lehtipinta-alana maapinta-alaa kohden (yksikkö m² / ;m²). Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+            "description_sv": "Bladarealindex mäter mängden bladyta på ett område. Det mäts som m² av bladytan (övre sidan) mot landytan. Felstaplarna anger konfidensintervall på 90&nbsp;%.",
             "yLabel": "LAI (m² / m²)",
             "defaults": {
                 "yMin": 0,
@@ -394,9 +394,9 @@ var chartsJson = {
                     "title": "BASGRA_N hindcast",
                     "title_fi": "BASGRA_N takautuva mallinnus",
                     "title_sv": "BASGRA_N återanalys",
-                    "description": "Hindcast (past) and forecast (future) are predicted values by the BASGRA_N process-based grassland model (<a href=\"https://doi.org/10.1016/j.ecolmodel.2019.108925\">Höglind et al., 2020, <i>Ecol. Modelling</i></a>). The 90 % confidence intervals for hindcast and forecast are generated by 250 ensemble members, with different combinations of model parameters, initial conditions and meteorological drivers. The forecasts update daily around 16 UTC.",
-                    "description_fi": "Takautuva mallinnus ja ennuste on tehty nurmimaille kehitetyllä prosessipohjaisella BASGRA_N -mallilla <a href=\"https://doi.org/10.1016/j.ecolmodel.2019.108925\">Höglind et al., 2020, <i>Ecol. Modelling</i></a>). 90 % luottamusvälit on laskettu tekemällä 250 erillistä mallinnusta erilaisilla malliparametrien, mallinnuksen alkutilojen ja meteorologisten muuttujien yhdistelmillä. Ennuste päivittyy joka päivä n. klo 16:00 (UTC).",
-                    "description_sv": "Retroaktiv modellering samt prognosen görs med den processbaserade BASGRA_N modellen utvecklad för gräsmarker <a href=\"https://doi.org/10.1016/j.ecolmodel.2019.108925\">Höglind et al., 2020, <i>Ecol. Modelling</i></a>). 90% konfidensintervaller har beräknats genom att göra 250 separata modelleringar med olika kombinationer av modellparametrar, modellering av initialtillstånd och meteorologiska variabler. Prognosen uppdateras varje dag ca kl. 16:00 (UTC)."
+                    "description": "Hindcast (past) and forecast (future) are predicted values by the BASGRA_N process-based grassland model (<a href=\"https://doi.org/10.1016/j.ecolmodel.2019.108925\">Höglind et al., 2020, <i>Ecol. Modelling</i></a>). The 90&nbsp;% confidence intervals for hindcast and forecast are generated by 250 ensemble members, with different combinations of model parameters, initial conditions and meteorological drivers. The forecasts update daily around 16 UTC.",
+                    "description_fi": "Takautuva mallinnus ja ennuste on tehty nurmimaille kehitetyllä prosessipohjaisella BASGRA_N -mallilla <a href=\"https://doi.org/10.1016/j.ecolmodel.2019.108925\">Höglind et al., 2020, <i>Ecol. Modelling</i></a>). 90&nbsp;% luottamusvälit on laskettu tekemällä 250 erillistä mallinnusta erilaisilla malliparametrien, mallinnuksen alkutilojen ja meteorologisten muuttujien yhdistelmillä. Ennuste päivittyy joka päivä n. klo 16:00 (UTC).",
+                    "description_sv": "Retroaktiv modellering samt prognosen görs med den processbaserade BASGRA_N modellen utvecklad för gräsmarker <a href=\"https://doi.org/10.1016/j.ecolmodel.2019.108925\">Höglind et al., 2020, <i>Ecol. Modelling</i></a>). 90&nbsp;% konfidensintervaller har beräknats genom att göra 250 separata modelleringar med olika kombinationer av modellparametrar, modellering av initialtillstånd och meteorologiska variabler. Prognosen uppdateras varje dag ca kl. 16:00 (UTC)."
                 },
                 {
                     "id": "basgra_n_forecast",
@@ -409,9 +409,9 @@ var chartsJson = {
                     "title": "BASGRA-BGC hindcast",
                     "title_fi": "BASGRA-BGC takautuva mallinnus",
                     "title_sv": "BASGRA-BGC återanalys",
-                    "description": "Hindcast (past) shows predicted values by the BASGRA-BGC process-based grassland model (<a href=\"https://doi.org/10.1016/j.scitotenv.2020.144385\">Huang et al., 2021, <i>Sci. Total Environ. </i></a>). The 90 % confidence intervals for hindcast and forecast are generated by 100 ensemble members, with different combinations of model parameters and initial conditions.",
-                    "description_fi": "Takautuva mallinnus on tehty nurmimaille kehitetyllä prosessipohjaisella BASGRA-BGC -mallilla (<a href=\"https://doi.org/10.1016/j.scitotenv.2020.144385\">Huang et al., 2021, <i>Sci. Total Environ. </i></a>). 90 % luottamusvälit on laskettu tekemällä 100 erillistä mallinnusta erilaisilla malliparametrien ja mallinnuksen alkutilojen yhdistelmillä.",
-                    "description_sv": "Retroaktiv modellering görs med den processbaserade BASGRA-BGC -modellen utvecklad för gräsmarker (<a href=\"https://doi.org/10.1016/j.scitotenv.2020.144385\">Huang et al., 2021, <i>Sci. Total Environ. </i></a>). 90% konfidensintervaller har beräknats genom att göra 100 separata modelleringar med olika kombinationer av modellparametrar och modellering av initialtillstånd."
+                    "description": "Hindcast (past) shows predicted values by the BASGRA-BGC process-based grassland model (<a href=\"https://doi.org/10.1016/j.scitotenv.2020.144385\">Huang et al., 2021, <i>Sci. Total Environ. </i></a>). The 90&nbsp;% confidence intervals for hindcast and forecast are generated by 100 ensemble members, with different combinations of model parameters and initial conditions.",
+                    "description_fi": "Takautuva mallinnus on tehty nurmimaille kehitetyllä prosessipohjaisella BASGRA-BGC -mallilla (<a href=\"https://doi.org/10.1016/j.scitotenv.2020.144385\">Huang et al., 2021, <i>Sci. Total Environ. </i></a>). 90&nbsp;% luottamusvälit on laskettu tekemällä 100 erillistä mallinnusta erilaisilla malliparametrien ja mallinnuksen alkutilojen yhdistelmillä.",
+                    "description_sv": "Retroaktiv modellering görs med den processbaserade BASGRA-BGC -modellen utvecklad för gräsmarker (<a href=\"https://doi.org/10.1016/j.scitotenv.2020.144385\">Huang et al., 2021, <i>Sci. Total Environ. </i></a>). 90&nbsp;% konfidensintervaller har beräknats genom att göra 100 separata modelleringar med olika kombinationer av modellparametrar och modellering av initialtillstånd."
                 },
                 {
                     "id": "basgra_bgc_forecast",
@@ -424,7 +424,7 @@ var chartsJson = {
                     "title": "STICS hindcast",
                     "title_fi": "STICS takautuva mallinnus",
                     "title_sv": "STICS återanalys",
-                    "description": "Hindcast (past) shows predicted values by the STICS process-based crop model (Brisson et al., <a href=\"https://doi.org/10.1051/agro:19980501\">1998</a>, <a href=\"https://doi.org/10.1051/agro:19980501\">2002</a>, <i>Agronomie</i>)." // The 90 % confidence intervals for hindcast and forecast are generated by 250 ensemble members, with different combinations of model parameters and initial conditions.
+                    "description": "Hindcast (past) shows predicted values by the STICS process-based crop model (Brisson et al., <a href=\"https://doi.org/10.1051/agro:19980501\">1998</a>, <a href=\"https://doi.org/10.1051/agro:19980501\">2002</a>, <i>Agronomie</i>)." // The 90&nbsp;% confidence intervals for hindcast and forecast are generated by 250 ensemble members, with different combinations of model parameters and initial conditions.
                 },
                 {
                     "id": "stics_forecast",
@@ -572,7 +572,7 @@ var chartsJson = {
             "title": "Soil moisture",
             "title_fi": "Maaperän kosteus",
             "title_sv": "Jordmånens fuktighet",
-            "description": "Soil moisture is a key driver for plant and microbe activity. In addition it tracks the water budget of the soil. 0.5 m3 water/m³ soil = 100 mm water in 20 cm depth of soil.",
+            "description": "Soil moisture is a key driver for plant and microbe activity. In addition it tracks the water budget of the soil. 0.5 m³ water/m³ soil = 100 mm water in 20 cm depth of soil.",
             "description_fi": "Maaperän kosteus säätelee kasvillisuuden ja maaperän mikrobien aktiivisuutta sekä seuraa maaperän vesitasetta. Puoli kuutiota (0.5 m³) vettä yhtä kuutiota maaperää kohden vastaa 100 mm vettä 20 cm syvyydessä.",
             "description_sv": "Jordmånens fuktighet reglerar aktiviteten hos växtligheten och markens mikrober, samt följer med jordmånens vattenbalans. En halv kubikmeter (0.5 m³)  vatten per kubikmeter jord motsvarar 100 mm vatten på 20 cm djup.",
             "yLabel": "soil moisture (m³ / m³)",
@@ -583,9 +583,33 @@ var chartsJson = {
                 "yMin": 0,
                 "yMax": 1
             },
+            "sourceCategoryList": [
+                {
+                    "id": "observation",
+                    "title": "Observation",
+                    "title_fi": "Havainto",
+                    "title_sv": "Observation"
+                },
+                {
+                    "id": "basgra_n_hindcast",
+                    "title": "BASGRA_N hindcast",
+                    "title_fi": "BASGRA_N takautuva mallinnus",
+                    "title_sv": "BASGRA_N återanalys",
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
+                },
+                {
+                    "id": "basgra_n_forecast",
+                    "title": "BASGRA_N forecast",
+                    "title_fi": "BASGRA_N ennuste",
+                    "title_sv": "BASGRA_N prognos"
+                },
+            ],
             "sourceTypes": [
                 {
                     "id": "meteo",
+                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -595,6 +619,7 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo_block",
+                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -604,6 +629,7 @@ var chartsJson = {
                 },
                 {
                     "id": "datasense",
+                    "sourceCategoryId": "observation",
                     "lines": true,
                     "seriesCSVFields": {
                         "date": "Date",
@@ -613,6 +639,7 @@ var chartsJson = {
                 },
                 {
                     "id": "qml",
+                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -625,6 +652,7 @@ var chartsJson = {
                 },
                 {
                     "id": "qml",
+                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -634,6 +662,38 @@ var chartsJson = {
                     "parameters": {
                         "height_cm": -30
                     }
+                },
+                {
+                    "id": "basgra_n_hindcast",
+                    "sourceCategoryId": "basgra_n_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "SoilMoisture_mean",
+                        "fractiles": [
+                            {
+                                "startField": "SoilMoisture_F005",
+                                "endField": "SoilMoisture_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "basgra_n_forecast",
+                    "sourceCategoryId": "basgra_n_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "SoilMoisture_mean",
+                        "fractiles": [
+                            {
+                                "startField": "SoilMoisture_F005",
+                                "endField": "SoilMoisture_F095"
+                            }
+                        ]
+                    }
                 }
             ]
         },
@@ -642,7 +702,7 @@ var chartsJson = {
             "title": "Temperature",
             "title_fi": "Lämpötila",
             "title_sv": "Temperatur",
-            "description": "Soil temperature controls plant and microbe activity. Increase of 10 degC roughly doubles growth and decomposition. Air temperature controls soil temperature in the long term.",
+            "description": "Soil temperature controls plant and microbe activity. Increase of 10 °C roughly doubles growth and decomposition. Air temperature controls soil temperature in the long term.",
             "description_fi": "Maaperän lämpötila säätelee kasvillisuuden ja maaperän mikrobien aktiivisuutta. Karkeasti arvioituna 10 asteen lämpötilanousu tuplaa kasvun ja maatumisen nopeuden. Pitkällä aikavälillä maaperän lämpötilaa säätelee ilman lämpötila.",
             "description_sv": "Jordmånens temperatur reglerar aktiviteten hos växtligheten och markens mikrober. Grovt uppskattat skulle en temperaturökning på 10 grader fördubbla tillväxthastigheten och förmultningen. På långsikt regleras jordmånens temperatur av luftens temperatur.",
             "yLabel": "temperature (°C)",
@@ -664,9 +724,9 @@ var chartsJson = {
                 {
                     "id": "ecmwf_forecast",
                     "title": "ECMWF forecast",
-                    "description": "For the forecast, also the 50 % and 80 % ranges are shown.",
-                    "description_fi": "Ennustelle on myös näkyvissä 50% ja 80% luottamusvälit.",
-                    "description_sv": "För prognosen visas också intervallerna 50 % och 80 %.",
+                    "description": "For the forecast, also the 50&nbsp;% and 80&nbsp;% ranges are shown.",
+                    "description_fi": "Ennustelle on myös näkyvissä 50&nbsp;% ja 80&nbsp;% luottamusvälit.",
+                    "description_sv": "För prognosen visas också intervallerna 50&nbsp;% och 80&nbsp;%.",
                     "title_fi": "ECMWF ennuste",
                     "title_sv": "ECMWF prognos"
                 },
@@ -958,9 +1018,9 @@ var chartsJson = {
                     "title": "ECMWF forecast",
                     "title_fi": "ECMWF ennuste",
                     "title_sv": "ECMWF prognos",
-                    "description": "For the forecast, also the 50 % and 80 % ranges are shown.",
-                    "description_fi": "Ennustelle on myös näkyvissä 50% ja 80% luottamusvälit.",
-                    "description_sv": "För prognosen visas också intervallerna 50 % och 80 %."
+                    "description": "For the forecast, also the 50&nbsp;% and 80&nbsp;% ranges are shown.",
+                    "description_fi": "Ennustelle on myös näkyvissä 50&nbsp;% ja 80&nbsp;% luottamusvälit.",
+                    "description_sv": "För prognosen visas också intervallerna 50&nbsp;% och 80&nbsp;%."
                 }
             ],
             "sourceTypes": [
@@ -1075,9 +1135,9 @@ var chartsJson = {
                     "title": "ECMWF forecast",
                     "title_fi": "ECMWF ennuste",
                     "title_sv": "ECMWF prognos",
-                    "description": "For the forecast, also the 50 % and 80 % ranges are shown.",
-                    "description_fi": "Ennustelle on myös näkyvissä 50% ja 80% luottamusvälit.",
-                    "description_sv": "För prognosen visas också intervallerna 50 % och 80 %."
+                    "description": "For the forecast, also the 50&nbsp;% and 80&nbsp;% ranges are shown.",
+                    "description_fi": "Ennustelle on myös näkyvissä 50&nbsp;% ja 80&nbsp;% luottamusvälit.",
+                    "description_sv": "För prognosen visas också intervallerna 50&nbsp;% och 80&nbsp;%."
                 }
             ],
             "sourceTypes": [
@@ -1226,9 +1286,9 @@ var chartsJson = {
             "title": "Net radiation",
             "title_fi": "Nettosäteily",
             "title_sv": "Nettostrålning",
-            "description": "Net radiation is the difference between incoming and outgoing broadband (visible to long-wave infrared) radiation (0.2 - 100 µm).",
-            "description_fi": "Nettosäteily on tulevan ja poistuvan leveäkaistaisen (aallonpituus 0.2 - 100 µm) säteilyn erotus.",
-            "description_sv": "Nettostrålning beskriver skillnaden mellan inkommande och utgående bredband strålning (våglängd 0.2 - 100 µm)",
+            "description": "Net radiation is the difference between incoming and outgoing broadband (visible to long-wave infrared) radiation (0.2–100 µm).",
+            "description_fi": "Nettosäteily on tulevan ja poistuvan leveäkaistaisen (aallonpituus 0.2–100 µm) säteilyn erotus.",
+            "description_sv": "Nettostrålning beskriver skillnaden mellan inkommande och utgående bredband strålning (våglängd 0.2–100 µm)",
             "yLabel": "radiation (W / m²)",
             "yLabel_fi": "säteilyteho (W / m²)",
             "yLabel_sv": "strålning (W / m²)",
@@ -1431,9 +1491,9 @@ var chartsJson = {
             "title": "Photosynthetically active radiation (PAR)",
             "title_fi": "Fotosynteettisesti aktiivinen säteily (PAR)",
             "title_sv": "Fotosyntetiskt aktiv strålning (PAR)",
-            "description": "PAR is the plant available amount of light (400-700 nm) per time unit. Controls actual plant growth.",
-            "description_fi": "PAR kertoo yhteyttämiseen käytettävissä olevan säteilyn määrän (fotosynteettisesti aktiviinen säteily, 400-700 nm). Sillä on suuri vaikutus kasvillisuuden kasvuun.",
-            "description_sv": "PAR anger mängden strålning som är tillgängligt för fotosyntesen (fotosyntetiskt aktiv strålning, 400-700 nm). Den har en stor betydelse för växtlighetens tillväxt.",
+            "description": "PAR is the plant available amount of light (400–700 nm) per time unit. Controls actual plant growth.",
+            "description_fi": "PAR kertoo yhteyttämiseen käytettävissä olevan säteilyn määrän (fotosynteettisesti aktiviinen säteily, 400–700 nm). Sillä on suuri vaikutus kasvillisuuden kasvuun.",
+            "description_sv": "PAR anger mängden strålning som är tillgängligt för fotosyntesen (fotosyntetiskt aktiv strålning, 400–700 nm). Den har en stor betydelse för växtlighetens tillväxt.",
             "yLabel": "PAR (µmol / m² / s)",
             "timeAggregationSettings": [
                 {
@@ -1473,9 +1533,9 @@ var chartsJson = {
                     "title": "ECMWF forecast",
                     "title_fi": "ECMWF ennuste",
                     "title_sv": "ECMWF prognos",
-                    "description": "For the forecast, also the 50 % and 80 % ranges are shown.",
-                    "description_fi": "Ennustelle on myös näkyvissä 50% ja 80% luottamusvälit.",
-                    "description_sv": "För prognosen visas också intervallerna 50 % och 80 %."
+                    "description": "For the forecast, also the 50&nbsp;% and 80&nbsp;% ranges are shown.",
+                    "description_fi": "Ennustelle on myös näkyvissä 50&nbsp;% ja 80&nbsp;% luottamusvälit.",
+                    "description_sv": "För prognosen visas också intervallerna 50&nbsp;% och 80&nbsp;%."
                 }
             ],
             "sourceTypes": [
@@ -1536,9 +1596,9 @@ var chartsJson = {
             "title": "Photosynthetically active radiation (PAR)",
             "title_fi": "Fotosynteettisesti aktiivinen säteily (PAR)",
             "title_sv": "Fotosyntetiskt aktiv strålning (PAR)",
-            "description": "PAR is the plant available amount of light (400-700 nm) per time unit. Controls actual plant growth.",
-            "description_fi": "PAR kertoo yhteyttämiseen käytettävissä olevan säteilyn määrän (fotosynteettisesti aktiviinen säteily, 400-700 nm). Sillä on suuri vaikutus kasvillisuuden kasvuun.",
-            "description_sv": "PAR anger mängden strålning som är tillgängligt för fotosyntesen (fotosyntetiskt aktiv strålning, 400-700 nm). Den har en stor betydelse för växtlighetens tillväxt.",
+            "description": "PAR is the plant available amount of light (400–700 nm) per time unit. Controls actual plant growth.",
+            "description_fi": "PAR kertoo yhteyttämiseen käytettävissä olevan säteilyn määrän (fotosynteettisesti aktiviinen säteily, 400–700 nm). Sillä on suuri vaikutus kasvillisuuden kasvuun.",
+            "description_sv": "PAR anger mängden strålning som är tillgängligt för fotosyntesen (fotosyntetiskt aktiv strålning, 400–700 nm). Den har en stor betydelse för växtlighetens tillväxt.",
             "yLabel": "PAR (MJ / m² / day)",
             "yLabel_fi": "PAR (MJ / m² / vrk)",
             "yLabel_sv": "PAR (MJ / m² / dag)",
@@ -1570,9 +1630,9 @@ var chartsJson = {
                     "title": "ECMWF forecast",
                     "title_fi": "ECMWF ennuste",
                     "title_sv": "ECMWF prognos",
-                    "description": "For the forecast, also the 50 % and 80 % ranges are shown.",
-                    "description_fi": "Ennustelle on myös näkyvissä 50% ja 80% luottamusvälit.",
-                    "description_sv": "För prognosen visas också intervallerna 50 % och 80 %."
+                    "description": "For the forecast, also the 50&nbsp;% and 80&nbsp;% ranges are shown.",
+                    "description_fi": "Ennustelle on myös näkyvissä 50&nbsp;% ja 80&nbsp;% luottamusvälit.",
+                    "description_sv": "För prognosen visas också intervallerna 50&nbsp;% och 80&nbsp;%."
                 }
             ],
             "sourceTypes": [
@@ -1641,9 +1701,9 @@ var chartsJson = {
             "title": "Incoming and surface-reflected short-wave radiation",
             "title_fi": "Tuleva ja maasta heijastunut lyhytaaltoinen säteily",
             "title_sv": "Inkommande och markreflekterad kortvågig strålning",
-            "description": "Incoming (down) and surface-reflected (up) visible and near-infrared radiation (300 - 2800 nm).",
-            "description_fi": "Tuleva (down) ja maasta heijastunut (up) lyhytaaltoinen säteily (näkyvästä valosta lähi-infrapuna-alueeseen, 300 - 2800 nm).",
-            "description_sv": "Inkommande (down) och markreflekterad (up) kortvågig strålning (från synligt ljus till nära-infraröd strålning, 300 - 2800 nm)",
+            "description": "Incoming (down) and surface-reflected (up) visible and near-infrared radiation (300–2800 nm).",
+            "description_fi": "Tuleva (down) ja maasta heijastunut (up) lyhytaaltoinen säteily (näkyvästä valosta lähi-infrapuna-alueeseen, 300–2800 nm).",
+            "description_sv": "Inkommande (down) och markreflekterad (up) kortvågig strålning (från synligt ljus till nära-infraröd strålning, 300–2800 nm)",
             "yLabel": "radiation (W / m²)",
             "yLabel_fi": "säteilyteho (W / m²)",
             "yLabel_sv": "strålning (W / m²)",
@@ -1786,9 +1846,9 @@ var chartsJson = {
                     "title": "BASGRA_N hindcast",
                     "title_fi": "BASGRA_N takautuva mallinnus",
                     "title_sv": "BASGRA_N återanalys",
-                    "description": "Error bars indicate 90 % confidence intervals.",
-                    "description_fi": "Virhepalkit näyttävät 90% luottamusvälin.",
-                    "description_sv": "Felstaplarna anger konfidensintervall på 90%."
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
                 },
                 {
                     "id": "basgra_n_forecast",
@@ -1801,9 +1861,9 @@ var chartsJson = {
                     "title": "BASGRA-BGC hindcast",
                     "title_fi": "BASGRA-BGC takautuva mallinnus",
                     "title_sv": "BASGRA-BGC återanalys",
-                    "description": "Error bars indicate 90 % confidence intervals.",
-                    "description_fi": "Virhepalkit näyttävät 90% luottamusvälin.",
-                    "description_sv": "Felstaplarna anger konfidensintervall på 90%."
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
                 },
                 {
                     "id": "basgra_bgc_forecast",
@@ -1938,36 +1998,36 @@ var chartsJson = {
                     "title": "BASGRA_N hindcast",
                     "title_fi": "BASGRA_N takautuva mallinnus",
                     "title_sv": "BASGRA_N återanalys",
-                    "description": "Error bars indicate 90 % confidence intervals.",
-                    "description_fi": "Virhepalkit näyttävät 90% luottamusvälin.",
-                    "description_sv": "Felstaplarna anger konfidensintervall på 90%."
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
                 },
                 {
                     "id": "basgra_n_forecast",
                     "title": "BASGRA_N forecast",
                     "title_fi": "BASGRA_N ennuste",
                     "title_sv": "BASGRA_N prognos",
-                    "description": "Error bars indicate 90 % confidence intervals.",
-                    "description_fi": "Virhepalkit näyttävät 90% luottamusvälin.",
-                    "description_sv": "Felstaplarna anger konfidensintervall på 90%."
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
                 },
                 {
                     "id": "basgra_bgc_hindcast",
                     "title": "BASGRA-BGC hindcast",
                     "title_fi": "BASGRA-BGC takautuva mallinnus",
                     "title_sv": "BASGRA-BGC återanalys",
-                    "description": "Error bars indicate 90 % confidence intervals.",
-                    "description_fi": "Virhepalkit näyttävät 90% luottamusvälin.",
-                    "description_sv": "Felstaplarna anger konfidensintervall på 90%."
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
                 },
                 {
                     "id": "basgra_BGC_forecast",
                     "title": "BASGRA-BGC forecast",
                     "title_fi": "BASGRA-BGC ennuste",
                     "title_sv": "BASGRA-BGC prognos",
-                    "description": "Error bars indicate 90 % confidence intervals.",
-                    "description_fi": "Virhepalkit näyttävät 90% luottamusvälin.",
-                    "description_sv": "Felstaplarna anger konfidensintervall på 90%."
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
                 }
             ],
             "sourceTypes": [
