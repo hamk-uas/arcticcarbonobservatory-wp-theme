@@ -1080,6 +1080,8 @@
 }
 
 #circle_tooltip {
+    visibility: hidden;
+    opacity: 0;
     background: rgb(255, 249, 227);
     border: 1px solid black;
     border-radius: 5px;

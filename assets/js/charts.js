@@ -579,9 +579,20 @@ var chartsJson = {
             "yLabel_fi": "maaperän kosteus (m³ / m³)",
             "yLabel_sv": "jordmånens fuktighet (m³ / m³)",
             "timeAggregationStatistic": "mean",
+            "timeAggregationSettings": [
+                {
+                    "enabled": false
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 86400000
+                }
+            ],
             "defaults": {
                 "yMin": 0,
-                "yMax": 1
+                "yMax": 1,
+                "timeAggregationSettingIndex": "auto"
             },
             "sourceCategoryList": [
                 {
@@ -604,6 +615,36 @@ var chartsJson = {
                     "title": "BASGRA_N forecast",
                     "title_fi": "BASGRA_N ennuste",
                     "title_sv": "BASGRA_N prognos"
+                },
+                {
+                    "id": "basgra_bgc_hindcast",
+                    "title": "BASGRA_BGC hindcast",
+                    "title_fi": "BASGRA_BGC takautuva mallinnus",
+                    "title_sv": "BASGRA_BGC återanalys",
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
+                },
+                {
+                    "id": "basgra_bgc_forecast",
+                    "title": "BASGRA_BGC forecast",
+                    "title_fi": "BASGRA_BGC ennuste",
+                    "title_sv": "BASGRA_BGC prognos"
+                },
+                {
+                    "id": "stics_hindcast",
+                    "title": "STICS hindcast",
+                    "title_fi": "STICS takautuva mallinnus",
+                    "title_sv": "STICS återanalys",
+                    "description": "Error bars indicate 90&nbsp;% confidence intervals.",
+                    "description_fi": "Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+                    "description_sv": "Felstaplarna anger konfidensintervall på 90&nbsp;%."
+                },
+                {
+                    "id": "stics_forecast",
+                    "title": "STICS forecast",
+                    "title_fi": "STICS ennuste",
+                    "title_sv": "STICS prognos"
                 },
             ],
             "sourceTypes": [
@@ -682,6 +723,70 @@ var chartsJson = {
                 {
                     "id": "basgra_n_forecast",
                     "sourceCategoryId": "basgra_n_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "SoilMoisture_mean",
+                        "fractiles": [
+                            {
+                                "startField": "SoilMoisture_F005",
+                                "endField": "SoilMoisture_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "basgra_bgc_hindcast",
+                    "sourceCategoryId": "basgra_bgc_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "SoilMoisture_mean",
+                        "fractiles": [
+                            {
+                                "startField": "SoilMoisture_F005",
+                                "endField": "SoilMoisture_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "basgra_bgc_forecast",
+                    "sourceCategoryId": "basgra_bgc_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "SoilMoisture_mean",
+                        "fractiles": [
+                            {
+                                "startField": "SoilMoisture_F005",
+                                "endField": "SoilMoisture_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "stics_hindcast",
+                    "sourceCategoryId": "stics_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "SoilMoisture_mean",
+                        "fractiles": [
+                            {
+                                "startField": "SoilMoisture_F005",
+                                "endField": "SoilMoisture_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "stics_forecast",
+                    "sourceCategoryId": "stics_forecast",
                     "lines": true,
                     "integrationTime": -86400000,
                     "seriesCSVFields": {

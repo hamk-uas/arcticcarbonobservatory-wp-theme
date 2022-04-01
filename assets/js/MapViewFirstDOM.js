@@ -315,3 +315,27 @@ function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], 
     }
     return boundingBox;
 }
+
+function showTooltip(evt, initiatorId, text) {
+    let tooltip = document.getElementById("circle_tooltip");
+    tooltip.innerHTML = text;
+    if (tooltip.style.visibility === 'hidden') {
+        tooltip.style.left = evt.pageX + 10 + 'px';
+        tooltip.style.top = evt.pageY + 10 + 'px';
+        currentInitiatorId = initiatorId;
+    }
+    if (tooltip.style.visibility === 'hidden') {
+        tooltip.style.transition = 'opacity 250ms ease-in 500ms';
+        tooltip.style.visibility = 'visible';
+        tooltip.style.opacity = 1;
+    }
+// Tooltip html element should be placed in the DOM
+    // <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+}
+
+function hideTooltip(evt, initiatorId) {
+    let tooltip = document.getElementById("circle_tooltip");
+    tooltip.style.transition = 'all 250ms';
+    tooltip.style.visibility = 'hidden';
+    tooltip.style.opacity = 0;
+}
