@@ -5,6 +5,11 @@
     $maintitle = "mainTitle-" . $currentLang;
     $mapinfotext = "mapInfoText-" . $currentLang;
     ?>
+<script type="text/javascript">
+    var v = {
+    	fieldobservatoryLanguage: "<?php echo $currentLang?>".split("_")[0] // fi -> fi, sv_SE -> sv, en_US -> en
+    };
+</script>
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
