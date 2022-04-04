@@ -1,13 +1,12 @@
 <?php $baseUri = get_template_directory_uri(); 
-    get_header();
-    $currentLang = get_locale();
-    $maincontent = "mainContent-" . $currentLang;
-    $maintitle = "mainTitle-" . $currentLang;
-    $mapinfotext = "mapInfoText-" . $currentLang;
+    get_header();    
+    $maincontent = "mainContent-" . get_locale();
+    $maintitle = "mainTitle-" . get_locale();
+    $mapinfotext = "mapInfoText-" . get_locale();
     ?>
 <script type="text/javascript">
     var v = {
-    	fieldobservatoryLanguage: "<?php echo $currentLang?>".split("_")[0] // fi -> fi, sv_SE -> sv, en_US -> en
+    	fieldobservatoryLanguage: "<?php echo explode("_", get_locale())[0]?>" // fi -> fi, sv_SE -> sv, en_US -> en
     };
 </script>
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
@@ -128,7 +127,7 @@ get_footer();
             fieldobservatoryLanguage: "en"
         };
     } else {
-        console.log(`Using language: ${window.fieldobservatoryLanguage}`);
+        console.log(`Using language: ${v.fieldobservatoryLanguage}`);
     }
     var fieldobservatoryIsWordpress = true;
 
