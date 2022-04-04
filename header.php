@@ -1,3 +1,9 @@
+<?php
+    function add_query_string($url) {
+        return empty($_SERVER['QUERY_STRING'])? $url : $url.'?'.$_SERVER['QUERY_STRING'];
+    }
+    add_filter('pll_the_language_link', 'add_query_string');
+?>
 <!doctype html>
 <html lang="<?php echo explode("_", get_locale())[0]?>">
 <head>
