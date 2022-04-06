@@ -98,7 +98,7 @@
             <div id="mapRightDiv" class="fieldInfoDiv">
                 <h2 id="fieldInfo"></h2><div id="siteDescription"></div>
             </div>
-            <div id="circle_tooltip" style="position: absolute;"></div>
+            <div id="tooltip" class="tooltip_hidden"></div>
         </div>
     </div>
 </div>

@@ -317,6 +317,7 @@ function refreshChart(chartId, refreshIndex, xAxisHtml, drawingHtmls) {
     document.getElementById(`chart_drawing_defs_${chartId}`).innerHTML = drawingHtmls.drawingDefsHtml;
     document.getElementById(`chart_drawing_background_${chartId}`).innerHTML = drawingHtmls.drawingBackgroundHtml;
     document.getElementById(`chart_drawing_${chartId}`).innerHTML = drawingHtmls.drawingHtml;
+    addTransientDrawingListeners(chartId);
     v.charts[chartId].refreshIndex = refreshIndex;
 }
 
@@ -369,15 +370,95 @@ function workerUpdateView() {
     });
 }
 
-function addDrawingListeners() {
+function addTooltip(elementId, text) {
+    //console.log(`addTooltip ${elementId}`);
+    let element = document.getElementById(elementId);
+    if (element != null) {
+        element.addEventListener("mouseover", (e) => showTooltip(e, elementId, text));
+        element.addEventListener("mouseleave", (e) => hideTooltip(e, elementId));
+    }
+}
+
+function addTransientDrawingListeners(chartId) {
+    let chart = v.charts[chartId];
+    let nowElementId = `chart_${chartId}_now`;
+    let nowElement = document.getElementById(nowElementId);
+    if (nowElement != null) {            
+        let dateObject = new Date(v.now);
+        addTooltip(nowElementId, translate(t.tooltip, 'now')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`}));
+    }
+    if (v.charts["satelliteImages"] !== undefined) {
+        v.charts["satelliteImages"].sources.forEach(function (source, sourceIndex) {
+            if (source.sourceType === "mgmt_event") {
+                source.jsonList.forEach(function (json, jsonIndex) {
+                    if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate && json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
+                        json.data.management.events.forEach(function (event, eventIndex) {
+                            let eventElementId = `chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}`;
+                            let eventElement = document.getElementById(eventElementId);
+                            if (eventElement != null) {
+                                if (event.start_date !== undefined && event.end_date !== undefined) {
+                                    let startDateObject = new Date(event.start_date);
+                                    let endDateObject = new Date(event.end_date);
+                                    addTooltip(eventElementId, translate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`}));
+                                    eventElement.onclick = function (e) {
+                                        setEventDate(event.start_date, sourceIndex, eventIndex, chartId, e);
+                                        immediateHideTooltip(eventElementId);
+                                        e.stopPropagation();
+                                        e.preventDefault();                            
+                                    }
+                                    eventElement.onmousedown = preventDefault;
+                                } else if (event.date !== undefined) {
+                                    let dateObject = new Date(event.date);
+                                    addTooltip(eventElementId, translate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`}));
+                                    eventElement.onclick = function (e) {
+                                        setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
+                                        immediateHideTooltip(eventElementId);
+                                        e.stopPropagation();
+                                        e.preventDefault();                            
+                                    }
+                                    eventElement.onmousedown = preventDefault;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    if (chartId === "satelliteImages") {
+        chart.sourceCategoryList.forEach(function (sourceCategory) {
+            if (chart.visible[sourceCategory.id]) {
+                sourceCategory.geoTiffDates.forEach(function (date, index) {
+                    let dateObject = new Date(date);
+                    let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
+                    let tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: sourceCategory.dateToGeoTiffList[date].length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                    addTooltip(circleId, tooltipString);
+                    let circle = document.getElementById(circleId);
+                    if (circle != null) {
+                        circle.onclick = (e) => {
+                            setSatelliteImageDate(date, e);
+                            immediateHideTooltip(circleId);
+                        }
+                        circle.onmousedown = preventDefault;
+                    }
+                });
+            }
+        });
+    }
+}
+
+function addPermanentDrawingListeners() {
     v.chartIds.forEach(function (chartId) {
-        let panArea = document.getElementById(`chart_pan_area_${chartId}`);
-        panArea.onpointerdown = function (e) {
+        let panAreaElementId = `chart_pan_area_${chartId}`
+        let panAreaElement = document.getElementById(panAreaElementId);
+        addTooltip(panAreaElementId, translate(t.tooltip, 'panArea'))
+        panAreaElement.onpointerdown = function (e) {
+            immediateHideTooltip(panAreaElementId);
             let clientXOrigin = e.clientX;
             let startDateOrigin = v.startDate;
             let endDateOrigin = v.endDate;
-            panArea.setPointerCapture(e.pointerId);
-            panArea.onpointermove = function (e) {
+            panAreaElement.setPointerCapture(e.pointerId);
+            panAreaElement.onpointermove = function (e) {
                 let timeShiftMilliseconds = Math.round((clientXOrigin - e.clientX) / v.dimensions.width * (endDateOrigin - startDateOrigin));
                 v.startDate = startDateOrigin + timeShiftMilliseconds;
                 v.endDate = v.startDate + (endDateOrigin - startDateOrigin);
@@ -395,20 +476,23 @@ function addDrawingListeners() {
             e.stopPropagation();
             e.preventDefault();
         };
-        panArea.onpointerup = function (e) {
+        panAreaElement.onpointerup = function (e) {
             requestWorkerRefreshCharts(v.chartIds.filter(function (id) {
                 let rect = document.getElementById(`chart_svg_${id}`).getBoundingClientRect();
                 return (id !== chartId && !(rect.bottom >= 0 && rect.right >= 0 && rect.top < window.innerHeight && rect.left < window.innerWidth));
             }), chartRefreshIndex);
-            panArea.releasePointerCapture(e.pointerId);
-            panArea.onpointermove = null;
+            panAreaElement.releasePointerCapture(e.pointerId);
+            panAreaElement.onpointermove = null;
             e.stopPropagation();
         };
-        let zoomXIn = document.getElementById(`chart_zoom_x_in_${chartId}`);
+        let zoomXInElementId = `chart_zoom_x_in_${chartId}`;
+        let zoomXIn = document.getElementById(zoomXInElementId);
+        addTooltip(zoomXInElementId, translate(t.tooltip, 'zoomXIn'))
         zoomXIn.onmousedown = function (e) {
             e.preventDefault();
         };
         zoomXIn.onclick = function (e) {
+            immediateHideTooltip(zoomXInElementId);
             if (v.zoomLevel > 0) {
                 let centerDate = (v.startDate + v.endDate) * 0.5;
                 v.zoomLevel--;
@@ -424,11 +508,14 @@ function addDrawingListeners() {
             e.stopPropagation();
             e.preventDefault();
         };
-        let zoomXOut = document.getElementById(`chart_zoom_x_out_${chartId}`);
+        let zoomXOutElementId = `chart_zoom_x_out_${chartId}`;
+        let zoomXOut = document.getElementById(zoomXOutElementId);
+        addTooltip(zoomXOutElementId, translate(t.tooltip, 'zoomXOut'))
         zoomXOut.onmousedown = function (e) {
             e.preventDefault();
         };
         zoomXOut.onclick = function (e) {
+            immediateHideTooltip(zoomXOutElementId);
             if (v.zoomLevel < v.zoomLevels.length - 1) {
                 let centerDate = (v.startDate + v.endDate) * 0.5;
                 v.zoomLevel++;
@@ -495,12 +582,12 @@ function resizeCharts() {
         prepXGrid(v);
 
         v.chartIds.forEach(function (chartId) {
-            document.getElementById(`chart_svg_${chartId}`).innerHTML = getChartSvgInnerHtml(v, chartId);            
+            document.getElementById(`chart_svg_${chartId}`).innerHTML = getChartSvgInnerHtml(v, chartId);
         });
         refreshAllCharts();
 
         // Add pointer event listeners do drawings
-        addDrawingListeners();
+        addPermanentDrawingListeners();
 
         worker.postMessage({
             command: "vUpdate",
@@ -617,7 +704,6 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             } else {
                 soilTypeHTML = `<td>${translate(t.soil_texture_choice_plaintext, feature.properties.soil_texture, "")}</td>`;
             }
-            console.log(soilTypeHTML);
             let description = `
             <p style="animation:fadein 1s">${translate(feature.properties, "site_type_Name", (feature.properties.site_type === undefined) ? "" : feature.properties.site_type)}</p>
             <p style="animation:fadein 1s">${translate(feature.properties, "description", "")}</p>
@@ -1126,7 +1212,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     refreshAllCharts();
 
     // Add pointer event listeners to drawings
-    addDrawingListeners();
+    //addPermanentDrawingListeners();
 
     requestWorkerLoadData();
 };

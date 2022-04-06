@@ -40,6 +40,26 @@ var crop_codes = {
 
 // Translations
 var t = {
+    tooltip: {
+        /* Satellite image selector */
+        "toggleSatelliteImages": $ => `Show/hide ${$.numImages} images<br>${$.dateString}`,
+        "toggleSatelliteImages_fi": $ => `Näytä/piilota ${$.numImages} kuvaa<br>${$.dateString}`,
+        /* Current time indicator */
+        "now": $ => `Present time<br>${$.dateString}`,
+        "now_fi": $ => `Nykyhetki<br>${$.dateString}`,
+        /* Pan area */
+        "panArea": "Drag to pan",
+        "panArea_fi": "Vedä siirtääksesi näkymää",
+        /* Management event */
+        "toggleEvent": $ => `Show/hide event<br>${$.dateString}`,
+        "toggleEvent_fi": $ => `Näytä/piilota tapahtuma<br>${$.dateString}`,
+        /* Chart controls */
+        "zoomXIn": "Zoom in time",
+        "zoomXIn_fi": "Zoomaa sisään aikaa",
+        "zoomXOut": "Zoom out time",
+        "zoomXOut_fi": "Zoomaa ulos aikaa",
+
+    },
     vegetationIndex: {
         "ndviNormalizedSumImage": "cumNDVI",
         "laiImage": "LAI",
@@ -555,7 +575,6 @@ var t = {
 // Get property of object in the current language.
 // You can pass a fallback value that is returned if the property is not found in the desired language or the default language.
 // If fallback is undefined or not given, then the property name itself returned as the fallback value.
-// You can pass a null fallback to get informed that the fallback value got returned.
 function translate(object, property, fallback = property, language = v.fieldobservatoryLanguage) {
     if (language !== 'en') {
         let translationKey = `${property}_${language}`;
@@ -1088,24 +1107,24 @@ function getTractorSymbolHtml(x, y, color) {
     </g>`;
 }
 
-function getCalendarSymbolHtml(x, y, color) {
+function getCalendarSymbolHtml(id, x, y, color) {
     // width="141" height="146"
-    return `    
-    <g transform="translate(${x}, ${y}) translate(${-70*0.19}, ${-146*0.19}) scale(0.19)"><path fill="${color}"
-    d="M13.3,126.4V37.4c0-2.4,.9-4.5,2.6-6.3c1.7-1.8,3.8-2.6
-    6.2-2.6h8.8v-6.7c0-3.1,1.1-5.7,3.2-7.9c2.2-2.2,4.7-3.3,7.8-3.3h4.4c3,0
-    5.6,1.1,7.8,3.3c2.2,2.2,3.2,4.8,3.2,7.9v6.7h26.4v-6.7c0-3.1,1.1-5.7
-    3.2-7.9c2.2-2.2,4.7-3.3,7.8-3.3h4.4c3,0,5.6,1.1,7.8,3.3c2.2,2.2,3.2
-    4.8,3.2,7.9v6.7h8.8c2.4,0,4.4,.9,6.2,2.6c1.7,1.8,2.6,3.8,2.6,6.3v88.9c0
-    2.4-.9,4.5-2.6,6.3c-1.7,1.8-3.8,2.6-6.2,2.6H22.1c-2.4,0-4.4-.9-6.2-2.6C14.2,130.8
-    13.3,128.8,13.3,126.4z M22.1,126.4h96.8V55.2H22.1V126.4z M39.7,41.9c0,.6,.2,1.2
-    .6,1.6c.4,.4,.9,.6,1.6,.6h4.4c.6,0,1.2-.2,1.6-.6c.4-.4
-    .6-.9,.6-1.6v-20c0-.6-.2-1.2-.6-1.6c-.4-.4-.9-.6-1.6-.6h-4.4c-.6,0-1.2,.2-1.6
-    .6c-.4,.4-.6,1-.6,1.6V41.9z
-    M92.5,41.9c0,.6,.2,1.2,.6,1.6c.4,.4,.9,.6
-    1.6,.6h4.4c.6,0,1.2-.2,1.6-.6c.4-.4
-    .6-.9,.6-1.6v-20c0-.6-.2-1.2-.6-1.6c-.4-.4-.9-.6-1.6-.6h-4.4c-.6
-    0-1.2,.2-1.6,.6c-.4,.4-.6,1-.6,1.6V41.9z"/></g>`;    
+    return `        
+        <g transform="translate(${x}, ${y}) translate(${-70*0.19}, ${-146*0.19}) scale(0.19)"><path fill="${color}"
+        d="M13.3,126.4V37.4c0-2.4,.9-4.5,2.6-6.3c1.7-1.8,3.8-2.6
+        6.2-2.6h8.8v-6.7c0-3.1,1.1-5.7,3.2-7.9c2.2-2.2,4.7-3.3,7.8-3.3h4.4c3,0
+        5.6,1.1,7.8,3.3c2.2,2.2,3.2,4.8,3.2,7.9v6.7h26.4v-6.7c0-3.1,1.1-5.7
+        3.2-7.9c2.2-2.2,4.7-3.3,7.8-3.3h4.4c3,0,5.6,1.1,7.8,3.3c2.2,2.2,3.2
+        4.8,3.2,7.9v6.7h8.8c2.4,0,4.4,.9,6.2,2.6c1.7,1.8,2.6,3.8,2.6,6.3v88.9c0
+        2.4-.9,4.5-2.6,6.3c-1.7,1.8-3.8,2.6-6.2,2.6H22.1c-2.4,0-4.4-.9-6.2-2.6C14.2,130.8
+        13.3,128.8,13.3,126.4z M22.1,126.4h96.8V55.2H22.1V126.4z M39.7,41.9c0,.6,.2,1.2
+        .6,1.6c.4,.4,.9,.6,1.6,.6h4.4c.6,0,1.2-.2,1.6-.6c.4-.4
+        .6-.9,.6-1.6v-20c0-.6-.2-1.2-.6-1.6c-.4-.4-.9-.6-1.6-.6h-4.4c-.6,0-1.2,.2-1.6
+        .6c-.4,.4-.6,1-.6,1.6V41.9z
+        M92.5,41.9c0,.6,.2,1.2,.6,1.6c.4,.4,.9,.6
+        1.6,.6h4.4c.6,0,1.2-.2,1.6-.6c.4-.4
+        .6-.9,.6-1.6v-20c0-.6-.2-1.2-.6-1.6c-.4-.4-.9-.6-1.6-.6h-4.4c-.6
+        0-1.2,.2-1.6,.6c-.4,.4-.6,1-.6,1.6V41.9z"/></g><rect id="${id}" x="${x-11}" y="${y-26}" width="22" height="24" fill="transparent"/>`;
 }
 
 function getSentinel2SymbolHtml(x, y, color) {
@@ -1150,8 +1169,7 @@ function getVisibleSymbolHtml(chartId, legendId, color, visible = true, defsHtml
 
 function getZoomInSymbolHtml(id, x, y) {
     return `
-    <svg id="${id}" style="cursor:pointer" x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
-        <rect x="0" y="0" width="42.321" height="45.321" style="fill:none; stroke:none"/>
+    <svg x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
         <g transform="matrix(0.017, -1, 1, 0.017, 0, 31.876)" fill="#ffffff" stroke="#71cdb6" stroke-width="4">
             <circle cx="15.94" cy="15.94" r="15.94" stroke="none" />
             <circle cx="15.94" cy="15.94" r="13.94" fill="none" />
@@ -1161,6 +1179,7 @@ function getZoomInSymbolHtml(id, x, y) {
             <line x2="10" transform="translate(11.5 15.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4" />
             <line y2="10" transform="translate(16.5 10.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4" />
         </g>
+        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
     </svg>`;
 }
 
@@ -1229,21 +1248,20 @@ function getTimeAggregationSymbolHtml(chartId, x, y) {
 
 function getZoomOutSymbolHtml(id, x, y) {
     return `
-    <svg id="${id}" style="cursor:pointer" x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
-        <rect x="0" y="0" width="42.321" height="45.321" style="fill:none; stroke:none"/>
+    <svg style="cursor:pointer" x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
         <g transform="matrix(0.017, -1, 1, 0.017, 0, 31.876)" fill="#ffffff" stroke="#71cdb6" stroke-width="4">
             <circle cx="15.94" cy="15.94" r="15.94" stroke="none"/>
             <circle cx="15.94" cy="15.94" r="13.94" fill="none"/>
         </g>
         <line x2="13" y2="15" transform="translate(26.5 27.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
         <line x2="10" transform="translate(11.5 15.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
+        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
     </svg>`;
 }
 
 function getAutoZoomSymbolHtml(chartId, x, y) {
     let chart = v.charts[chartId];
     let g = `
-    <rect x="0" y="0" width="42.321" height="45.321" style="fill:none; stroke:none"/>
     <g transform="matrix(0.017, -1, 1, 0.017, 0, 31.876)" fill="#ffffff" stroke-width="4">
         <circle cx="15.94" cy="15.94" r="15.94" stroke="none"/>
         <circle cx="15.94" cy="15.94" r="13.94" fill="none"/>
@@ -1257,21 +1275,21 @@ function getAutoZoomSymbolHtml(chartId, x, y) {
         <path d="M0,0H7.829" transform="translate(12.5 18.5)" fill="none" stroke-linecap="round" stroke-width="2"/>
     </g>`;
     return `    
-    <svg id="chart_${chartId}_auto_zoom" style="cursor:pointer" x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321" onclick="toggleAutoZoom('${chartId}', event);" onmousedown="preventDefault(event)">
+    <svg x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
         <g id="chart_${chartId}_auto_zoom_disabled" stroke="${v.disabledColor}" style="visibility:${(chart.autoZoom)? 'hidden' : 'visible'}">
             ${g}
         </g>
         <g id="chart_${chartId}_auto_zoom_enabled" stroke="#71cdb6" style="visibility:${(chart.autoZoom) ? 'visible' : 'hidden'}">
             ${g}
         </g>
+        <rect id="chart_${chartId}_auto_zoom" style="cursor:pointer" onclick="toggleAutoZoom('${chartId}', event);" onmousedown="preventDefault(event)" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
     </svg>`;
 }
 
 function getDownloadSymbolHtml(id, x, y) {
     return `
-    <svg id="${id}" style="cursor:pointer" x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
+    <svg x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
       <g transform="translate(${(42.321 - 40) / 2} ${(45.321 - 39) / 2})">
-        <rect x="0" y="0" width="42.321" height="45.321" style="fill:none; stroke:none"/>
         <g fill="#fff" stroke="#71cdb6" stroke-width="4">
           <rect width="40" height="39" rx="19.5" stroke="none"/>
           <rect x="2" y="2" width="36" height="35" rx="17.5" fill="none"/>
@@ -1283,6 +1301,7 @@ function getDownloadSymbolHtml(id, x, y) {
           </g>
           <line id="Line_11" data-name="Line 11" x1="14" transform="translate(0 20)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
         </g>
+        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
       </g>
     </svg>`;
 }
@@ -1331,7 +1350,7 @@ function getChartSvgInnerHtml(v, chartId, standalone = false) {
         ${drawingDefsHtml}
     </defs>
     <g transform="translate(${v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth} 0)">
-        <svg width="${v.dimensions.width}" height="${v.dimensions.topMargin + height}" clip-path="url(#chart_clip_${chartId})">
+        <svg width="${v.dimensions.width}" height="${v.dimensions.topMargin + height}" ${(standalone) ? `clip-path="url(#chart_clip_${chartId})"` : ''}>
             <g id="chart_drawing_background_${chartId}" transform="translate(0 ${v.dimensions.topMargin})">
                 ${drawingBackgroundHtml}
             </g>
@@ -2081,9 +2100,8 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                             color = v.chartColors[0];
                             selected = true;
                         }
-                        let dateObject = new Date(date);
                         let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                        drawingHtml += `<circle id="${circleId}" onmouseleave="hideTooltip(evt, '${circleId}');" onmouseover="showTooltip(evt, '${circleId}', 'Show ${sourceCategory.dateToGeoTiffList[date].length} images for<br>${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}')" onclick="setSatelliteImageDate(${date}, event)" onmousedown="preventDefault(event)" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}" />`;
+                        drawingHtml += `<circle id="${circleId}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}" />`;
                         drawingHtml += `<text pointer-events="none" font-family="sans-serif" font-size="18px" ${(selected) ? 'font-weight="bold"' : ''} fill="${color}" text-anchor="middle" dominant-baseline="middle" x="${x.toFixed(1)}" y="${height / 2 + 2}">${sourceCategory.dateToGeoTiffList[date].length}</text>`;
                         if (date === v.satelliteImageDate && !cursorDrawn) {
                             drawingHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="${-v.dimensions.topMargin/2}" x2="${x.toFixed(1)}" y2="${height}" stroke="${v.chartColors[0]}" stroke-width="1" stroke-dasharray="4" />`;
@@ -2410,7 +2428,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
         if (v.now >= v.startDate) {
             drawingBackgroundHtml += `<line pointer-events="none" x1="${nowX.toFixed(1)}" y1="0" x2="${nowX.toFixed(1)}" y2="${height}" stroke="${v.disabledColor}" stroke-width="1" stroke-dasharray="4" />`;
             drawingBackgroundHtml += `<text pointer-events="none" font-family="sans-serif" font-size="12px" font-weight="bold" fill="${v.disabledColor}" text-anchor="middle" dominant-baseline="middle" x="${nowX.toFixed(1)}" y="${-9}">✓</text>`;
-            drawingBackgroundHtml += getCalendarSymbolHtml(nowX.toFixed(1), 0, v.disabledColor);
+            drawingBackgroundHtml += getCalendarSymbolHtml(`chart_${chart.id}_now`, nowX.toFixed(1), 0, v.disabledColor);
         }
     }
     // Show management events
@@ -2419,7 +2437,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
     if (v.charts["satelliteImages"] !== undefined) {
         v.charts["satelliteImages"].sources.forEach(function (source, sourceIndex) {
             if (source.sourceType === "mgmt_event") {
-                source.jsonList.forEach(function (json) {
+                source.jsonList.forEach(function (json, jsonIndex) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
                         if (json.loaded === undefined) {
                             loading = true;
@@ -2448,7 +2466,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${ex.toFixed(1)}" y1="0" x2="${ex.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         drawingBackgroundHtml += `<path d="M ${sx.toFixed(1)} ${-14 + yOffset} C ${(sx + (ex - sx) * 0.5).toFixed(1)} ${-14 + yOffset + 19}, ${ex.toFixed(1)} ${-7}, ${ex.toFixed(1)} ${0}" fill="none" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         let r = 13 - 1 - ((selected) ? 0.5 : 0);
-                                        drawingHtml += `<circle onclick="setEventDate(${event.start_date}, ${sourceIndex}, ${eventIndex}, '${chartId}', event)" onmousedown="preventDefault(event)" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}" />`;
+                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}" />`;
                                         iconX = sx;
                                     }
                                 } else if (event.date !== undefined) {
@@ -2464,7 +2482,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                     if (x + 21 > 0 && x - 21 < v.dimensions.width) {
                                         onView = true
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="-2" x2="${x.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
-                                        drawingHtml += `<circle onclick="setEventDate(${event.date}, ${sourceIndex}, ${eventIndex}, '${chartId}', event)" onmousedown="preventDefault(event)" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}" />`;
+                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}" />`;
                                         iconX = x;
                                     }
                                 }

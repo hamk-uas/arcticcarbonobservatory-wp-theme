@@ -1079,11 +1079,33 @@
     grid-template-columns: repeat(1,1fr);
 }
 
-#circle_tooltip {
-    visibility: hidden;
-    opacity: 0;
+#tooltip {
+    position: absolute;
+    pointer-events: none;
     background: rgb(255, 249, 227);
     border: 1px solid black;
     border-radius: 5px;
     padding: 5px;
+}
+
+.tooltip_hidden {
+    visibility: hidden;
+}
+
+.tooltip_delay {
+    transition: visibility 0ms linear 500ms;
+    opacity: 0;
+    visibility: visible;
+}
+
+.tooltip_reveal {
+    transition: opacity 250ms linear;
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip_hide {
+    transition: opacity 250ms linear;
+    opacity: 0;
+    visibility: visible;
 }

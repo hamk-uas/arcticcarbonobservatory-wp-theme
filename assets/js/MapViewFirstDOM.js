@@ -316,26 +316,86 @@ function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], 
     return boundingBox;
 }
 
-function showTooltip(evt, initiatorId, text) {
-    let tooltip = document.getElementById("circle_tooltip");
-    tooltip.innerHTML = text;
-    if (tooltip.style.visibility === 'hidden') {
-        tooltip.style.left = evt.pageX + 10 + 'px';
-        tooltip.style.top = evt.pageY + 10 + 'px';
-        currentInitiatorId = initiatorId;
-    }
-    if (tooltip.style.visibility === 'hidden') {
-        tooltip.style.transition = 'opacity 250ms ease-in 500ms';
-        tooltip.style.visibility = 'visible';
-        tooltip.style.opacity = 1;
-    }
-// Tooltip html element should be placed in the DOM
-    // <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+var tooltipOnceIds = {};
+var tooltipInitiatorToOnceId = {};
+var tooltipInitiatorId;
+var pageX, pageY; // Current mouse position
+let tooltip = document.getElementById("tooltip");
+var tooltipTransitionStart = function() {};
+var tooltipTransitionEnd = function() {};
+var preventTooltipReappearElementId;
+
+tooltip.addEventListener("transitionstart", function(e) {
+    tooltipTransitionStart();
+}, { once: false });
+tooltip.addEventListener("transitionend", function(e) {
+    tooltipTransitionEnd();
+}, { once: false });
+
+document.addEventListener('mousemove', trackMouse, false);
+document.addEventListener('mouseenter', trackMouse, false);
+document.addEventListener('click', (e) => {
+    immediateHideTooltip(tooltipInitiatorId);    
+}, false);
+    
+function trackMouse(e) {
+    pageX = e.pageX;
+    pageY = e.pageY;
 }
 
-function hideTooltip(evt, initiatorId) {
-    let tooltip = document.getElementById("circle_tooltip");
-    tooltip.style.transition = 'all 250ms';
-    tooltip.style.visibility = 'hidden';
-    tooltip.style.opacity = 0;
+function immediateHideTooltip(elementId) {
+    let tooltip = document.getElementById("tooltip");
+    tooltip.className = "tooltip_hidden";
+    preventTooltipReappearElementId = elementId;
+}
+
+function showTooltip(e, initiatorId, text) {
+    // console.log(`showTooltip ${initiatorId}`);
+    if (initiatorId !== preventTooltipReappearElementId) {
+        preventTooltipReappearElementId = undefined;
+        function refreshTextAndPosition() {
+            tooltip.innerHTML = text;
+            tooltip.style.left = pageX + 10 + 'px';
+            tooltip.style.top = pageY + 10 + 'px';
+        }
+
+        function reveal() {
+            refreshTextAndPosition();
+            tooltip.className = "tooltip_reveal";
+        }
+
+        function restartDelay() {
+            tooltip.className = "tooltip_delay";
+            tooltipTransitionStart = function() {
+                tooltipTransitionStart = function() {};
+                reveal();
+            }
+        }
+
+        tooltipInitiatorId = initiatorId;
+        if (tooltip.className === "tooltip_hidden") {
+            window.requestAnimationFrame(restartDelay);
+        } else if (tooltip.className === "tooltip_delay") {
+            window.requestAnimationFrame(restartDelay);
+        } else if (tooltip.className === "tooltip_reveal") {
+            refreshTextAndPosition();
+        } else if (tooltip.className === "tooltip_hide") {
+            tooltipTransitionEnd = function() {};
+            reveal();
+        }
+    }
+}
+
+function hideTooltip(e, initiatorId) {
+    preventTooltipReappearElementId = undefined;
+    if (tooltip.className === "tooltip_delay") {
+        tooltipTransitionStart = function () {};
+        tooltip.className = "tooltip_hidden";
+    } else if (tooltip.className === "tooltip_reveal") {
+        tooltipTransitionEnd = function () {        
+            tooltipTransitionEnd = function() {};
+            tooltip.className = "tooltip_hidden";
+        }
+        tooltip.className = "tooltip_hide";
+    }
 }
