@@ -51,7 +51,7 @@ function viewAllSitesAfterLoadingEssentials() {
     siteTypeList.forEach(function (siteTypeId) {
         siteType = siteTypes[siteTypeId];
         filterContainerInnerHTML += `
-        <label class="filterCheckBox">            
+        <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilter")}">
             ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
             <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" checked>
             <span class="checkmark" style="background-color:${getSiteTypeColor(siteTypeId)}"></span>

@@ -9,9 +9,9 @@
     	fieldobservatoryLanguage: "<?php echo explode("_", get_locale())[0]?>" // fi -> fi, sv_SE -> sv, en_US -> en
     };
 </script>
-<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.js'></script>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-<link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css" rel="stylesheet" />
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
 <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css" />
 
@@ -65,29 +65,7 @@
                 </h4>
             </div>
             <div id="map" class="mapBoxMap">
-                
                 <div class="map-overlay" id="mapFilterContainer">
-                    <h2 style="padding-bottom:10px;">Show sites</h2>
-                        <label class="filterCheckBox">
-                            Intensive
-                            <input type="checkbox" id="checkBoxIntensive" name="intensive" value="intensiveSite" onclick="checkCheckBoxes()" checked>
-                            <span class="checkmark" style="background-color:#129bc7"></span>
-                        </label>
-                        <!--<label class="filterCheckBox">
-                            Valio
-                            <input type="checkbox" id="checkBoxValio" name="valio" value="valioSite" onclick="checkCheckBoxes()" checked>
-                            <span class="checkmark" style="background-color:#114a9c"></span>
-                        </label>--!>
-                        <label class="filterCheckBox">
-                            Carbon Action
-                            <input type="checkbox" id="checkBoxCarbonAction" name="carbonAction" value="carbonActionSite" onclick="checkCheckBoxes()" checked>
-                            <span class="checkmark" style="background-color: #349a80"></span>
-                        </label>
-                        <label class="filterCheckBox">
-                            Svensk Kolinlagring
-                            <input type="checkbox" id="checkBoxSvenskKolinlagring" name="svenskKolinlagrig" value="svenskKolinlagringSite" onclick="checkCheckBoxes()" checked>
-                            <span class="checkmark" style="background-color: #292929"></span>
-                        </label>
                 </div>
                 <div id="attribution" class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-ctrl-top-left" style="position: absolute; bottom: 0; height: 50px;">
                 </div>
@@ -98,7 +76,7 @@
             <div id="mapRightDiv" class="fieldInfoDiv">
                 <h2 id="fieldInfo"></h2><div id="siteDescription"></div>
             </div>
-            <div id="tooltip" class="tooltip_hidden"></div>
+            <div id="tooltip" role="tooltip" class="tooltip_hidden"></div>
         </div>
     </div>
 </div>

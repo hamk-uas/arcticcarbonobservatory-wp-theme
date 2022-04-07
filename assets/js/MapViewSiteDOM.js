@@ -381,12 +381,6 @@ function addTooltip(elementId, text) {
 
 function addTransientDrawingListeners(chartId) {
     let chart = v.charts[chartId];
-    let nowElementId = `chart_${chartId}_now`;
-    let nowElement = document.getElementById(nowElementId);
-    if (nowElement != null) {            
-        let dateObject = new Date(v.now);
-        addTooltip(nowElementId, translate(t.tooltip, 'now')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`}));
-    }
     if (v.charts["satelliteImages"] !== undefined) {
         v.charts["satelliteImages"].sources.forEach(function (source, sourceIndex) {
             if (source.sourceType === "mgmt_event") {
@@ -397,22 +391,15 @@ function addTransientDrawingListeners(chartId) {
                             let eventElement = document.getElementById(eventElementId);
                             if (eventElement != null) {
                                 if (event.start_date !== undefined && event.end_date !== undefined) {
-                                    let startDateObject = new Date(event.start_date);
-                                    let endDateObject = new Date(event.end_date);
-                                    addTooltip(eventElementId, translate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`}));
                                     eventElement.onclick = function (e) {
                                         setEventDate(event.start_date, sourceIndex, eventIndex, chartId, e);
-                                        immediateHideTooltip(eventElementId);
                                         e.stopPropagation();
                                         e.preventDefault();                            
                                     }
                                     eventElement.onmousedown = preventDefault;
                                 } else if (event.date !== undefined) {
-                                    let dateObject = new Date(event.date);
-                                    addTooltip(eventElementId, translate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`}));
                                     eventElement.onclick = function (e) {
                                         setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
-                                        immediateHideTooltip(eventElementId);
                                         e.stopPropagation();
                                         e.preventDefault();                            
                                     }
@@ -429,16 +416,10 @@ function addTransientDrawingListeners(chartId) {
         chart.sourceCategoryList.forEach(function (sourceCategory) {
             if (chart.visible[sourceCategory.id]) {
                 sourceCategory.geoTiffDates.forEach(function (date, index) {
-                    let dateObject = new Date(date);
                     let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                    let tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: sourceCategory.dateToGeoTiffList[date].length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
-                    addTooltip(circleId, tooltipString);
                     let circle = document.getElementById(circleId);
                     if (circle != null) {
-                        circle.onclick = (e) => {
-                            setSatelliteImageDate(date, e);
-                            immediateHideTooltip(circleId);
-                        }
+                        circle.onclick = (e) => setSatelliteImageDate(date, e);
                         circle.onmousedown = preventDefault;
                     }
                 });
@@ -451,9 +432,7 @@ function addPermanentDrawingListeners() {
     v.chartIds.forEach(function (chartId) {
         let panAreaElementId = `chart_pan_area_${chartId}`
         let panAreaElement = document.getElementById(panAreaElementId);
-        addTooltip(panAreaElementId, translate(t.tooltip, 'panArea'))
         panAreaElement.onpointerdown = function (e) {
-            immediateHideTooltip(panAreaElementId);
             let clientXOrigin = e.clientX;
             let startDateOrigin = v.startDate;
             let endDateOrigin = v.endDate;
@@ -487,12 +466,10 @@ function addPermanentDrawingListeners() {
         };
         let zoomXInElementId = `chart_zoom_x_in_${chartId}`;
         let zoomXIn = document.getElementById(zoomXInElementId);
-        addTooltip(zoomXInElementId, translate(t.tooltip, 'zoomXIn'))
         zoomXIn.onmousedown = function (e) {
             e.preventDefault();
         };
         zoomXIn.onclick = function (e) {
-            immediateHideTooltip(zoomXInElementId);
             if (v.zoomLevel > 0) {
                 let centerDate = (v.startDate + v.endDate) * 0.5;
                 v.zoomLevel--;
@@ -510,12 +487,10 @@ function addPermanentDrawingListeners() {
         };
         let zoomXOutElementId = `chart_zoom_x_out_${chartId}`;
         let zoomXOut = document.getElementById(zoomXOutElementId);
-        addTooltip(zoomXOutElementId, translate(t.tooltip, 'zoomXOut'))
         zoomXOut.onmousedown = function (e) {
             e.preventDefault();
         };
         zoomXOut.onclick = function (e) {
-            immediateHideTooltip(zoomXOutElementId);
             if (v.zoomLevel < v.zoomLevels.length - 1) {
                 let centerDate = (v.startDate + v.endDate) * 0.5;
                 v.zoomLevel++;

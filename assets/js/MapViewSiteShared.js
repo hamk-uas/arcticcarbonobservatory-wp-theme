@@ -41,24 +41,41 @@ var crop_codes = {
 // Translations
 var t = {
     tooltip: {
+        /* Map controls */
+        "mapFilter": "Show/hide a farm type",
+        "mapFilter_fi": "Näytä/piilota maatilatyyppi",
+        "findMyLocation": "Find my location",
+        "findMyLocation_fi": "Etsi sijaintini",
         /* Satellite image selector */
-        "toggleSatelliteImages": $ => `Show/hide ${$.numImages} images<br>${$.dateString}`,
-        "toggleSatelliteImages_fi": $ => `Näytä/piilota ${$.numImages} kuvaa<br>${$.dateString}`,
+        "toggleSatelliteImages": $ => `Show/hide ${$.numImages} images\n${$.dateString}`,
+        "toggleSatelliteImages_fi": $ => `Näytä/piilota ${$.numImages} kuvaa\n${$.dateString}`,
+        /* Selected satellite image date indicator */
+        "satellite": $ => `Selected satellite image date\n${$.dateString}`,
+        "satellite_fi": $ => `Valittu satelliittikuvan päivämäärä\n${$.dateString}`,
         /* Current time indicator */
-        "now": $ => `Present time<br>${$.dateString}`,
-        "now_fi": $ => `Nykyhetki<br>${$.dateString}`,
+        "now": $ => `Present time\n${$.dateString}`,
+        "now_fi": $ => `Nykyhetki\n${$.dateString}`,
         /* Pan area */
         "panArea": "Drag to pan",
         "panArea_fi": "Vedä siirtääksesi näkymää",
         /* Management event */
-        "toggleEvent": $ => `Show/hide event<br>${$.dateString}`,
-        "toggleEvent_fi": $ => `Näytä/piilota tapahtuma<br>${$.dateString}`,
+        "toggleEvent": $ => `Show/hide event\n${$.dateString}`,
+        "toggleEvent_fi": $ => `Näytä/piilota tapahtuma\n${$.dateString}`,
         /* Chart controls */
         "zoomXIn": "Zoom in time",
         "zoomXIn_fi": "Zoomaa sisään aikaa",
         "zoomXOut": "Zoom out time",
         "zoomXOut_fi": "Zoomaa ulos aikaa",
-
+        "autoZoomY": "Autozoom to values\non/off",
+        "autoZoomY_fi": "Automaattinen zoomaus arvoihin\npäälle/pois",
+        "timeAggregation": "Select time aggregation",
+        "timeAggregation_fi": "Valitse ajallinen koostaminen",
+        "chartDownload": "Download image and data",
+        "chartDownload_fi": "Lataa kuva ja data",
+        "legendItemVisibility": "Toggle item visibility",
+        "legendItemVisibility_fi": "Näytä/piilota kohde",
+        "selectSatelliteImageType": "Select satellite image type",
+        "selectSatelliteImageType_fi": "Valitse satelliittikuvan tyyppi",
     },
     vegetationIndex: {
         "ndviNormalizedSumImage": "cumNDVI",
@@ -1107,7 +1124,7 @@ function getTractorSymbolHtml(x, y, color) {
     </g>`;
 }
 
-function getCalendarSymbolHtml(id, x, y, color) {
+function getCalendarSymbolHtml(id, x, y, color, tooltipString) {
     // width="141" height="146"
     return `        
         <g transform="translate(${x}, ${y}) translate(${-70*0.19}, ${-146*0.19}) scale(0.19)"><path fill="${color}"
@@ -1124,10 +1141,10 @@ function getCalendarSymbolHtml(id, x, y, color) {
         M92.5,41.9c0,.6,.2,1.2,.6,1.6c.4,.4,.9,.6
         1.6,.6h4.4c.6,0,1.2-.2,1.6-.6c.4-.4
         .6-.9,.6-1.6v-20c0-.6-.2-1.2-.6-1.6c-.4-.4-.9-.6-1.6-.6h-4.4c-.6
-        0-1.2,.2-1.6,.6c-.4,.4-.6,1-.6,1.6V41.9z"/></g><rect id="${id}" x="${x-11}" y="${y-26}" width="22" height="24" fill="transparent"/>`;
+        0-1.2,.2-1.6,.6c-.4,.4-.6,1-.6,1.6V41.9z"/></g><rect id="${id}" x="${x-11}" y="${y-26}" width="22" height="24" fill="transparent"><title>${tooltipString}</title></rect>`;
 }
 
-function getSentinel2SymbolHtml(x, y, color) {
+function getSatelliteSymbolHtml(x, y, color, tooltipString) {
     return `<g transform=" translate(${x}, ${y}) scale(0.05) translate(${255 * Math.sqrt(2)}, ${128}) rotate(135)" fill="${color}" stroke="none" >
     <path d="M469.672,128.941c13.981-24.243,10.628-55.825-10.081-76.533c-20.71-20.709-52.292-24.061-76.533-10.08L340.732,0
 	l-11.494,11.495c-47.217,47.219-47.217,124.049,0,171.267c23.609,23.61,54.621,35.414,85.634,35.414
@@ -1140,14 +1157,14 @@ function getSentinel2SymbolHtml(x, y, color) {
 	l-24.311-24.311l58.621-58.621l24.312,24.311L164.755,245.348z M266.651,347.246l58.621-58.621l24.173,24.172l-58.621,58.621
 	L266.651,347.246z M313.814,394.407l58.621-58.621l24.311,24.311l-58.621,58.62L313.814,394.407z M361.115,441.708l58.621-58.62
 	l24.311,24.311l-58.621,58.62L361.115,441.708z"/>
-    </g>
-    `;
+    </g><rect x="${x-13}" y="${y}" width="26" height="20" fill="transparent"><title>${tooltipString}</title></rect>`;
 }
 
-function getVisibleSymbolHtml(chartId, legendId, color, visible = true, defsHtml = "") {
+function getVisibleSymbolHtml(chartId, legendId, color, tooltipString, visible = true, defsHtml = "") {
     let id = `chart_${chartId}_visible_${legendId}`;
     return `
     <svg id="${id}" style="vertical-align:middle; cursor:pointer" width="39.413" height="40" viewBox="0 -7.3355 39.413 40" onclick="toggleLegendItemVisibility('${chartId}', '${legendId}', event);" onmousedown="preventDefault(event)">
+        <title>${tooltipString}</title>
         <defs>${defsHtml}</defs>
         <rect x="0" y="-7.3355" width="39.413" height="40" style="fill:none; stroke:none"/>
         <g id="${`${id}_hidden`}" style="visibility: ${(!visible) ? "visible": "hidden"}">
@@ -1167,7 +1184,7 @@ function getVisibleSymbolHtml(chartId, legendId, color, visible = true, defsHtml
     </svg>`;
 }
 
-function getZoomInSymbolHtml(id, x, y) {
+function getZoomInSymbolHtml(id, x, y, tooltipString) {
     return `
     <svg x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
         <g transform="matrix(0.017, -1, 1, 0.017, 0, 31.876)" fill="#ffffff" stroke="#71cdb6" stroke-width="4">
@@ -1179,7 +1196,7 @@ function getZoomInSymbolHtml(id, x, y) {
             <line x2="10" transform="translate(11.5 15.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4" />
             <line y2="10" transform="translate(16.5 10.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4" />
         </g>
-        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
+        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"><title>${tooltipString}</title></rect>
     </svg>`;
 }
 
@@ -1210,7 +1227,7 @@ function getTimeAggregationPeriodText(period) {
     return translate(period_plaintext, `${period}`, `${period / 1000} s`);
 }
 
-function getTimeAggregationSymbolHtml(chartId, x, y) {
+function getTimeAggregationSymbolHtml(chartId, x, y, tooltipString) {
     let chart = v.charts[chartId];
     let timeAggregation = (chart.timeAggregationSettings !== undefined) ? chart.timeAggregationSettings[chart.timeAggregationSettingIndex] : {};
     function g(enabled) {
@@ -1234,19 +1251,19 @@ function getTimeAggregationSymbolHtml(chartId, x, y) {
     });
     return `
     <svg id="chart_${chartId}_time_aggregation" x="${x - 20}" y="${y}" width="80" height="58" viewBox="0 0 80 58" onclick="cycleTimeAggregation('${chartId}', event);" onmousedown="preventDefault(event)">
-        <g transform="translate(20 0)">
-            <rect x="0" y="0" width="40" height="40" style="fill:none; stroke:none"/>
+        <g transform="translate(20 0)">            
             <g id="chart_${chartId}_time_aggregation_disabled" stroke="${v.disabledColor}" style="visibility:${(timeAggregation.enabled) ? 'hidden' : 'visible'}">
                 ${g(false)}
             </g>
             <g id="chart_${chartId}_time_aggregation_enabled" stroke="#71cdb6" style="visibility:${(timeAggregation.enabled) ? 'visible' : 'hidden'}">
                 ${g(true)}
             </g>
+            <rect x="0" y="0" width="40" height="40" fill="transparent"><title>${tooltipString}</title></rect>
             ${settingsStr}
     </svg>`;
 }
 
-function getZoomOutSymbolHtml(id, x, y) {
+function getZoomOutSymbolHtml(id, x, y, tooltipString) {
     return `
     <svg style="cursor:pointer" x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
         <g transform="matrix(0.017, -1, 1, 0.017, 0, 31.876)" fill="#ffffff" stroke="#71cdb6" stroke-width="4">
@@ -1255,11 +1272,11 @@ function getZoomOutSymbolHtml(id, x, y) {
         </g>
         <line x2="13" y2="15" transform="translate(26.5 27.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
         <line x2="10" transform="translate(11.5 15.5)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
-        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
+        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"><title>${tooltipString}</title></rect>
     </svg>`;
 }
 
-function getAutoZoomSymbolHtml(chartId, x, y) {
+function getAutoZoomSymbolHtml(chartId, x, y, tooltipString) {
     let chart = v.charts[chartId];
     let g = `
     <g transform="matrix(0.017, -1, 1, 0.017, 0, 31.876)" fill="#ffffff" stroke-width="4">
@@ -1282,11 +1299,11 @@ function getAutoZoomSymbolHtml(chartId, x, y) {
         <g id="chart_${chartId}_auto_zoom_enabled" stroke="#71cdb6" style="visibility:${(chart.autoZoom) ? 'visible' : 'hidden'}">
             ${g}
         </g>
-        <rect id="chart_${chartId}_auto_zoom" style="cursor:pointer" onclick="toggleAutoZoom('${chartId}', event);" onmousedown="preventDefault(event)" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
+        <rect id="chart_${chartId}_auto_zoom" style="cursor:pointer" onclick="toggleAutoZoom('${chartId}', event);" onmousedown="preventDefault(event)" x="0" y="0" width="42.321" height="45.321" fill="transparent"><title>${tooltipString}</title></rect>
     </svg>`;
 }
 
-function getDownloadSymbolHtml(id, x, y) {
+function getDownloadSymbolHtml(id, x, y, tooltipString) {
     return `
     <svg x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
       <g transform="translate(${(42.321 - 40) / 2} ${(45.321 - 39) / 2})">
@@ -1301,7 +1318,7 @@ function getDownloadSymbolHtml(id, x, y) {
           </g>
           <line id="Line_11" data-name="Line 11" x1="14" transform="translate(0 20)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
         </g>
-        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"/>
+        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"><title>${tooltipString}</title></rect>
       </g>
     </svg>`;
 }
@@ -1371,7 +1388,7 @@ function getChartSvgInnerHtml(v, chartId, standalone = false) {
     </g>    
     <path style="stroke: #CCCCCC; stroke-width: 2; fill: none;" d="M ${v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth} ${v.dimensions.topMargin} ${(true) ? `v ${height}` : `m 0 ${height}`} h ${v.dimensions.width}" />
     <g transform="translate(${v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth} 0)">
-        ${!standalone ? `<rect id="chart_pan_area_${chartId}" class="ChartPanArea" fill="url(#chart_pan_area_gradient_${chartId})" x="0" y="${v.dimensions.topMargin}" width="${v.dimensions.width}" height="${height}" fill="none" />` : ""}
+        ${!standalone ? `<rect id="chart_pan_area_${chartId}" class="ChartPanArea" fill="url(#chart_pan_area_gradient_${chartId})" x="0" y="${v.dimensions.topMargin}" width="${v.dimensions.width}" height="${height}" fill="none"><title>${translate(t.tooltip, 'panArea')}</rect>` : ""}
         <svg width="${v.dimensions.width}" height="${v.dimensions.topMargin + height}" ${(standalone) ? `clip-path="url(#chart_clip_${chartId})"` : ''}>
             <g id="chart_drawing_${chartId}" transform="translate(0 ${v.dimensions.topMargin})">
                 ${drawingHtml}
@@ -1380,11 +1397,11 @@ function getChartSvgInnerHtml(v, chartId, standalone = false) {
     </g>
     ${(standalone ? "" : `
         <g id="chart_controls_svg_${chartId}" class="ChartControls">
-            ${getZoomInSymbolHtml(`chart_zoom_x_in_${chartId}`, zoomInX, controlYPostfixAdd(60))}
-            ${getZoomOutSymbolHtml(`chart_zoom_x_out_${chartId}`, zoomInX, controlYPostfixAdd(60))}
-            ${(chart.timeAggregationSettings !== undefined) ? getTimeAggregationSymbolHtml(chartId, zoomInX, controlYPostfixAdd(63)) : ""}
-            ${(chartId !== "satelliteImages") ? getDownloadSymbolHtml(`chart_download_${chartId}`, zoomInX, controlYPostfixAdd(60)) : ""}
-            ${(chartId !== "satelliteImages") ? getAutoZoomSymbolHtml(chartId, v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth + 15, 0) : ""}
+            ${getZoomInSymbolHtml(`chart_zoom_x_in_${chartId}`, zoomInX, controlYPostfixAdd(60), translate(t.tooltip, 'zoomXIn'))}
+            ${getZoomOutSymbolHtml(`chart_zoom_x_out_${chartId}`, zoomInX, controlYPostfixAdd(60), translate(t.tooltip, 'zoomXOut'))}
+            ${(chart.timeAggregationSettings !== undefined) ? getTimeAggregationSymbolHtml(chartId, zoomInX, controlYPostfixAdd(63), translate(t.tooltip, 'timeAggregation')) : ""}
+            ${(chartId !== "satelliteImages") ? getDownloadSymbolHtml(`chart_download_${chartId}`, zoomInX, controlYPostfixAdd(60), translate(t.tooltip, 'chartDownload')) : ""}
+            ${(chartId !== "satelliteImages") ? getAutoZoomSymbolHtml(chartId, v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth + 15, 0, translate(t.tooltip, 'autoZoomY')) : ""}
         </g>`
     )}`;
 }
@@ -1431,18 +1448,20 @@ function getChartDivInnerHtml(v, chartId) {
     var legend = '<div class="chart_legend">';
     var sourceIndex = 0;
     if (chartId === "satelliteImages") {
+        let tooltipString = translate(t.tooltip, "selectSatelliteImageType");
         v.charts[chartId].sourceCategoryList.forEach(function (sourceCategory) {
             let visibleSymbolHtml;
-            visibleSymbolHtml = getVisibleSymbolHtml(chartId, sourceCategory.id, v.chartColors[0], v.charts[chartId].visible[sourceCategory.id]);
+            visibleSymbolHtml = getVisibleSymbolHtml(chartId, sourceCategory.id, v.chartColors[0], tooltipString, v.charts[chartId].visible[sourceCategory.id]);
             legend += `<span class="chart_legend_element">${visibleSymbolHtml}<span class="chart_legend_text">${translate(sourceCategory, "title")}</span></span>`;
         });
     } else {
+        let tooltipString = translate(t.tooltip, "legendItemVisibility");
         v.charts[chartId].sources.forEach(function (source) {
             let visibleSymbolHtml;
             if (chartId === 'temperature' && source.rainbow !== undefined) {
-                visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, `url(#chart_${chartId}_visible_${source.id}_gradient)`, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
+                visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, `url(#chart_${chartId}_visible_${source.id}_gradient)`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
             } else {
-                visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, source.color, v.charts[chartId].visible[source.legendId]);
+                visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, source.color, tooltipString, v.charts[chartId].visible[source.legendId]);
             }
             legend += `<span id="chart_${chartId}_legend_element_${source.legendId}" class="chart_legend_element"><span>${visibleSymbolHtml}</span><span class="chart_legend_text">${source.name}</span></span>`;
         });
@@ -2100,8 +2119,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                             color = v.chartColors[0];
                             selected = true;
                         }
+                        let dateObject = new Date(date);
                         let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                        drawingHtml += `<circle id="${circleId}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}" />`;
+                        let tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: sourceCategory.dateToGeoTiffList[date].length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                        drawingHtml += `<circle id="${circleId}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}"><title>${tooltipString}</title></circle>`;
                         drawingHtml += `<text pointer-events="none" font-family="sans-serif" font-size="18px" ${(selected) ? 'font-weight="bold"' : ''} fill="${color}" text-anchor="middle" dominant-baseline="middle" x="${x.toFixed(1)}" y="${height / 2 + 2}">${sourceCategory.dateToGeoTiffList[date].length}</text>`;
                         if (date === v.satelliteImageDate && !cursorDrawn) {
                             drawingHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="${-v.dimensions.topMargin/2}" x2="${x.toFixed(1)}" y2="${height}" stroke="${v.chartColors[0]}" stroke-width="1" stroke-dasharray="4" />`;
@@ -2251,11 +2272,20 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 useDate -= series[i].integrationTime / 2;
                             }
                             let clickStr = 'pointer-events="none"';
+                            let tooltipStrings = [];
                             if (chart.relatedSatelliteImage !== undefined && !standalone && v.charts["satelliteImages"] !== undefined && v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId] !== undefined) {
                                 // No satellite images
                                 clickStr = `cursor="pointer" onclick="selectNearestSatelliteImage('${chart.relatedSatelliteImage.sourceCategoryId}', ${v.startDate + useDate / pixelsPerMillisecond}, event)" onmousedown = "preventDefault(event)"`;
+                                let date = Math.round(v.startDate + useDate / pixelsPerMillisecond);
+                                let dateObject = new Date(date);
+                                tooltipStrings.push(translate(t.tooltip, 'toggleSatelliteImages')({ numImages: v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].dateToGeoTiffList[date].length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`}));
                             }                            
-                            linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6" />`;
+                            let tooltipString = tooltipStrings.join("\n\n");
+                            if (tooltipString !== '') {
+                                linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6"><title>${tooltipString}</title></circle>`;
+                            } else {
+                                linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6" />`;
+                            }
                         }
                         linesHtml += "</g>";
                         // Draw error bars, if stdErr or fractiles are available
@@ -2426,9 +2456,11 @@ function getDrawingHtmls(v, chartId, standalone = false) {
         }*/
         // Indicate current time
         if (v.now >= v.startDate) {
+            let dateObject = new Date(v.now);
+            let tooltipString = translate(t.tooltip, 'now')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
             drawingBackgroundHtml += `<line pointer-events="none" x1="${nowX.toFixed(1)}" y1="0" x2="${nowX.toFixed(1)}" y2="${height}" stroke="${v.disabledColor}" stroke-width="1" stroke-dasharray="4" />`;
             drawingBackgroundHtml += `<text pointer-events="none" font-family="sans-serif" font-size="12px" font-weight="bold" fill="${v.disabledColor}" text-anchor="middle" dominant-baseline="middle" x="${nowX.toFixed(1)}" y="${-9}">✓</text>`;
-            drawingBackgroundHtml += getCalendarSymbolHtml(`chart_${chart.id}_now`, nowX.toFixed(1), 0, v.disabledColor);
+            drawingBackgroundHtml += getCalendarSymbolHtml(`chart_${chart.id}_now`, nowX.toFixed(1), 0, v.disabledColor, tooltipString);
         }
     }
     // Show management events
@@ -2466,7 +2498,9 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${ex.toFixed(1)}" y1="0" x2="${ex.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         drawingBackgroundHtml += `<path d="M ${sx.toFixed(1)} ${-14 + yOffset} C ${(sx + (ex - sx) * 0.5).toFixed(1)} ${-14 + yOffset + 19}, ${ex.toFixed(1)} ${-7}, ${ex.toFixed(1)} ${0}" fill="none" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         let r = 13 - 1 - ((selected) ? 0.5 : 0);
-                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}" />`;
+                                        let startDateObject = new Date(event.start_date);
+                                        let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`});
+                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = sx;
                                     }
                                 } else if (event.date !== undefined) {
@@ -2482,7 +2516,9 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                     if (x + 21 > 0 && x - 21 < v.dimensions.width) {
                                         onView = true
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="-2" x2="${x.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
-                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}" />`;
+                                        let dateObject = new Date(event.date);
+                                        let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = x;
                                     }
                                 }
@@ -2590,19 +2626,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
             if (!cursorDrawn) {
                 drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="${-v.dimensions.topMargin/2}" x2="${x.toFixed(1)}" y2="${height}" stroke="${v.chartColors[0]}" stroke-width="1" stroke-dasharray="4" />`;
             }
-            drawingBackgroundHtml += getSentinel2SymbolHtml(x.toFixed(1), -v.dimensions.topMargin, v.chartColors[1]);
             let dateObject = new Date(v.satelliteImageDate);
-/*            drawingDefsHtml += `
-            <filter id="chart_text_halo_${chartId}" color-interpolation-filters="sRGB">
-                <feColorMatrix in="SourceGraphic" type="matrix" values="-1 0 0 0 1, 0 -1 0 0 1, 0 0 -1 0 1, 0 0 0 1 0"/>
-                <feMorphology operator="dilate" radius="1" result="halo"/>
-                <feMerge>
-                    <feMergeNode in="halo"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>`;*/
-            // text style "filter: url(#chart_text_halo_${chartId})"
-            drawingBackgroundHtml += `<text pointer-events="none" style="font: 14px sans-serif;" text-anchor="start" dominant-baseline="middle" x="${(x + 18).toFixed(1)}" y="${-v.dimensions.topMargin*3/4}">${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}</text>`;
+            let tooltipString = translate(t.tooltip, "satellite")({ dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC` });
+            drawingBackgroundHtml += getSatelliteSymbolHtml(x.toFixed(1), -v.dimensions.topMargin, v.chartColors[1], tooltipString);
+            //drawingBackgroundHtml += `<text pointer-events="none" style="font: 14px sans-serif;" text-anchor="start" dominant-baseline="middle" x="${(x + 18).toFixed(1)}" y="${-v.dimensions.topMargin*3/4}">${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}</text>`;
             cursorDrawn = true;
         }
     }
