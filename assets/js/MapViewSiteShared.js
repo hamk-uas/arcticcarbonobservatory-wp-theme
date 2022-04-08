@@ -46,6 +46,32 @@ var t = {
         "mapFilter_fi": "Näytä/piilota maatilatyyppi",
         "findMyLocation": "Find my location",
         "findMyLocation_fi": "Etsi sijaintini",
+        "toggleAttribution": "Toggle attribution",
+        "toggleAttribution_fi": "Näytä/piilota lähteet",
+        "mapFeedback": "Map feedback",
+        "mapFeedback_fi": "Anna palautetta kartasta",
+        "enterFullscreen": "Enter fullscreen",
+        "enterFullscreen_fi": "Kokoruututila",
+        "exitFullscreen": "Exit fullscreen",
+        "exitFullscreen_fi": "Pois kokoruututilasta",
+        "locationNotAvailable": "Location not available",
+        "locationNotAvailable": "Sijaintia ei saatavilla",
+        "mapboxLogo": "Mapbox logo",
+        "mapboxLogo_fi": "Mapboxin logo",
+        "map": "Map",
+        "map_fi": "Kartta",
+        "resetBearingToNorth": "Reset bearing to north",
+        "resetBearingToNorth_fi": "Palauta kompassin pohjoinen",
+        "zoomIn": "Zoom in",
+        "zoomIn_fi": "Zoomaa sisään",
+        "zoomOut": "Zoom out",
+        "zoomOut_fi": "Zoomaa ulos",
+        "useCtrlPlusScrollToZoomTheMap": "Use Ctrl + scroll to zoom the map",
+        "useCtrlPlusScrollToZoomTheMap_fi": "Ctrl + vieritys zoomaa karttaa",
+        "useCmdPlusScrollToZoomTheMap": "Use ⌘ + scroll to zoom the map",
+        "useCmdPlusScrollToZoomTheMap_fi": "⌘ + vieritys zoomaa karttaa",
+        "useTwoFingersToMoveTheMap": "Use two fingers to move the map",
+        "useTwoFingersToMoveTheMap_fi": "Liikuta karttaa kahdella sormella",
         /* Satellite image selector */
         "toggleSatelliteImages": $ => `Show/hide ${$.numImages} images\n${$.dateString}`,
         "toggleSatelliteImages_fi": $ => `Näytä/piilota ${$.numImages} kuvaa\n${$.dateString}`,
@@ -920,7 +946,11 @@ function prepCharts(v, siteJson, chartsJson) {
         let sourceNameDups = {};
         chart.sources.forEach(function (source) {
             if (source.block !== undefined) {
-                source.name = `${translate(t.plaintext, "plot")} ${source.block}`;
+                let block = v.site.blockIdToBlock[source.block];
+                source.name = translate(block, "Name");
+                if (source.name === undefined) {
+                    source.name = `${translate(t.plaintext, "plot")} ${source.block}`;
+                }
             } else if (source.blockGroup !== undefined) {
                 source.name = `${translate(t.plaintext, "plotgroup")} ${source.blockGroup}`;
             } else {
@@ -996,11 +1026,14 @@ function prepCharts(v, siteJson, chartsJson) {
                 let sourceCategory = chart.sourceCategories[source.sourceCategoryId];
                 if (!(sourceCategory.hideTitleIfOnly && Object.keys(chart.sourceCategories).length == 1)) {
                     if (source.name == v.site.Name) {
-                        source.name = sourceCategory.title;
+                        source.name = translate(sourceCategory, "title");
                     } else {
                         source.name = `${translate(sourceCategory, "title")}<br>${translate(source, "name")}`;
                     }
                 }
+            }
+            if (source.sourceType === "fmimeteo") {
+                source.name += ` (${v.site.weather_station})`;
             }
             sourceIndex++;
         });
@@ -2272,16 +2305,17 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 useDate -= series[i].integrationTime / 2;
                             }
                             let clickStr = 'pointer-events="none"';
-                            let tooltipStrings = [];
+                            let tooltipString;
                             if (chart.relatedSatelliteImage !== undefined && !standalone && v.charts["satelliteImages"] !== undefined && v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId] !== undefined) {
-                                // No satellite images
-                                clickStr = `cursor="pointer" onclick="selectNearestSatelliteImage('${chart.relatedSatelliteImage.sourceCategoryId}', ${v.startDate + useDate / pixelsPerMillisecond}, event)" onmousedown = "preventDefault(event)"`;
                                 let date = Math.round(v.startDate + useDate / pixelsPerMillisecond);
                                 let dateObject = new Date(date);
-                                tooltipStrings.push(translate(t.tooltip, 'toggleSatelliteImages')({ numImages: v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].dateToGeoTiffList[date].length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`}));
+                                let geoTiffList = v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].dateToGeoTiffList[date];
+                                if (geoTiffList !== undefined) {
+                                    clickStr = `cursor="pointer" onclick="selectNearestSatelliteImage('${chart.relatedSatelliteImage.sourceCategoryId}', ${v.startDate + useDate / pixelsPerMillisecond}, event)" onmousedown = "preventDefault(event)"`;
+                                    tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: geoTiffList.length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                                }
                             }                            
-                            let tooltipString = tooltipStrings.join("\n\n");
-                            if (tooltipString !== '') {
+                            if (tooltipString !== undefined) {
                                 linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6"><title>${tooltipString}</title></circle>`;
                             } else {
                                 linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6" />`;

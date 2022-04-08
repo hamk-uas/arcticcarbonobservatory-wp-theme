@@ -65,11 +65,8 @@
                 </h4>
             </div>
             <div id="map" class="mapBoxMap">
-                <div class="map-overlay" id="mapFilterContainer">
-                </div>
-                <div id="attribution" class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-ctrl-top-left" style="position: absolute; bottom: 0; height: 50px;">
-                </div>
-
+                <div class="map-overlay" id="mapFilterContainer"></div>
+                <div id="attribution" class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-ctrl-top-left" style="position: absolute; bottom: 0; height: 50px;"></div>
             </div>
         </div>
         <div id="afterMap">

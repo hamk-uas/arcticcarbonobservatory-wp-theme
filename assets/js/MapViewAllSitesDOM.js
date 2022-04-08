@@ -127,8 +127,6 @@ function viewAllSitesAfterLoadingEssentials() {
         addMapEventHandler('mouseenter', 'fieldLocationsLayerFar', function (e) {
             if (popup.userData !== "near") {
                 var coordinates = e.features[0].geometry.coordinates.slice();
-                console.log(e);
-                var styleColor = getSiteTypeColor(e.features[0].properties.site_type);
                 popup
                     .setLngLat(coordinates)
                     .setHTML('<h2>' + translate(t.plaintext_titles, "click_to_zoom") + '</h2>')

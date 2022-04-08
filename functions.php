@@ -1,6 +1,5 @@
 <?php
-	
-	
+
 	function fieldobservatory_theme_support(){
 		//adds dynamic title tag support	
 		add_theme_support('title-tag');
@@ -178,4 +177,10 @@
   return $mimes;
 }
 add_filter('upload_mimes', 'font_mime_types');
+
+function add_query_string($url) {
+	return empty($_SERVER['QUERY_STRING'])? $url : $url.'?'.$_SERVER['QUERY_STRING'];
+}
+add_filter('pll_the_language_link', 'add_query_string');
+
 ?>

@@ -733,14 +733,20 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     });
 
     // Merge blocksGeoJson features and siteJson block properties into siteJson, with siteJson block properties taking priority
-    siteJson.blocks.forEach((block, index) => {
+    siteJson.blocks.forEach((block, index) => {        
         blocksGeoJson.features.forEach(feature => {
             if (feature.properties.site === history.state.site && feature.properties.id === `${history.state.site}_${block.id}`) {
                 siteJson.blocks[index] = { ...feature.properties, ...block };
             }
         });
     });
-    
+
+    // Create siteJson.blockIdToBlock
+    siteJson.blockIdToBlock = {};
+    siteJson.blocks.forEach((block, index) => {        
+        siteJson.blockIdToBlock[block.id] = block;
+    });
+
     // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
     prepCharts(v, JSON.parse(JSON.stringify(siteJson)), JSON.parse(JSON.stringify(chartsJson))); // Create deep copies so that the preceding console.log statements show what was loaded
     // console.log("Charts prepped");
