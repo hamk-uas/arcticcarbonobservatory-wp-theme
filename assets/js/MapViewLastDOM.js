@@ -50,22 +50,12 @@ async function initPage() {
                 "circle-stroke-color": {
                     property: 'site_type',
                     type: 'categorical',
-                    stops: [
-                        ['Valio', '#114a9c'],
-                        ['Advanced CarbonAction Site', '#349a80'],
-                        ['Intensive Site', '#129bc7'],
-                        ['Svensk Kolinlagring Site', '#292929'],
-                    ]
+                    stops: Object.entries(siteTypeColors)
                 },
                 "circle-color": {
                     property: 'site_type',
                     type: 'categorical',
-                    stops: [
-                        ['Valio', '#114a9c'],
-                        ['Advanced CarbonAction Site', '#349a80'],
-                        ['Intensive Site', '#129bc7'],
-                        ['Svensk Kolinlagring Site', '#292929'],
-                    ]
+                    stops: Object.entries(siteTypeColors)
                 },
                 "circle-stroke-width": 3,
                 "circle-opacity": 0.6,
@@ -90,10 +80,11 @@ async function initPage() {
                     property: 'site_type',
                     type: 'categorical',
                     stops: [
-                        ['Valio', 'MapMarkerDarkBlue'],
                         ['Advanced CarbonAction Site', 'MapMarkerGreen'],
                         ['Intensive Site', 'MapMarkerBlue'],
                         ['Svensk Kolinlagring Site', 'MapMarkerDarkGrey'],
+                        ['Valio', 'MapMarkerDarkBlue'],
+                        ['co-carbon', 'MapMarkerDarkGreen'],
                     ]
                 }
             },

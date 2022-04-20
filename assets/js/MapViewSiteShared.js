@@ -1077,22 +1077,32 @@ function prepCharts(v, siteJson, chartsJson) {
     console.log("v = ");
     console.log(v);
 
-    // Append sourceCategory descriptions to chart description
+    // Append sourceCategory and source descriptions to chart description
     v.chartIds.forEach(function (chartId) {
         let chart = v.charts[chartId];
+        let chartDescription = translate(chart, "description", "");
         if (chart.sourceCategories !== undefined) {
             Object.entries(chart.sourceCategories).forEach(function ([sourceCategoryId, sourceCategory]) {
                 if (translate(sourceCategory, "description", null) != null) {
-                    let chartDescriptionKey = translationKey(chart, "description");
-                    if (chart[chartDescriptionKey] === undefined) {
-                        chart[chartDescriptionKey] = "";
-                    }
                     let sourceCategoryDescription = translate(sourceCategory, "description");
-                    if (!chart[chartDescriptionKey].includes(sourceCategoryDescription)) {
-                        chart[chartDescriptionKey] = `${chart[chartDescriptionKey]} ${sourceCategoryDescription}`;
+                    if (!chartDescription.includes(sourceCategoryDescription)) {
+                        chartDescription = `${chartDescription} ${sourceCategoryDescription}`;
                     }
                 }
             });
+            Object.entries(chart.sources).forEach(function ([sourceId, source]) {
+                if (translate(source, "description", null) != null) {
+                    let sourceDescription = translate(source, "description");
+                    if (!chartDescription.includes(sourceDescription)) {
+                        chartDescription = `${chartDescription} ${sourceDescription}`;
+                    }
+                }
+            });
+        }
+        if (chartDescription === "") {
+            chart[translationKey(chart, "description")] = undefined;
+        } else {
+            chart[translationKey(chart, "description")] = chartDescription;
         }
     });
 

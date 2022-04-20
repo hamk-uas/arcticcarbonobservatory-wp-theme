@@ -27,21 +27,6 @@ function removeMapEventHandlers() {
     mapEventsAndHandlers = [];
 }
 
-var siteTypeColors = {
-    'Advanced CarbonAction Site': '#349a80',
-    'Intensive Site': '#129bc7',
-    'Valio': '#114a9c',
-    'Svensk Kolinlagring Site': '#292929'
-};
-
-//Get color by siteType
-function getSiteTypeColor(siteType) {
-    let color = siteTypeColors[siteType];
-    if (color === undefined) {
-        color = "#349a80";
-    }
-    return color;
-}
 // Open ALL SITES view
 function viewAllSitesAfterLoadingEssentials() {
     // Make essential layers visible

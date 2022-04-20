@@ -6,6 +6,23 @@ if (!fieldobservatoryIsWordpress) {
     document.querySelector('#liMapView').className = 'active';
 }
 
+var siteTypeColors = {
+    'Advanced CarbonAction Site': '#349a80',
+    'Intensive Site': '#129bc7',
+    'Valio': '#114a9c',
+    'Svensk Kolinlagring Site': '#292929',
+    'co-carbon': '#234832'
+};
+
+//Get color by siteType
+function getSiteTypeColor(siteType) {
+    let color = siteTypeColors[siteType];
+    if (color === undefined) {
+        color = "#349a80";
+    }
+    return color;
+}
+
 // Prepare map
 initStateFromLocationUrl(); // Parse browser URL parameters
 
@@ -65,7 +82,7 @@ async function loadEssentials() {
     if (history.state.demo !== undefined) {
         allSitesViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
         siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
-        siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoMapbackgroundsJson = json }));
+        siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
     }
     let promises = [
         Promise.all(allSitesViewPromises).then(async function () {
@@ -245,6 +262,7 @@ function initMap(initMapView) {
         })
     );*/
     return Promise.all([
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGreen.png`, 'MapMarkerDarkGreen'),
         mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkBlue.png`, 'MapMarkerDarkBlue'),
         mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerBlue.png`, 'MapMarkerBlue'),
         mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerGreen.png`, 'MapMarkerGreen'),

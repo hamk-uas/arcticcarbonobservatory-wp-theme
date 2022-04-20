@@ -377,19 +377,13 @@ var chartsJson = {
                     "id": "observation",
                     "title": "Observation",
                     "title_fi": "Havainto",
-                    "title_sv": "Observation",
-                    "description": "CO₂ flux is measured using the chamber method.",
-                    "description_fi": "CO₂-vuo on mitattu kammiomenetelmällä.",
-                    "description_sv": "CO₂-flödet mättes med kammarmetoden."
+                    "title_sv": "Observation"
                 },
                 {
                     "id": "observation_gapfilled",
                     "title": "Observation (gapfilled)",
                     "title_fi": "Havainto (paikattu)",
-                    "title_sv": "Observation (lappad)",
-                    "description": "CO₂ flux is measured using the eddy-covariance method.",
-                    "description_fi": "CO₂-vuo on mitattu pyörrekovarianssimenetelmällä.",
-                    "description_sv": "CO₂-flödet mättes med eddy kovarians metoden."
+                    "title_sv": "Observation (lappad)"
                 },
                 {
                     "id": "basgra_n_hindcast",
@@ -447,6 +441,9 @@ var chartsJson = {
                         "date": "PeriodEndUTC",
                         "val": "CO2Flux24h"
                     },
+                    "description": "CO₂ flux is measured using the chamber method.",
+                    "description_fi": "CO₂-vuo on mitattu kammiomenetelmällä.",
+                    "description_sv": "CO₂-flödet mättes med kammarmetoden."
                 },
                 {
                     "id": "flux",
@@ -458,6 +455,24 @@ var chartsJson = {
                         "val": "CO2flux",
                         "flags": "CO2flux_flags"
                     },
+                    "description": "CO₂ flux is measured using the eddy-covariance method.",
+                    "description_fi": "CO₂-vuo on mitattu pyörrekovarianssimenetelmällä.",
+                    "description_sv": "CO₂-flödet mättes med eddy kovarians metoden."
+                },
+                {
+                    "id": "flux",
+                    "sourceCategoryId": "observation",
+                    "gappy": true,
+                    "lines": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "CO2flux_raw",
+                        "flags": "CO2flux_flags"
+                    },
+                    "description": "CO₂ flux is measured using the eddy-covariance method.",
+                    "description_fi": "CO₂-vuo on mitattu pyörrekovarianssimenetelmällä.",
+                    "description_sv": "CO₂-flödet mättes med eddy kovarians metoden."
                 },
                 {
                     "id": "basgra_n_hindcast",
@@ -1132,6 +1147,16 @@ var chartsJson = {
                 }
             ],
             "sourceTypes": [
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "bars": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "Precipitation"
+                    }
+                },
                 {
                     "id": "pluvio",
                     "sourceCategoryId": "observation",

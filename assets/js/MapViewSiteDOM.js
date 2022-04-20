@@ -677,7 +677,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             if (blocksWithDifferentSoilTexture.length > 0) {
                 soilTypeHTML = siteBlocks.map(block => `<td><span style="white-space: nowrap;">${translate(block.properties, "Name")}</span><br>${translate(t.soil_texture_choice_plaintext, block.properties.soil_texture)}</td>`).join(" ");
             } else {
-                soilTypeHTML = `<td>${translate(t.soil_texture_choice_plaintext, feature.properties.soil_texture, "")}</td>`;
+                if (feature.properties.soil_texture != null) {
+                    soilTypeHTML = `<td>${translate(t.soil_texture_choice_plaintext, feature.properties.soil_texture, "")}</td>`;
+                }
             }
             let description = `
             <p style="animation:fadein 1s">${translate(feature.properties, "site_type_Name", (feature.properties.site_type === undefined) ? "" : feature.properties.site_type)}</p>
@@ -686,10 +688,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             <table style="animation:fadein 1s;">
                 ${managementHTML}
                 ${speciesHTML}
+                ${(soilTypeHTML !== undefined)? `
                 <tr>
                     <td style="vertical-align: top;">${translate(t.plaintext_titles, "soil_texture")}:</td>
                     ${soilTypeHTML}
-                </tr>
+                </tr>`: ""}
             </table>
             <div id="satelliteImageDiv">
                 <h4 id="Satellite_images">${translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title")}</h4>
@@ -1084,7 +1087,12 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                         const fileDirectory = image.getFileDirectory();
                         const geoKeys = image.getGeoKeys();
                         const modelTiePoint = fileDirectory.ModelTiepoint;
+                        console.log("GeoTIFF fileDirectory:");
+                        console.log(fileDirectory);
+                        console.log("GeoTIFF geoKeys:");
+                        console.log(geoKeys);
                         const modelPixelScale = fileDirectory.ModelPixelScale;
+                        const modelTransformation = fileDirectory.ModelTransformation;
                         const transform = proj4(`EPSG:${geoKeys.ProjectedCSTypeGeoKey}`, 'EPSG:4326');
                         let mapSourceId = `satelliteImage_${source.id}_${geoTiff.index}`;
                         let geoJson = {
@@ -1097,7 +1105,13 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                         for (let y = 0; y <= height; y++) {
                             let row = [];
                             for (let x = 0; x <= width; x++) {
-                                row.push(transform.forward([modelTiePoint[3] + (x - modelTiePoint[0]) * modelPixelScale[0], modelTiePoint[4] - (y - modelTiePoint[1]) * modelPixelScale[1]]));
+                                if (modelTransformation !== undefined) {
+                                    // y - 1 seems to work here... 
+                                    row.push(transform.forward([modelTransformation[3] + x*modelTransformation[0] + y*modelTransformation[1], modelTransformation[7] - x*modelTransformation[4] - (y - 1)*modelTransformation[5]]));
+                                } else {
+                                    // y seems to work here...
+                                    row.push(transform.forward([modelTiePoint[3] + (x - modelTiePoint[0]) * modelPixelScale[0], modelTiePoint[4] - (y - modelTiePoint[1]) * modelPixelScale[1]]));
+                                }
                             }
                             coords.push(row);
                         }
