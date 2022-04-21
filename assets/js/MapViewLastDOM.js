@@ -85,11 +85,12 @@ async function initPage() {
                         ['Svensk Kolinlagring Site', 'MapMarkerDarkGrey'],
                         ['Valio', 'MapMarkerDarkBlue'],
                         ['co-carbon', 'MapMarkerDarkGreen'],
+                        ['smear-agri', 'MapMarkerBlack'],
                     ]
                 }
             },
             "paint": {
-                "text-halo-width": 1,
+                "text-halo-width": 2,
                 "text-halo-blur": 1,
                 "text-halo-color": "#ffffff"
             }

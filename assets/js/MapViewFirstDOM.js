@@ -11,7 +11,8 @@ var siteTypeColors = {
     'Intensive Site': '#129bc7',
     'Valio': '#114a9c',
     'Svensk Kolinlagring Site': '#292929',
-    'co-carbon': '#234832'
+    'co-carbon': '#234832',
+    'smear-agri': '#000000'
 };
 
 //Get color by siteType
@@ -266,7 +267,8 @@ function initMap(initMapView) {
         mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkBlue.png`, 'MapMarkerDarkBlue'),
         mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerBlue.png`, 'MapMarkerBlue'),
         mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerGreen.png`, 'MapMarkerGreen'),
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerDarkGrey')
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerDarkGrey'),
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerBlack')
     ]);
 }
 

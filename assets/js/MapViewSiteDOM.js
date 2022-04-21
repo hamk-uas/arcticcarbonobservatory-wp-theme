@@ -878,7 +878,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 "text-allow-overlap": true
             },
             "paint": {
-                "text-halo-width": 1,
+                "text-halo-width": 2,
                 "text-halo-blur": 1,
                 "text-halo-color": "#ffffff"
             }
