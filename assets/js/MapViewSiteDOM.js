@@ -1087,10 +1087,6 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                         const fileDirectory = image.getFileDirectory();
                         const geoKeys = image.getGeoKeys();
                         const modelTiePoint = fileDirectory.ModelTiepoint;
-                        console.log("GeoTIFF fileDirectory:");
-                        console.log(fileDirectory);
-                        console.log("GeoTIFF geoKeys:");
-                        console.log(geoKeys);
                         const modelPixelScale = fileDirectory.ModelPixelScale;
                         const modelTransformation = fileDirectory.ModelTransformation;
                         const transform = proj4(`EPSG:${geoKeys.ProjectedCSTypeGeoKey}`, 'EPSG:4326');
