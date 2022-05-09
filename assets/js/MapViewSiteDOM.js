@@ -1005,6 +1005,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (v.site.id === "ae" || v.site.id === "ai" || v.site.id === "ik" || v.site.id === "ja" || v.site.id === "jn" || v.site.id === "ki" || v.site.id === "ko" || v.site.id === "kp" || v.site.id === "la" || v.site.id === "li" || v.site.id === "mi" || v.site.id === "mo" || v.site.id === "mu" || v.site.id === "na" || v.site.id === "ne" || v.site.id === "ni" || v.site.id === "pa" || v.site.id === "pi" || v.site.id === "pu" || v.site.id === "si") {
         offlineDataStr += '<p class="h4p">Mattila, Tuomas, & Heinonen, Reija. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2020 [Data set]. Zenodo. <a href="http://doi.org/10.5281/zenodo.4068271" target="_blank">http://doi.org/10.5281/zenodo.4068271</a></p>';
     }
+    if (v.site.id === "la" || v.site.id === "pi" || v.site.id === "ni" || v.site.id === "ae" || v.site.id === "ki" || v.site.id === "mu" || v.site.id === "pa" || v.site.id === "jn" || v.site.id === "mi" || v.site.id === "ik" || v.site.id === "mo" || v.site.id === "ai" || v.site.id === "ja" || v.site.id === "ne" || v.site.id === "na" || v.site.id === "pu" || v.site.id === "si" || v.site.id === "li" || v.site.id === "ko" || v.site.id === "kp") {
+        offlineDataStr += '<p class="h4p">Mattila Tuomas, & Girz Andrei. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2021 [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.5575531" target="_blank">https://doi.org/10.5281/zenodo.5575531</a></p>';
+    }
     if (offlineDataStr !== "") {
         creditStr += '<h4 id="Offline_data">Offline data</h4>';
         creditStr += offlineDataStr;
