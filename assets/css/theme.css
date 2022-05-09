@@ -135,7 +135,7 @@ header .site-logo{width:200px;float:left;margin-left:7%;padding-top:26px;z-index
 .mobile .fa-times{padding:11px 15px;width:55px;height:55px;display:none;font-size:31px;}
 .mobile .fa:hover {background: transparent;}
 .grid-containerLogo{display:flex;grid-gap:28px;}
-.grid-itemLogo{text-align:center;justify-content:center;align-items:center;margin:auto;text-align: -webkit-center;}
+.grid-itemLogo{text-align:center;justify-content:center;align-items:center;margin:auto;text-align: -webkit-center;display:grid;}
 .menumobile{height:100%;margin-right:7%;margin-left:50px;}
 .image-containerBanner
 {
