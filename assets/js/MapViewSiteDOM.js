@@ -936,7 +936,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             }).join(', ');
             switch (creditId) {
                 case "mmlOpen":
-                    creditStr += `<p style="padding: 8px 0px;">The aerial photo contains data from the National Land Survey of Finland Topographic Database (${downloadDates}). <a href="https://www.maanmittauslaitos.fi/en/opendata-licence-cc40" target="_blank">License</a>.</p>`;
+                    creditStr += `<p class="h4p">The aerial photo contains data from the National Land Survey of Finland Topographic Database (${downloadDates}). <a href="https://www.maanmittauslaitos.fi/en/opendata-licence-cc40" target="_blank">License</a>.</p>`;
                     break;
             }
         });
@@ -945,7 +945,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
 
     if (v.credits !== undefined) {
         for (const [creditId, credit] of Object.entries(v.credits)) {
-            creditStr += '<p style="padding: 8px 0px;">';
+            creditStr += '<p class="h4p">';
             let chartTitles = v.chartIds.filter(chartId => credit.charts[chartId] !== undefined).map(chartId => translate(v.charts[chartId], "title", chartId, "en"));
             let chartsStr = chartTitles.slice(0, -1).join(', ') + ((chartTitles.length > 1) ? " and " : "") + chartTitles.slice(-1);
             let years = Object.keys(credit.years).sort((a, b) => a - b);
@@ -992,7 +992,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                     creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data from <a href="https://www.datasense.fi/" target="_blank">Datasense</a> sensors.`;
                     break;
             }
-            creditStr += "<p>";
+            creditStr += "</p>";
         }
     }
     if (creditStr !== "") {
@@ -1000,15 +1000,16 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
     let offlineDataStr = "";
     if (v.site.id === "mi" || v.site.id === "li" || v.site.id === "si" || v.site.id === "jo" || v.site.id === "pa" || v.site.id === "ki" || v.site.id === "vi" || v.site.id === "ja" || v.site.id === "mu" || v.site.id === "ru" || v.site.id === "ml" || v.site.id === "ai" || v.site.id === "mä" || v.site.id === "mo" || v.site.id === "ko" || v.site.id === "ky" || v.site.id === "se" || v.site.id === "ni" || v.site.id === "at" || v.site.id === "jn" || v.site.id === "me" || v.site.id === "pu" || v.site.id === "ka" || v.site.id === "kp" || v.site.id === "la" || v.site.id === "ke") {
-        offlineDataStr += '<p style="padding: 8px 0px;">Tuomas Mattila. (2020). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2019 [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.3670653" target="_blank">http://doi.org/10.5281/zenodo.3670653</a></p>';
+        offlineDataStr += '<p class="h4p">Tuomas Mattila. (2020). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2019 [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.3670653" target="_blank">http://doi.org/10.5281/zenodo.3670653</a></p>';
     }
     if (v.site.id === "ae" || v.site.id === "ai" || v.site.id === "ik" || v.site.id === "ja" || v.site.id === "jn" || v.site.id === "ki" || v.site.id === "ko" || v.site.id === "kp" || v.site.id === "la" || v.site.id === "li" || v.site.id === "mi" || v.site.id === "mo" || v.site.id === "mu" || v.site.id === "na" || v.site.id === "ne" || v.site.id === "ni" || v.site.id === "pa" || v.site.id === "pi" || v.site.id === "pu" || v.site.id === "si") {
-        offlineDataStr += '<p style="padding: 8px 0px;">Mattila, Tuomas, & Heinonen, Reija. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2020 [Data set]. Zenodo. <a href="http://doi.org/10.5281/zenodo.4068271" target="_blank">http://doi.org/10.5281/zenodo.4068271</a></p>';
+        offlineDataStr += '<p class="h4p">Mattila, Tuomas, & Heinonen, Reija. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2020 [Data set]. Zenodo. <a href="http://doi.org/10.5281/zenodo.4068271" target="_blank">http://doi.org/10.5281/zenodo.4068271</a></p>';
     }
     if (offlineDataStr !== "") {
         creditStr += '<h4 id="Offline_data">Offline data</h4>';
         creditStr += offlineDataStr;
     }
+    creditStr += `<h4 id="Edit_data">Manage site</h4><p class="h4p"><a href="${v.fieldobservatoryLanguage === "fi"? "https://peltoobservatorio.fi/peltoapp": "https://fieldobservatory.org/fieldapp"}">Enter field management activity data</a> (login required)</p>`;
     if (creditStr !== "") {
         document.getElementById("dataCredits").innerHTML = creditStr;
     }

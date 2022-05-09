@@ -1,11 +1,5 @@
 ﻿window.onresize = onWindowResize;
 
-if (!fieldobservatoryIsWordpress) {
-    // Changes to _Layout.cshtml
-    document.querySelector('#liHome').className = 'homeBtn';
-    document.querySelector('#liMapView').className = 'active';
-}
-
 var siteTypeColors = {
     'Advanced CarbonAction Site': '#349a80',
     'Intensive Site': '#129bc7',

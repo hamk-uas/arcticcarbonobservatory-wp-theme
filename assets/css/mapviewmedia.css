@@ -29,16 +29,7 @@
     display: none; /* Hide field info div for ViewAllSites */
 }
 
-.ViewSite #dataCredits {
-    padding: 0px 25px;
-}
-
-.ViewSite #dataCredits p {
-    font-size: 16px;
-    line-height: 20px;
-    padding-bottom: 0px;
-}
-
+.loader #mainFooter,
 .loader #dataCredits {
     display: none; /* Hide data credits if we are still loading ViewSite*/
 }
@@ -101,23 +92,30 @@
     padding-top: 10px;
 }
 
-    .chart_gridcontainer_item h4 {
-        color: #5E5E5E;
-        font-size: 24px;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
+.chart_gridcontainer_item h4 {
+    color: #5E5E5E;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
 
-    .chart_gridcontainer_item p {
-        padding: 5px 0px 5px 0px;
-        font-size: 18px;
-        color: #5E5E5E;
-        font-family: 'proxima-nova', sans-serif;
-        font-weight: 400;
-        margin: 0px;
-        word-spacing: 2px;
-        line-height: 18px;
-    }
+p.h1p,
+p.h2p,
+p.h3p,
+p.h4p,
+.chart_gridcontainer_item p {
+    font-size: 18px;
+    color: #5E5E5E;
+    font-family: 'proxima-nova', sans-serif;
+    font-weight: 400;
+    margin: 0px;
+    word-spacing: 2px;
+    line-height: 18px;
+}
+
+.chart_gridcontainer_item p {
+    padding: 5px 0px 5px 0px;
+}
 
 .chart_gridcontainer .fieldInfoDiv td {
     font-size: 18px;
