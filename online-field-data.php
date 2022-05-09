@@ -9,17 +9,17 @@
     	fieldobservatoryLanguage: "<?php echo explode("_", get_locale())[0]?>" // fi -> fi, sv_SE -> sv, en_US -> en
     };
 </script>
-<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.js'></script>
+<!--<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.js'></script>-->
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css" rel="stylesheet" />
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
-<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css" />
+<!--<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css" rel="stylesheet" />-->
+<!--<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>-->
+<!--<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css" />-->
 
 <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
-<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>-->
 <!-- link rel="stylesheet" href="assets/css/theme.css" type="text/css" /-->
-<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/mapviewmedia.css" type="text/css" />
+<!-- <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/mapviewmedia.css" type="text/css" />-->
 <style type="text/css">
 
     /* MAP BOX STYLE*/

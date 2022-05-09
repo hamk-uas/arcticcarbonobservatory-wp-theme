@@ -64,7 +64,6 @@
 .fieldInfoDiv {
     width: 100%;
     display: block;
-    float: left;
     padding: 15px 25px;
 }
 .fieldInfoDiv h4 {
@@ -78,12 +77,19 @@
     line-height: 28px;
 }
 
+.colorbar-container {
+    position: relative;
+    margin-left: 24px;
+}
+
+.colorbar {
+    position: absolute;
+}
+
 .chart_gridcontainer {
     display: grid;
     grid-template-columns: repeat(2,1fr);
     grid-gap: 25px;
-    /*padding: 5px;
-	margin: 5px;*/
 }
 
 .chart_gridcontainer_item {
@@ -92,7 +98,7 @@
     font-size: 15px;
     text-align: center;
     display: block;
-    /*margin-top: 25px;*/
+    padding-top: 10px;
 }
 
     .chart_gridcontainer_item h4 {
@@ -577,7 +583,6 @@
         }
 
     .fieldInfoDiv {
-        float: right;
         padding: 15px 25px;
     }
 
@@ -817,7 +822,6 @@
             display: grid;
         }
         .fieldInfoDiv {
-            float: right;
             padding: 0;
             margin-bottom: 15px;
 
@@ -826,6 +830,7 @@
                 font-size: 17px;
                 line-height: 24px;
             }
+            
         .chart_gridcontainer {
             display: grid;
             grid-template-columns: repeat(1,1fr);
@@ -997,7 +1002,6 @@
     }
     .fieldInfoDiv {
         width: 100%;
-        float: right;
         padding: 0;
     }
         .fieldInfoDiv p {

@@ -1538,7 +1538,7 @@ function getChartDivInnerHtml(v, chartId) {
     }
     legend += "</div>"
     return `
-    ${chartId === "satelliteImages" ? `<div style="position:absolute; float:left;"><img id="colorbar" style="visibility:visible" width="48px" src="${fieldobservatoryImagesUrl}/colorbar.svg" alt="colorbar"><img id="colorbar_lai" style="position:absolute; top:22px; left:0px;visibility:hidden" width="48px" src="${v.fieldobservatoryImagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI"></div>` : `<h4>${translate(v.charts[chartId], "title")}</h4>`}
+    ${chartId === "satelliteImages" ? `<div class="colorbar-container"><img id="colorbar" class="colorbar" style="visibility:visible" width="48px" src="${fieldobservatoryImagesUrl}/colorbar.svg" alt="colorbar"><img id="colorbar_lai" class="colorbar" style="visibility:hidden" width="48px" src="${v.fieldobservatoryImagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI"></div>` : `<h4>${translate(v.charts[chartId], "title")}</h4>`}
     ${getChartSvgOuterHtml(v, chartId)}
     ${legend}
     ${translate(v.charts[chartId], "description", null) != null ? `<div class="chart_description"><p>${translate(v.charts[chartId], "description")}</p></div>` : ''}`;
