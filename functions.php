@@ -20,18 +20,18 @@
 	add_action('init','fieldobservatory_menus');
 	
 	function fielobservatory_register_styles(){
-    	$version = wp_get_theme()->get('version');
+    	$version = wp_get_theme()->version;
 		wp_enqueue_style('fieldobservatory-theme', get_template_directory_uri() . "/assets/css/theme.css",array(),$version,'all');
 		wp_enqueue_style('fieldobservatory-fontawesome',get_template_directory_uri() . "/assets/css/fontawesome.min.css",array(),'all');
 		wp_enqueue_style('fieldobservatory-mapboxglGeocoder',"https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css",array(),'all');
 		wp_enqueue_style('fieldobservatory-mapboxglcss',"https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css",array(),'all');
-		wp_enqueue_style('fieldobservatory-mapViewMedia',get_template_directory_uri() . "/assets/css/mapviewmedia.css",$version,array(),'all');
+		wp_enqueue_style('fieldobservatory-mapViewMedia',get_template_directory_uri() . "/assets/css/mapviewmedia.css",array(),$version,'all');
 	}	
 	
 	add_action('wp_enqueue_scripts','fielobservatory_register_styles');
 	
 	function fielobservatory_register_scripts(){
-    	$version = wp_get_theme()->get('version');
+    	$version = wp_get_theme()->version;
 		wp_enqueue_script('fieldobservatory-jquery','https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',array(),'3.5.1',true);
 		wp_enqueue_script('fieldobservatory-global',get_template_directory_uri() . '/assets/js/global.js',array(),$version,true);
 		wp_enqueue_script('fieldobservatory-sudoSlider',get_template_directory_uri() .'/assets/js/jquery.sudoSlider.min.js',array(),$version,true);

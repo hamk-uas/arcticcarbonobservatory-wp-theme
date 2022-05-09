@@ -9,17 +9,7 @@
     	fieldobservatoryLanguage: "<?php echo explode("_", get_locale())[0]?>" // fi -> fi, sv_SE -> sv, en_US -> en
     };
 </script>
-<!--<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.js'></script>-->
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-<!--<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css" rel="stylesheet" />-->
-<!--<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>-->
-<!--<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css" />-->
-
-<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
-<!--<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>-->
-<!--<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>-->
-<!-- link rel="stylesheet" href="assets/css/theme.css" type="text/css" /-->
-<!-- <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/mapviewmedia.css" type="text/css" />-->
 <style type="text/css">
 
     /* MAP BOX STYLE*/
@@ -89,7 +79,6 @@ get_footer();
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.min.js" integrity="sha512-Nwp3XMQKRvqr376bCa50Hs4X4z5zbsefo63QLa62poTx5o/GhYgjnToCoBZk7bxjeP2y84oEgKNUrpK2+2Czyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- https://github.com/proj4js/proj4js -->
 <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.4/dist-browser/geotiff.min.js"></script> <!-- see https://cdn.jsdelivr.net/npm/geotiff@2.0.4/README.md -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.min.js" integrity="sha512-Nwp3XMQKRvqr376bCa50Hs4X4z5zbsefo63QLa62poTx5o/GhYgjnToCoBZk7bxjeP2y84oEgKNUrpK2+2Czyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- http://proj4js.org/ -->-->
 <script type="text/javascript">
     mapboxgl.accessToken = "pk.eyJ1IjoiaGFta3NtYXJ0IiwiYSI6ImNreG9sN3p0cDAweTkycG8yZ3B3NHV5cjUifQ.YfKxbZoIH0pR7x2ZU6bDIA";
 
@@ -97,32 +86,21 @@ get_footer();
     var storageUrl2 = 'https://field-observatory.data.lit.fmi.fi';
     var demoStorageUrl = 'https://field-observatory-demo.data.lit.fmi.fi';
     if (!window.hasOwnProperty("v") || window.v === undefined || v.fieldobservatoryLanguage === undefined) {
-        console.log("Using default language.");
         var v = {
             fieldobservatoryLanguage: "en"
         };
-    } else {
-        console.log(`Using language: ${v.fieldobservatoryLanguage}`);
     }
-    var fieldobservatoryIsWordpress = true;
-
-    if (fieldobservatoryIsWordpress) {
-        var fieldobservatoryImagesUrl = "<?php echo get_template_directory_uri(); ?>/assets/images";
-        var fieldobservatoryJSUrl = "<?php echo get_template_directory_uri(); ?>/assets/js";
-    } else {
-        var fieldobservatoryImagesUrl = "/img";
-        var fieldobservatoryJSUrl = "js";
-    }
+    var fieldobservatoryImagesUrl = "<?php echo get_template_directory_uri(); ?>/assets/images";
+    var fieldobservatoryJSUrl = "<?php echo get_template_directory_uri(); ?>/assets/js";    
 </script>
-
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewFirstDOM.js">console.log("FirstDOm js ready")</script>
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/charts.js">console.log("chart js ready")</script>
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewAllSitesDOM.js">console.log("All sites js ready")</script>
-<script type="text/js-worker" id="fieldobservatory-MapViewSiteWorkerJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewSiteWorker.js"></script>
-<script type="text/javascript" id="fieldobservatory-MapViewSiteSharedJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewSiteShared.js"></script>
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewSiteDOM.js"></script>
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewLastDOM.js"></script>
-<!-- END OF JAVASCRIPT DEVELOPED SEPARATELY-->
+<?php $version = wp_get_theme()->version; ?>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewFirstDOM.js?ver=<?php echo $version ?>"></script>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/charts.js?ver=<?php echo $version ?>"></script>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewAllSitesDOM.js?ver=<?php echo $version ?>"></script>
+<script type="text/js-worker" id="fieldobservatory-MapViewSiteWorkerJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewSiteWorker.js?ver=<?php echo $version ?>"></script>
+<script type="text/javascript" id="fieldobservatory-MapViewSiteSharedJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewSiteShared.js?ver=<?php echo $version ?>"></script>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewSiteDOM.js?ver=<?php echo $version ?>"></script>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewLastDOM.js?ver=<?php echo $version ?>"></script>
 <script>
 console.log("End of field-data.php");
 document.addEventListener('DOMContentLoaded', (event) => {
