@@ -127,7 +127,7 @@ var chartsJson = {
             "title_fi": "Lehtialaindeksi (LAI)",
             "title_sv": "Bladarealindex (LAI)",
             "description": "Leaf area index describes the amount of vegetation canopy in the area. Measured as m² of leaf surface (top side) to land area. Error bars indicate 90&nbsp;% confidence intervals.",
-            "description_fi": "Lehtialaindeksi mittaa lehtipinta-alan määrää alueella. Se määritellään kasvillisuuden yksipuolisena lehtipinta-alana maapinta-alaa kohden (yksikkö m² / ;m²). Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
+            "description_fi": "Lehtialaindeksi mittaa lehtipinta-alan määrää alueella. Se määritellään kasvillisuuden yksipuolisena lehtipinta-alana maapinta-alaa kohden (yksikkö m² / m²). Virhepalkit näyttävät 90&nbsp;% luottamusvälin.",
             "description_sv": "Bladarealindex mäter mängden bladyta på ett område. Det mäts som m² av bladytan (övre sidan) mot landytan. Felstaplarna anger konfidensintervall på 90&nbsp;%.",
             "yLabel": "LAI (m² / m²)",
             "defaults": {
