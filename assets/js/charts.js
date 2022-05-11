@@ -674,31 +674,66 @@ var chartsJson = {
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
-                        "val": "SoilMoisture"
+                        "val": "SoilMoisture120cm"
+                    },
+                    "parameters": {
+                        "height_cm": -120
                     }
                 },
                 {
-                    "id": "meteo_block",
+                    "id": "meteo",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
-                        "val": "SoilMoisture"
+                        "val": "SoilMoisture90cm"
+                    },
+                    "parameters": {
+                        "height_cm": -90
                     }
                 },
                 {
-                    "id": "datasense",
+                    "id": "meteo",
                     "sourceCategoryId": "observation",
                     "lines": true,
+                    "integrationTime": 1800000,
                     "seriesCSVFields": {
-                        "date": "Date",
-                        "val": "Volume"
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilMoisture60cm"
                     },
-                    "gapDetectTimeThreshold": 10800000
+                    "parameters": {
+                        "height_cm": -60
+                    }
                 },
                 {
-                    "id": "qml",
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilMoisture35cm"
+                    },
+                    "parameters": {
+                        "height_cm": -35
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilMoisture30cm"
+                    },
+                    "parameters": {
+                        "height_cm": -30
+                    }
+                },
+                {
+                    "id": "meteo",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
@@ -711,17 +746,27 @@ var chartsJson = {
                     }
                 },
                 {
-                    "id": "qml",
+                    "id": "meteo",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
-                        "val": "SoilMoisture30cm"
+                        "val": "SoilMoisture"
                     },
                     "parameters": {
-                        "height_cm": -30
+                        "height_cm": "-"
                     }
+                },
+                {
+                    "id": "datasense",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "Volume"
+                    },
+                    "gapDetectTimeThreshold": 10800000
                 },
                 {
                     "id": "basgra_n_hindcast",
@@ -875,27 +920,40 @@ var chartsJson = {
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
-                        "val": "TemperatureSoil30cm"
+                        "val": "TemperatureSoil120cm"
                     },
                     "parameters": {
-                        "height_cm": -30
+                        "height_cm": -120
                     }
                 },
                 {
-                    "id": "meteo_block",
+                    "id": "meteo",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
-                        "val": "TemperatureSoil30cm"
+                        "val": "TemperatureSoil60cm"
                     },
                     "parameters": {
-                        "height_cm": -30
+                        "height_cm": -60
                     }
                 },
                 {
-                    "id": "qml",
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "TemperatureSoil35cm"
+                    },
+                    "parameters": {
+                        "height_cm": -35
+                    }
+                },
+                {
+                    "id": "meteo",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
@@ -921,46 +979,7 @@ var chartsJson = {
                     }
                 },
                 {
-                    "id": "meteo_block",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "TemperatureSoil10cm"
-                    },
-                    "parameters": {
-                        "height_cm": -10
-                    }
-                },
-                {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "TemperatureSoil5cm"
-                    },
-                    "parameters": {
-                        "height_cm": -5
-                    }
-                },
-                {
-                    "id": "meteo_block",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "TemperatureSoil5cm"
-                    },
-                    "parameters": {
-                        "height_cm": -5
-                    }
-                },
-                {
-                    "id": "qml",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
@@ -1014,32 +1033,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "TemperatureAir"
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
-                    "id": "meteo_site",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "TemperatureAir"
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
-                    "id": "qml",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
@@ -1316,32 +1309,6 @@ var chartsJson = {
                     }
                 },
                 {
-                    "id": "meteo_site",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "RelativeHumidity"
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
-                    "id": "qml",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "RelativeHumidity"
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
                     "id": "ecmwf_forecast_intensive",
                     "sourceCategoryId": "ecmwf_forecast",
                     "lines": true,
@@ -1388,7 +1355,7 @@ var chartsJson = {
             ]
         },
         {
-            "id": "datasenseConductivity",
+            "id": "electricalConductivity",
             "title": "Electrical conductivity",
             "title_fi": "Sähköjohtavuus",
             "title_sv": "Elektrisk konduktivitet",
@@ -1405,6 +1372,71 @@ var chartsJson = {
             },
             "sourceTypes": [
                 {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "ElectricalConductivity120cm"
+                    },
+                    "parameters": {
+                        "height_cm": -120
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "ElectricalConductivity90cm"
+                    },
+                    "parameters": {
+                        "height_cm": -90
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "ElectricalConductivity60cm"
+                    },
+                    "parameters": {
+                        "height_cm": -60
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "ElectricalConductivity35cm"
+                    },
+                    "parameters": {
+                        "height_cm": -35
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "ElectricalConductivity10cm"
+                    },
+                    "parameters": {
+                        "height_cm": -10
+                    }
+                },
+                {
                     "id": "datasense",
                     "lines": true,
                     "seriesCSVFields": {
@@ -1412,6 +1444,83 @@ var chartsJson = {
                         "val": "Conductivity"
                     },
                     "gapDetectTimeThreshold": 10800000
+                }
+            ]
+        },
+        {
+            "id": "soilRedoxPotential",
+            "title": "Soil redox potential",
+            "yLabel": "redox potential (mV)",
+            "timeAggregationStatistic": "minMeanMax",
+            "defaults": {
+                "yMin": 0,
+                "yMax": 1000
+            },
+            "sourceTypes": [
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "RedoxPotential120cm"
+                    },
+                    "parameters": {
+                        "height_cm": -120
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "RedoxPotential90cm"
+                    },
+                    "parameters": {
+                        "height_cm": -90
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "RedoxPotential60cm"
+                    },
+                    "parameters": {
+                        "height_cm": -60
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "RedoxPotential35cm"
+                    },
+                    "parameters": {
+                        "height_cm": -35
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "RedoxPotential10cm"
+                    },
+                    "parameters": {
+                        "height_cm": -10
+                    }
                 }
             ]
         },
@@ -1444,24 +1553,6 @@ var chartsJson = {
             "sourceTypes": [
                 {
                     "id": "meteo",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "NetRadiation"
-                    }
-                },
-                {
-                    "id": "meteo_block",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "NetRadiation"
-                    }
-                },
-                {
-                    "id": "qml",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1674,27 +1765,7 @@ var chartsJson = {
             ],
             "sourceTypes": [
                 {
-                    "id": "qml",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "PAR"
-                    }
-                },
-                {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "PAR"
-                    }
-                },
-                {
-                    "id": "meteo_site",
                     "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
@@ -1817,7 +1888,7 @@ var chartsJson = {
             },
             "sourceTypes": [
                 {
-                    "id": "qml",
+                    "id": "meteo",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1882,18 +1953,6 @@ var chartsJson = {
                     }
                 },
                 {
-                    "id": "meteo_block",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "CMP"
-                    },
-                    "parameters": {
-                        "direction": "down"
-                    }
-                },
-                {
                     "id": "smp",
                     "lines": true,
                     "integrationTime": 1800000,
@@ -1912,18 +1971,6 @@ var chartsJson = {
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
                         "val": "ShortwaveUp"
-                    },
-                    "parameters": {
-                        "direction": "up"
-                    }
-                },
-                {
-                    "id": "meteo_block",
-                    "lines": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "CMPRefl"
                     },
                     "parameters": {
                         "direction": "up"
