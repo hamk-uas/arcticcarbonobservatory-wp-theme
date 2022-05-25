@@ -153,6 +153,17 @@ function setState(state) {
     let url = new URL(window.location.href);
     url.search = new URLSearchParams(state);
     history.replaceState(state, "", url.href);
+    for (let languageParent of document.getElementsByClassName("lang-item")) {
+        let languageA = languageParent.firstChild;
+        if (languageA !== undefined) {
+            let languageHref = languageA.href;
+            if (languageHref !== undefined) {
+                let languageUrl = new URL(languageHref);
+                languageUrl.search = url.search;
+                languageA.href = languageUrl.href;
+            }
+        }
+    }      
 }
 
 // Init state from location URL parameters
