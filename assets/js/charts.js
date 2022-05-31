@@ -332,7 +332,57 @@ var chartsJson = {
                     "parameters": {
                         "height_cm": "+"
                     }
+                },
+                {
+                    "id": "concentrations",
+                    "integrationTime": 1800000,
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "CO2concentration"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    }
                 }
+            ]
+        },
+        {
+            "id": "N2Oconcentration",
+            "title": "N₂O concentration",
+            "title_fi": "N₂O-pitoisuus",
+            "title_sv": "N₂O koncentration",
+            "yLabel": "N₂O concentration (ppm)",
+            "yLabel_fi": "N₂O-pitoisuus (ppm)",
+            "yLabel_sv": "N₂O koncentration (ppm)",
+            "timeAggregationSettings": [
+                {
+                    "enabled": false
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 86400000
+                }
+            ],
+            "defaults": {
+                "yMin": 0,
+                "yMax": 1000,
+                "timeAggregationSettingIndex": 0
+            },
+            "sourceTypes": [
+                {
+                    "id": "concentrations",
+                    "integrationTime": 1800000,
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "N2Oconcentration"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    }
+                },
             ]
         },
         {
