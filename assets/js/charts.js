@@ -587,6 +587,219 @@ var chartsJson = {
             ]
         },
         {
+            "id": "N2Oflux",
+            "title": "N₂O flux",
+            "title_fi": "N₂O-vuo",
+            "title_sv": "N₂O -flödet",
+            "description": "N₂O flux is the exchange of N₂O between the land and the atmosphere. Positive values represent release from land to the atmosphere, negative values represent sink to the land.",
+            "yLabel": "N₂O flux (mg / m² / s)",
+            "yLabel_fi": "N₂O-vuo (mg / m² / s)",
+            "yLabel_sv": "N₂O -flödet (mg / m² / s)",
+            "timeAggregationSettings": [
+                {
+                    "enabled": false
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 86400000
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 604800000
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 2592000000
+                }
+            ],
+            "defaults": {
+                "yMin": -0.01,
+                "yMax": 0.01,
+                "timeAggregationSettingIndex": "auto"
+            },
+            "minMaxIncludesZero": true,
+            "sourceCategoryList": [
+                {
+                    "id": "observation",
+                    "title": "Observation",
+                    "title_fi": "Havainto",
+                    "title_sv": "Observation"
+                },
+                {
+                    "id": "observation_gapfilled",
+                    "title": "Observation (gapfilled)",
+                    "title_fi": "Havainto (paikattu)",
+                    "title_sv": "Observation (lappad)"
+                },
+                {
+                    "id": "basgra_n_hindcast",
+                    "title": "BASGRA_N hindcast",
+                    "title_fi": "BASGRA_N takautuva mallinnus",
+                    "title_sv": "BASGRA_N återanalys"
+                },
+                {
+                    "id": "basgra_n_forecast",
+                    "title": "BASGRA_N forecast",
+                    "title_fi": "BASGRA_N ennuste",
+                    "title_sv": "BASGRA_N prognos"
+                },
+                {
+                    "id": "basgra_bgc_hindcast",
+                    "title": "BASGRA-BGC hindcast",
+                    "title_fi": "BASGRA-BGC takautuva mallinnus",
+                    "title_sv": "BASGRA-BGC återanalys"
+                },
+                {
+                    "id": "basgra_bgc_forecast",
+                    "title": "BASGRA-BGC forecast",
+                    "title_fi": "BASGRA-BGC ennuste",
+                    "title_sv": "BASGRA-BGC prognos"
+                },
+                {
+                    "id": "stics_hindcast",
+                    "title": "STICS hindcast",
+                    "title_fi": "STICS takautuva mallinnus",
+                    "title_sv": "STICS återanalys"
+                },
+                {
+                    "id": "stics_forecast",
+                    "title": "STICS forecast",
+                    "title_fi": "STICS ennuste",
+                    "title_sv": "STICS prognos"
+                }
+            ],
+            "sourceTypes": [
+                {
+                    "id": "flux",
+                    "sourceCategoryId": "observation_gapfilled",
+                    "lines": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "N2Oflux",
+                        "flags": "N2Oflux_flags"
+                    },
+                    "description": "N₂O flux is measured using the eddy-covariance method.",
+                    "description_fi": "N₂O-vuo on mitattu pyörrekovarianssimenetelmällä.",
+                    "description_sv": "N₂O-flödet mättes med virvelkovarians metoden."
+                },
+                {
+                    "id": "flux",
+                    "sourceCategoryId": "observation",
+                    "gappy": true,
+                    "lines": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "N2Oflux_raw",
+                        "flags": "N2Oflux_flags"
+                    },
+                    "description": "N₂O flux is measured using the eddy-covariance method.",
+                    "description_fi": "N₂O-vuo on mitattu pyörrekovarianssimenetelmällä.",
+                    "description_sv": "N₂O-flödet mättes med virvelkovarians metoden."
+                },
+                {
+                    "id": "basgra_n_hindcast",
+                    "sourceCategoryId": "basgra_n_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "N2Oflux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "N2Oflux_F005",
+                                "endField": "N2Oflux_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "basgra_n_forecast",
+                    "sourceCategoryId": "basgra_n_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "N2Oflux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "N2Oflux_F005",
+                                "endField": "N2Oflux_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "basgra_bgc_hindcast",
+                    "sourceCategoryId": "basgra_bgc_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "N2Oflux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "N2Oflux_F005",
+                                "endField": "N2Oflux_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "basgra_bgc_forecast",
+                    "sourceCategoryId": "basgra_bgc_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "N2Oflux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "N2Oflux_F005",
+                                "endField": "N2Oflux_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "stics_hindcast",
+                    "sourceCategoryId": "stics_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "N2Oflux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "N2Oflux_F005",
+                                "endField": "N2Oflux_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "stics_forecast",
+                    "sourceCategoryId": "stics_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "N2Oflux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "N2Oflux_F005",
+                                "endField": "N2Oflux_F095"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "id": "soilMoisture",
             "title": "Soil moisture",
             "title_fi": "Maaperän kosteus",
@@ -618,7 +831,8 @@ var chartsJson = {
                     "id": "observation",
                     "title": "Observation",
                     "title_fi": "Havainto",
-                    "title_sv": "Observation"
+                    "title_sv": "Observation",
+                    "hideTitleIfOnly": true
                 },
                 {
                     "id": "basgra_n_hindcast",
@@ -1373,7 +1587,6 @@ var chartsJson = {
             "sourceTypes": [
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1386,7 +1599,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1399,7 +1611,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1412,7 +1623,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1425,7 +1635,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1453,13 +1662,13 @@ var chartsJson = {
             "yLabel": "redox potential (mV)",
             "timeAggregationStatistic": "minMeanMax",
             "defaults": {
-                "yMin": 0,
-                "yMax": 1000
+                "yMin": -1000,
+                "yMax": 1000,
+                "autoZoom": true
             },
             "sourceTypes": [
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1472,7 +1681,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1485,7 +1693,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1498,7 +1705,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1511,7 +1717,6 @@ var chartsJson = {
                 },
                 {
                     "id": "meteo",
-                    "sourceCategoryId": "observation",
                     "lines": true,
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
@@ -1520,6 +1725,105 @@ var chartsJson = {
                     },
                     "parameters": {
                         "height_cm": -10
+                    }
+                }
+            ]
+        },
+        {
+            "id": "soilWaterPotential",
+            "title": "Soil water potential",
+            "title_fi": "Vesipotentiaali",
+            "yLabel": "soil water potential (kPa)",
+            "yLabel_fi": "vesipotentiaali (kPa)",
+            "timeAggregationStatistic": "minMeanMax",
+            "defaults": {
+                "yMin": -1,
+                "yMax": 1,
+                "autoZoom": true
+            },
+            "sourceTypes": [
+                {
+                    "id": "meteo",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilWaterPotential120cm"
+                    },
+                    "parameters": {
+                        "height_cm": -120
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilWaterPotential90cm"
+                    },
+                    "parameters": {
+                        "height_cm": -90
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilWaterPotential60cm"
+                    },
+                    "parameters": {
+                        "height_cm": -60
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilWaterPotential35cm"
+                    },
+                    "parameters": {
+                        "height_cm": -35
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "SoilWaterPotential10cm"
+                    },
+                    "parameters": {
+                        "height_cm": -10
+                    }
+                }
+            ]
+        },
+        {
+            "id": "waterTableDepth",
+            "title": "Water table depth",
+            "title_fi": "Pohjaveden pinta",
+            "yLabel": "Height (cm)",
+            "yLabel_fi": "Korkeus (cm)",
+            "timeAggregationStatistic": "minMeanMax",
+            "defaults": {
+                "yMin": -300,
+                "yMax": 100,
+                "autoZoom": true
+            },
+            "sourceTypes": [
+                {
+                    "id": "meteo",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "WaterTableDepth"
                     }
                 }
             ]
