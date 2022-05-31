@@ -1582,7 +1582,8 @@ var chartsJson = {
             "timeAggregationStatistic": "minMeanMax",
             "defaults": {
                 "yMin": 0,
-                "yMax": 1000
+                "yMax": 1000,
+                "autoZoom": true
             },
             "sourceTypes": [
                 {
