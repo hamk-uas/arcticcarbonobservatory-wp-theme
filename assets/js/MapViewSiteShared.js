@@ -679,7 +679,7 @@ function addChartColors(v) {
     v.airColors = [v.chartColors[1], v.oldChartColors[5]];//[v.oldChartColors[5], v.oldChartColors[4]];
     v.temperatureAirColors = [undefined, v.oldChartColors[11]];
     v.waterColors = [v.oldChartColors[4]];
-    v.soilColors = [v.chartColors[7], v.chartColors[6], v.chartColors[8], v.chartColors[9], "#000000"]//[, v.oldChartColors[7], v.oldChartColors[3], "#e8e8e8"];
+    v.soilColors = [v.chartColors[7], v.chartColors[6], v.chartColors[8], v.chartColors[9], "#000000", "#804000"] // The last ones are not official colors
     v.disabledColor = ["#CDCEC8"];
 }
 

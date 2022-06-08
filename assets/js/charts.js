@@ -1197,10 +1197,36 @@ var chartsJson = {
                     "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "PeriodStartUTC0",
+                        "val": "TemperatureSoil100cm"
+                    },
+                    "parameters": {
+                        "height_cm": -100
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
                         "val": "TemperatureSoil60cm"
                     },
                     "parameters": {
                         "height_cm": -60
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "TemperatureSoil50cm"
+                    },
+                    "parameters": {
+                        "height_cm": -50
                     }
                 },
                 {
@@ -1227,6 +1253,19 @@ var chartsJson = {
                     },
                     "parameters": {
                         "height_cm": -30
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "TemperatureSoil20cm"
+                    },
+                    "parameters": {
+                        "height_cm": -20
                     }
                 },
                 {
