@@ -1712,20 +1712,21 @@ function prepYGrid(v, chartId) {
         if (chart.autoZoom) {
             ({ seriesLists, loading, minVal, maxVal } = getSeriesLists(v, chartId));
             if (minVal != Infinity && maxVal != -Infinity) {
-                let threshold = Math.max(maxVal / 1000, 0.1);
-                if (maxVal - minVal < threshold) {                    
-                    let mean = 0.5 * (minVal + maxVal);
-                    chart.yMin = mean - 0.5 * threshold;
-                    chart.yMax = mean + 0.5 * threshold;
-                    if (minVal >= 0 && chart.yMin < 0) {
-                        chart.yMax -= chart.yMin;
-                        chart.yMin = 0;
-                    }
-                } else {
-                    chart.yMin = minVal;
+                if (chart.minMaxIncludesZero && minVal >= 0) {
+                    chart.yMin = 0;
                     chart.yMax = maxVal;
+                } else {
+                    let threshold = maxVal / 1000;
+                    if (maxVal - minVal < threshold) {                    
+                        let mean = 0.5 * (minVal + maxVal);
+                        chart.yMin = mean - 0.5 * threshold;
+                        chart.yMax = mean + 0.5 * threshold;
+                    } else {
+                        chart.yMin = minVal;
+                        chart.yMax = maxVal;
+                    }
                 }
-            }
+        }
         }
     }
 

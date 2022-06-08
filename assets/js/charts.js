@@ -305,6 +305,7 @@ var chartsJson = {
             "yLabel": "CO₂ concentration (ppm)",
             "yLabel_fi": "CO₂-pitoisuus (ppm)",
             "yLabel_sv": "CO₂ koncentration (ppm)",
+            "minMaxIncludesZero": true,
             "timeAggregationSettings": [
                 {
                     "enabled": false
@@ -367,7 +368,7 @@ var chartsJson = {
             ],
             "defaults": {
                 "yMin": 0,
-                "yMax": 1000,
+                "yMax": 10,
                 "timeAggregationSettingIndex": 0
             },
             "sourceTypes": [
@@ -421,7 +422,6 @@ var chartsJson = {
                 "yMax": 1,
                 "timeAggregationSettingIndex": "auto"
             },
-            "minMaxIncludesZero": true,
             "sourceCategoryList": [
                 {
                     "id": "observation",
@@ -670,7 +670,6 @@ var chartsJson = {
                 "yMax": 0.01,
                 "timeAggregationSettingIndex": "auto"
             },
-            "minMaxIncludesZero": true,
             "sourceCategoryList": [
                 {
                     "id": "observation",
@@ -860,6 +859,7 @@ var chartsJson = {
             "yLabel": "soil moisture (m³ / m³)",
             "yLabel_fi": "maaperän kosteus (m³ / m³)",
             "yLabel_sv": "jordmånens fuktighet (m³ / m³)",
+            "minMaxIncludesZero": true,
             "timeAggregationStatistic": "mean",
             "timeAggregationSettings": [
                 {
@@ -1365,6 +1365,7 @@ var chartsJson = {
             "yLabel": "precipitation (mm)",
             "yLabel_fi": "sademäärä (mm)",
             "yLabel_sv": "nederbörd (mm)",
+            "minMaxIncludesZero": true,
             "timeAggregationSettings": [
                 {
                     "enabled": false
@@ -2075,6 +2076,7 @@ var chartsJson = {
             "description_fi": "PAR kertoo yhteyttämiseen käytettävissä olevan säteilyn määrän (fotosynteettisesti aktiviinen säteily, 400–700 nm). Sillä on suuri vaikutus kasvillisuuden kasvuun.",
             "description_sv": "PAR anger mängden strålning som är tillgängligt för fotosyntesen (fotosyntetiskt aktiv strålning, 400–700 nm). Den har en stor betydelse för växtlighetens tillväxt.",
             "yLabel": "PAR (µmol / m² / s)",
+            "minMaxIncludesZero": true,
             "timeAggregationSettings": [
                 {
                     "enabled": false
@@ -2267,6 +2269,7 @@ var chartsJson = {
             "yLabel": "radiation (W / m²)",
             "yLabel_fi": "säteilyteho (W / m²)",
             "yLabel_sv": "strålning (W / m²)",
+            "minMaxIncludesZero": true,
             "timeAggregationSettings": [
                 {
                     "enabled": false
@@ -2520,7 +2523,6 @@ var chartsJson = {
                 "yMax": 15000,
                 "autoZoom": true
             },
-            "minMaxIncludesZero": true,
             "sourceCategoryList": [
                 {
                     "id": "observation",
