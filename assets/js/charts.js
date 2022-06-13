@@ -368,7 +368,7 @@ var chartsJson = {
             ],
             "defaults": {
                 "yMin": 0,
-                "yMax": 10,
+                "yMax": 0.6,
                 "timeAggregationSettingIndex": 0
             },
             "sourceTypes": [
@@ -666,8 +666,8 @@ var chartsJson = {
                 }
             ],
             "defaults": {
-                "yMin": -0.01,
-                "yMax": 0.01,
+                "yMin": -0.002,
+                "yMax": 0.008,
                 "timeAggregationSettingIndex": "auto"
             },
             "sourceCategoryList": [
