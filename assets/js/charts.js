@@ -430,6 +430,12 @@ var chartsJson = {
                     "title_sv": "Observation"
                 },
                 {
+                    "id": "observation_filtered",
+                    "title": "Observation (filtered)",
+                    "title_fi": "Havainto (suodatettu)",
+                    "title_sv": "Observation (filtrad)"
+                },
+                {
                     "id": "observation_gapfilled",
                     "title": "Observation (gapfilled)",
                     "title_fi": "Havainto (paikattu)",
@@ -504,6 +510,21 @@ var chartsJson = {
                     "seriesCSVFields": {
                         "date": "PeriodEndUTC0",
                         "val": "CO2flux",
+                        "flags": "CO2flux_flags"
+                    },
+                    "description": "CO₂ flux is measured using the eddy-covariance method.",
+                    "description_fi": "CO₂-vuo on mitattu pyörrekovarianssimenetelmällä.",
+                    "description_sv": "CO₂-flödet mättes med virvelkovarians metoden."
+                },
+                {
+                    "id": "flux",
+                    "sourceCategoryId": "observation_filtered",
+                    "lines": true,
+                    "gappy": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "CO2flux_filtered",
                         "flags": "CO2flux_flags"
                     },
                     "description": "CO₂ flux is measured using the eddy-covariance method.",
