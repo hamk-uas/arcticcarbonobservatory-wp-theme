@@ -1710,9 +1710,15 @@ function prepYGrid(v, chartId) {
         let minVal;
         let maxVal;
         if (chart.autoZoom) {
-            ({ seriesLists, loading, minVal, maxVal } = getSeriesLists(v, chartId));
+            ({ seriesLists, loading, minVal, maxVal } = getSeriesLists(v, chartId));            
             if (minVal != Infinity && maxVal != -Infinity) {
-                if (chart.minMaxIncludesZero && minVal >= 0) {
+                if (minVal == maxVal) {
+                    if (chart.minMaxIncludesZero && minVal < 0) {
+                        chart.yMin = minVal;
+                    } else if (minVal > chart.yMax) {
+                        chart.yMax = minVal;
+                    }
+                } else if (chart.minMaxIncludesZero && minVal >= 0) {
                     chart.yMin = 0;
                     chart.yMax = maxVal;
                 } else {
@@ -1726,7 +1732,7 @@ function prepYGrid(v, chartId) {
                         chart.yMax = maxVal;
                     }
                 }
-        }
+            }
         }
     }
 

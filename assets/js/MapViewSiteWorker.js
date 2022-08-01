@@ -19,10 +19,11 @@ async function loadData() {
                 if (csv.loaded === undefined) {
                     let csvStartDate = new Date(csv.startTime);
                     let csvEndDate = new Date(csv.endTime);
-                    if (csvStartDate <= v.endDate && csvEndDate >= v.startDate) {
+                    if (csvStartDate <= v.endDate && csvEndDate >= v.startDate) {                        
                         if (csv.fetchAbortController === undefined) {
                             csv.fetchAbortController = new AbortController();
                             let path = `${v.site.storageUrl}/${v.site.id}/${csv.url}?date=${getCacheRefreshDate(new Date(v.now))}`;
+                            console.log(`Fetching ${path}`);
                             //console.log(`Fetch CSV file ${path}`);
                             let fetchPromise = fetch(path, { method: 'GET', signal: csv.fetchAbortController.signal }).then(async function (result) {
                                 if (!result.ok) {
@@ -40,8 +41,10 @@ async function loadData() {
                                         }]
                                     });
                                 } else {
+                                    console.log(`Fetched ${path}`);
                                     // The CSV file contains past data
                                     let text = await result.text(); // CSV file contents
+                                    console.log(`Process ${path} step 0`);
                                     csv.loaded = true; // We are finished and have processed the result
                                     csv.data = {}; // Dictionary from CSV field name to all the values
                                     text = text.replace(/"/g, ""); // This is a quick fix to remove quotes which are never needed. TODO: Please fix this in CSV files instead.
@@ -53,6 +56,7 @@ async function loadData() {
                                     // Loop through all the CSV columns a.k.a. fields
                                     let dateFields = [];
                                     let dates = [];
+                                    console.log(`Process ${path} step 1`);
                                     for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
                                         fieldIsDate[fieldIndex] = (source.csvFieldType[fields[fieldIndex]] === "date");
                                         if (fieldIsDate[fieldIndex] !== undefined) {
@@ -67,6 +71,7 @@ async function loadData() {
                                             fieldData.push(null); // This field is not used for anything, store a null reference for the values
                                         }
                                     }
+                                    console.log(`Process ${path} step 2`);
                                     let skipped = 0;
                                     for (let lineNumber = 1; lineNumber < lines.length; lineNumber++) {
                                         if (!(lineNumber == lines.length - 1 && lines[lineNumber] == "")) {
@@ -87,9 +92,11 @@ async function loadData() {
                                             }
                                         }
                                     }
+                                    console.log(`Process ${path} step 3`);
                                     if (skipped > 0) {
                                         console.warn(`Skipped ${skipped} of ${lines.length} lines (${lines.length - skipped} remaining) with identical or differing by at most ${useTimeStepInMinutes} minute dates in CSV file ${path}`);
                                     }
+                                    console.log(`Process ${path} step 4`);
                                     for (const [field, val] of Object.entries(csv.data)) {
                                         if (source.csvFieldCredits !== undefined && source.csvFieldCredits[field] !== undefined && source.csvFieldCredits[field]["ecmwf_ensemble_forecast"]) {
                                             while (val[val.length - 1] === '') {
@@ -103,6 +110,7 @@ async function loadData() {
                                             }
                                         }
                                     }
+                                    console.log(`Process ${path} step 5`);
                                     postMessage({
                                         command: "csvSourceUpdate",
                                         updates: [{
@@ -114,6 +122,7 @@ async function loadData() {
                                             }
                                         }]
                                     });
+                                    console.log(`Process ${path} finish`);
                                 }
                             }).catch(e => {
                                 if (e.name === "AbortError") {
