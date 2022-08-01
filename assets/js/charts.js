@@ -433,7 +433,7 @@ var chartsJson = {
                     "id": "observation_filtered",
                     "title": "Observation (filtered)",
                     "title_fi": "Havainto (suodatettu)",
-                    "title_sv": "Observation (filtrad)"
+                    "title_sv": "Observation (filtrerad)"
                 },
                 {
                     "id": "observation_gapfilled",
