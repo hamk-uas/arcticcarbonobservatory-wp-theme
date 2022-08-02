@@ -504,12 +504,13 @@ var chartsJson = {
                 },
                 {
                     "id": "flux",
-                    "sourceCategoryId": "observation_gapfilled",
+                    "sourceCategoryId": "observation",
+                    "gappy": true,
                     "lines": true,
                     "integrationTime": -1800000,
                     "seriesCSVFields": {
                         "date": "PeriodEndUTC0",
-                        "val": "CO2flux",
+                        "val": "CO2flux_raw",
                         "flags": "CO2flux_flags"
                     },
                     "description": "CO₂ flux is measured using the eddy-covariance method.",
@@ -533,13 +534,12 @@ var chartsJson = {
                 },
                 {
                     "id": "flux",
-                    "sourceCategoryId": "observation",
-                    "gappy": true,
+                    "sourceCategoryId": "observation_gapfilled",
                     "lines": true,
                     "integrationTime": -1800000,
                     "seriesCSVFields": {
                         "date": "PeriodEndUTC0",
-                        "val": "CO2flux_raw",
+                        "val": "CO2flux",
                         "flags": "CO2flux_flags"
                     },
                     "description": "CO₂ flux is measured using the eddy-covariance method.",
@@ -699,6 +699,12 @@ var chartsJson = {
                     "title_sv": "Observation"
                 },
                 {
+                    "id": "observation_filtered",
+                    "title": "Observation (filtered)",
+                    "title_fi": "Havainto (suodatettu)",
+                    "title_sv": "Observation (filtrerad)"
+                },
+                {
                     "id": "observation_gapfilled",
                     "title": "Observation (gapfilled)",
                     "title_fi": "Havainto (paikattu)",
@@ -744,12 +750,13 @@ var chartsJson = {
             "sourceTypes": [
                 {
                     "id": "flux",
-                    "sourceCategoryId": "observation_gapfilled",
+                    "sourceCategoryId": "observation",
+                    "gappy": true,
                     "lines": true,
                     "integrationTime": -1800000,
                     "seriesCSVFields": {
                         "date": "PeriodEndUTC0",
-                        "val": "N2Oflux",
+                        "val": "N2Oflux_raw",
                         "flags": "N2Oflux_flags"
                     },
                     "description": "N₂O flux is measured using the eddy-covariance method.",
@@ -758,13 +765,27 @@ var chartsJson = {
                 },
                 {
                     "id": "flux",
-                    "sourceCategoryId": "observation",
+                    "sourceCategoryId": "observation_filtered",
+                    "lines": true,
                     "gappy": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "N2Oflux_filtered",
+                        "flags": "N2Oflux_flags"
+                    },
+                    "description": "N₂O flux is measured using the eddy-covariance method.",
+                    "description_fi": "N₂O-vuo on mitattu pyörrekovarianssimenetelmällä.",
+                    "description_sv": "N₂O-flödet mättes med virvelkovarians metoden."
+                },
+                {
+                    "id": "flux",
+                    "sourceCategoryId": "observation_gapfilled",
                     "lines": true,
                     "integrationTime": -1800000,
                     "seriesCSVFields": {
                         "date": "PeriodEndUTC0",
-                        "val": "N2Oflux_raw",
+                        "val": "N2Oflux",
                         "flags": "N2Oflux_flags"
                     },
                     "description": "N₂O flux is measured using the eddy-covariance method.",
