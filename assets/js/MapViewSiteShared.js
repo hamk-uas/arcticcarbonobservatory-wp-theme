@@ -2463,10 +2463,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 if (series[0].fractiles !== undefined) {
                                     d += `M${(series[i].date + 1.5).toFixed(1)} ${series[i].val}h${(series[i].integrationTime - 3).toFixed(1)}`;
                                 } else {
-                                    if (series[i].val != xAxisVal) {
-                                        d += `M${series[i].date.toFixed(1)} ${xAxisVal}`;
-                                        d += `V${series[i].val}h${series[0].integrationTime.toFixed(1)}V${xAxisVal}`;
-                                    }
+                                    //if (series[i].val != xAxisVal) {
+                                    d += `M${series[i].date.toFixed(1)} ${xAxisVal}`;
+                                    d += `V${series[i].val}h${series[0].integrationTime.toFixed(1)}V${xAxisVal}`;
+                                    //}
                                 }
                             }
                             linesHtml += `<g pointer-events="none"><path style="stroke-width: 2; stroke-linejoin: round; stroke-linecap: square; fill: none;" stroke="${sourceColor}" d="${d}"/></g>` // Chart path
