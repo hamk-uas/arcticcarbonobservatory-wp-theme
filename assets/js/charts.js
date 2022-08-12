@@ -1521,7 +1521,7 @@ var chartsJson = {
                     "id": "fmimeteo",
                     "sourceCategoryId": "observation",
                     "bars": true,
-                    "integrationTime": 1800000,
+                    "integrationTime": 3600000,
                     "seriesCSVFields": {
                         "date": "Time",
                         "val": "PrecipitationAmount"
