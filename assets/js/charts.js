@@ -1488,6 +1488,16 @@ var chartsJson = {
             ],
             "sourceTypes": [
                 {
+                    "id": "datasense",
+                    "sourceCategoryId": "observation",
+                    "bars": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "Precipitation"
+                    }
+                },
+                {
                     "id": "meteo",
                     "sourceCategoryId": "observation",
                     "bars": true,
@@ -1511,7 +1521,7 @@ var chartsJson = {
                     "id": "fmimeteo",
                     "sourceCategoryId": "observation",
                     "bars": true,
-                    "integrationTime": 3600000,
+                    "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "Time",
                         "val": "PrecipitationAmount"

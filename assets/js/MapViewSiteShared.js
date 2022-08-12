@@ -2283,6 +2283,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                         if ((series.length > 1 || (series[0].integrationTime !== undefined && series[0].integrationTime > 0.5)) && series[0].fractiles === undefined) {
                             let d = '';
                             if (series[0].integrationTime !== undefined && series[0].integrationTime > 0.5 && !source.lines) {
+                                if (chartId === "precipitation" && source.id === "RC-13") {
+                                    console.log(series[0].integrationTime);
+                                    console.log(series)
+                                }
                                 d += `M${series[0].date.toFixed(2)} ${series[0].val}`;
                                 d += `h${(series[0].integrationTime - 0.02).toFixed(2)}`; // Trying to avoid an Android Chrome bug by making this a bit shorter
                                 for (let i = 1; i < series.length; i++) {
@@ -2315,11 +2319,11 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 case "soilHeatFlux":
                                     // Fill to zero level
                                     if (series[0].integrationTime !== undefined && series[0].integrationTime > 0.5 && !source.lines) {
-                                        g += `<path d="${d} V ${height - (0 - chart.yMin) * pixelsPerUnit} H ${series[0].date.toFixed(2)}"/>`;
+                                        g += `<path d="${d} V ${height - (0 - chart.yMin) * pixelsPerUnit} H ${series[0].date.toFixed(2)}Z"/>`;
                                     } else if (series[0].integrationTime !== undefined) {
-                                        g += `<path d="${d} V ${height - (0 - chart.yMin) * pixelsPerUnit} H ${(series[0].date + series[0].integrationTime * 0.5).toFixed(2)}"/>`;
+                                        g += `<path d="${d} V ${height - (0 - chart.yMin) * pixelsPerUnit} H ${(series[0].date + series[0].integrationTime * 0.5).toFixed(2)}Z"/>`;
                                     } else {
-                                        g += `<path d="${d} V ${height - (0 - chart.yMin) * pixelsPerUnit} H ${series[0].date.toFixed(2)}"/>`;
+                                        g += `<path d="${d} V ${height - (0 - chart.yMin) * pixelsPerUnit} H ${series[0].date.toFixed(2)}Z"/>`;
                                     }
                                     break;
                             }
@@ -2463,8 +2467,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 if (series[0].fractiles !== undefined) {
                                     d += `M${(series[i].date + 1.5).toFixed(1)} ${series[i].val}h${(series[i].integrationTime - 3).toFixed(1)}`;
                                 } else {
-                                    d += `M${series[i].date.toFixed(1)} ${xAxisVal}`;
-                                    d += `V${series[i].val}h${series[0].integrationTime.toFixed(1)}V${xAxisVal}`;
+                                    if (series[i].val != xAxisVal) {
+                                        d += `M${series[i].date.toFixed(1)} ${xAxisVal}`;
+                                        d += `V${series[i].val}h${series[0].integrationTime.toFixed(1)}V${xAxisVal}`;
+                                    }
                                 }
                             }
                             linesHtml += `<g pointer-events="none"><path style="stroke-width: 2; stroke-linejoin: round; stroke-linecap: square; fill: none;" stroke="${sourceColor}" d="${d}"/></g>` // Chart path
