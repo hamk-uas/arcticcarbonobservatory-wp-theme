@@ -2283,10 +2283,6 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                         if ((series.length > 1 || (series[0].integrationTime !== undefined && series[0].integrationTime > 0.5)) && series[0].fractiles === undefined) {
                             let d = '';
                             if (series[0].integrationTime !== undefined && series[0].integrationTime > 0.5 && !source.lines) {
-                                if (chartId === "precipitation" && source.id === "RC-13") {
-                                    console.log(series[0].integrationTime);
-                                    console.log(series)
-                                }
                                 d += `M${series[0].date.toFixed(2)} ${series[0].val}`;
                                 d += `h${(series[0].integrationTime - 0.02).toFixed(2)}`; // Trying to avoid an Android Chrome bug by making this a bit shorter
                                 for (let i = 1; i < series.length; i++) {
