@@ -1410,50 +1410,6 @@ var chartsJson = {
                     "parameters": {
                         "height_cm": "+"
                     }
-                },
-                {
-                    "id": "ecmwf_forecast_intensive",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "lines": true,
-                    "seriesCSVFields": {
-                        "date": "Date",
-                        "val": "Temperature_F050",
-                        "fractiles": [
-                            {
-                                "startField": "Temperature_F010",
-                                "endField": "Temperature_F090"
-                            },
-                            {
-                                "startField": "Temperature_F025",
-                                "endField": "Temperature_F075"
-                            }
-                        ]
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
-                    "id": "ecmwf_forecast_ca",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "lines": true,
-                    "seriesCSVFields": {
-                        "date": "Date",
-                        "val": "Temperature_F050",
-                        "fractiles": [
-                            {
-                                "startField": "Temperature_F010",
-                                "endField": "Temperature_F090"
-                            },
-                            {
-                                "startField": "Temperature_F025",
-                                "endField": "Temperature_F075"
-                            }
-                        ]
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
                 }
             ]
         },
@@ -1588,46 +1544,6 @@ var chartsJson = {
                             }
                         ]
                     }
-                },
-                {
-                    "id": "ecmwf_forecast_intensive",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "bars": true,
-                    "integrationTime": -21600000,
-                    "seriesCSVFields": {
-                        "date": "Date_TotalPrecipitation",
-                        "val": "TotalPrecipitation_F050",
-                        "fractiles": [
-                            {
-                                "startField": "TotalPrecipitation_F010",
-                                "endField": "TotalPrecipitation_F090"
-                            },
-                            {
-                                "startField": "TotalPrecipitation_F025",
-                                "endField": "TotalPrecipitation_F075"
-                            }
-                        ]
-                    }
-                },
-                {
-                    "id": "ecmwf_forecast_ca",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "bars": true,
-                    "integrationTime": -21600000,
-                    "seriesCSVFields": {
-                        "date": "Date_TotalPrecipitation",
-                        "val": "TotalPrecipitation_F050",
-                        "fractiles": [
-                            {
-                                "startField": "TotalPrecipitation_F010",
-                                "endField": "TotalPrecipitation_F090"
-                            },
-                            {
-                                "startField": "TotalPrecipitation_F025",
-                                "endField": "TotalPrecipitation_F075"
-                            }
-                        ]
-                    }
                 }
             ]
         },
@@ -1708,50 +1624,6 @@ var chartsJson = {
                 },
                 {
                     "id": "ecmwf_forecast",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "lines": true,
-                    "seriesCSVFields": {
-                        "date": "Date",
-                        "val": "RelativeHumidity_F050",
-                        "fractiles": [
-                            {
-                                "startField": "RelativeHumidity_F010",
-                                "endField": "RelativeHumidity_F090"
-                            },
-                            {
-                                "startField": "RelativeHumidity_F025",
-                                "endField": "RelativeHumidity_F075"
-                            }
-                        ]
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
-                    "id": "ecmwf_forecast_intensive",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "lines": true,
-                    "seriesCSVFields": {
-                        "date": "Date",
-                        "val": "RelativeHumidity_F050",
-                        "fractiles": [
-                            {
-                                "startField": "RelativeHumidity_F010",
-                                "endField": "RelativeHumidity_F090"
-                            },
-                            {
-                                "startField": "RelativeHumidity_F025",
-                                "endField": "RelativeHumidity_F075"
-                            }
-                        ]
-                    },
-                    "parameters": {
-                        "height_cm": "+"
-                    }
-                },
-                {
-                    "id": "ecmwf_forecast_ca",
                     "sourceCategoryId": "ecmwf_forecast",
                     "lines": true,
                     "seriesCSVFields": {
@@ -2305,26 +2177,6 @@ var chartsJson = {
                             }
                         ]
                     }
-                },
-                {
-                    "id": "ecmwf_forecast_intensive",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "stairs": true,
-                    "seriesCSVFields": {
-                        "date": "Date_PAR",
-                        "val": "PAR_F050",
-                        "integrationTime": "PAR_integrationTime",
-                        "fractiles": [
-                            {
-                                "startField": "PAR_F010",
-                                "endField": "PAR_F090"
-                            },
-                            {
-                                "startField": "PAR_F025",
-                                "endField": "PAR_F075"
-                            }
-                        ]
-                    }
                 }
             ]
         },
@@ -2399,26 +2251,6 @@ var chartsJson = {
                             {
                                 "startField": "PAR_MJ_F025",
                                 "endField": "PAR_MJ_F075"
-                            }
-                        ]
-                    }
-                },
-                {
-                    "id": "ecmwf_forecast_ca",
-                    "sourceCategoryId": "ecmwf_forecast",
-                    "stairs": true,
-                    "integrationTime": -86400000,
-                    "seriesCSVFields": {
-                        "date": "Date_PAR",
-                        "val": "PAR_F050",
-                        "fractiles": [
-                            {
-                                "startField": "PAR_F010",
-                                "endField": "PAR_F090"
-                            },
-                            {
-                                "startField": "PAR_F025",
-                                "endField": "PAR_F075"
                             }
                         ]
                     }
