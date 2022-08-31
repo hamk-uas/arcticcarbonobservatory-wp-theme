@@ -165,7 +165,7 @@ var chartsJson = {
                     "title_sv": "BASGRA-BGC återanalys"
                 },
                 {
-                    "id": "basgra_BGC_forecast",
+                    "id": "basgra_bgc_forecast",
                     "title": "BASGRA-BGC forecast",
                     "title_fi": "BASGRA-BGC ennuste",
                     "title_sv": "BASGRA-BGC prognos"
@@ -181,6 +181,18 @@ var chartsJson = {
                     "title": "STICS forecast",
                     "title_fi": "STICS ennuste",
                     "title_sv": "STICS prognos"
+                },
+                {
+                    "id": "ldndc_hindcast",
+                    "title": "LDNDC hindcast",
+                    "title_fi": "LDNDC takautuva mallinnus",
+                    "title_sv": "LDNDC återanalys",
+                },
+                {
+                    "id": "ldndc_forecast",
+                    "title": "LDNDC forecast",
+                    "title_fi": "LDNDC ennuste",
+                    "title_sv": "LDNDC prognos"
                 }
             ],
             "sourceTypes": [
@@ -282,6 +294,38 @@ var chartsJson = {
                 {
                     "id": "stics_forecast",
                     "sourceCategoryId": "stics_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "LAI_mean",
+                        "fractiles": [
+                            {
+                                "startField": "LAI_F005",
+                                "endField": "LAI_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "ldndc_hindcast",
+                    "sourceCategoryId": "ldndc_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "LAI_mean",
+                        "fractiles": [
+                            {
+                                "startField": "LAI_F005",
+                                "endField": "LAI_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "ldndc_forecast",
+                    "sourceCategoryId": "ldndc_forecast",
                     "lines": true,
                     "integrationTime": -86400000,
                     "seriesCSVFields": {
@@ -485,6 +529,18 @@ var chartsJson = {
                     "title": "STICS forecast",
                     "title_fi": "STICS ennuste",
                     "title_sv": "STICS prognos"
+                },
+                {
+                    "id": "ldndc_hindcast",
+                    "title": "LDNDC hindcast",
+                    "title_fi": "LDNDC takautuva mallinnus",
+                    "title_sv": "LDNDC återanalys",
+                },
+                {
+                    "id": "ldndc_forecast",
+                    "title": "LDNDC forecast",
+                    "title_fi": "LDNDC ennuste",
+                    "title_sv": "LDNDC prognos"
                 }
             ],
             "sourceTypes": [
@@ -641,7 +697,39 @@ var chartsJson = {
                             }
                         ]
                     }
-                }
+                },
+                {
+                    "id": "ldndc_hindcast",
+                    "sourceCategoryId": "ldndc_hindcast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "CO2flux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "CO2flux_F005",
+                                "endField": "CO2flux_F095"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "ldndc_forecast",
+                    "sourceCategoryId": "ldndc_forecast",
+                    "lines": true,
+                    "integrationTime": -86400000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "CO2flux_mean",
+                        "fractiles": [
+                            {
+                                "startField": "CO2flux_F005",
+                                "endField": "CO2flux_F095"
+                            }
+                        ]
+                    }
+                },
             ],
             "disabledSourceTypes": [
                 {
@@ -970,7 +1058,7 @@ var chartsJson = {
                     "title": "STICS forecast",
                     "title_fi": "STICS ennuste",
                     "title_sv": "STICS prognos"
-                },
+                }
             ],
             "sourceTypes": [
                 {
@@ -1204,18 +1292,6 @@ var chartsJson = {
                     "description_sv": "För prognosen visas också intervallerna 50&nbsp;% och 80&nbsp;%.",
                     "title_fi": "ECMWF ennuste",
                     "title_sv": "ECMWF prognos"
-                },
-                {
-                    "id": "basgra_n_forecast",
-                    "title": "BASGRA_N forecast",
-                    "title_fi": "BASGRA_N ennuste",
-                    "title_sv": "BASGRA_N prognos"
-                },
-                {
-                    "id": "basgra_bgc_forecast",
-                    "title": "BASGRA-BGC forecast",
-                    "title_fi": "BASGRA-BGC ennuste",
-                    "title_sv": "BASGRA-BGC prognos"
                 }
             ],
             "sourceTypes": [
