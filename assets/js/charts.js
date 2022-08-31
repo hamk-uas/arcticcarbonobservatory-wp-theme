@@ -311,7 +311,7 @@ var chartsJson = {
                     "id": "ldndc_hindcast",
                     "sourceCategoryId": "ldndc_hindcast",
                     "lines": true,
-                    "integrationTime": -86400000,
+                    "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "Date",
                         "val": "LAI_mean",
@@ -327,7 +327,7 @@ var chartsJson = {
                     "id": "ldndc_forecast",
                     "sourceCategoryId": "ldndc_forecast",
                     "lines": true,
-                    "integrationTime": -86400000,
+                    "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "Date",
                         "val": "LAI_mean",
@@ -702,7 +702,7 @@ var chartsJson = {
                     "id": "ldndc_hindcast",
                     "sourceCategoryId": "ldndc_hindcast",
                     "lines": true,
-                    "integrationTime": -86400000,
+                    "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "Date",
                         "val": "CO2flux_mean",
@@ -718,7 +718,7 @@ var chartsJson = {
                     "id": "ldndc_forecast",
                     "sourceCategoryId": "ldndc_forecast",
                     "lines": true,
-                    "integrationTime": -86400000,
+                    "integrationTime": 1800000,
                     "seriesCSVFields": {
                         "date": "Date",
                         "val": "CO2flux_mean",
