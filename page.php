@@ -23,38 +23,6 @@
             <div class="DesignHolder">
                 <!-- \\ Begin Frame \\ -->
                 <div class="LayoutFrame">
-                    <div class="BannerContainer">
-                    <!-- \\ Begin Banner Section \\ -->
-                        <div class="Banner_secWhite" style="background:url(<?php the_post_thumbnail_url() ?>)" id="home">
-                            <!--  \\ Begin banner Side -->
-                            <div class="bannerside animationFade-ms200">
-							<?php
-								   if(get_post_meta($post->ID, 'showButton', true)=='true')
-            {
-             ?>
-			 <!--  \\ Begin Left Side -->
-                                   <a href=<?php echo get_post_meta($post->ID, 'fieldDataBtnHref', true); ?>>
-								   
-                                        <div class="image-containerBanner">
-                                            <div class="btnToDataSiteText">
-                                                <h2>
-                                                    <?php echo get_post_meta($post->ID, 'fieldDataBtnTextFirstLine', true); ?>
-                                                </h2>
-                                                <h2>
-                                                    <?php echo get_post_meta($post->ID, 'fieldDataBtnTextSecondLine', true); ?>
-                                                </h2>
-                                            </div>
-                                            <div class="whiteArrowRight"></div>
-                                        </div>
-                                    </a>
-									<?php
-            }
-			else
-			{
-
-			 } ?>
-                            </div>
-                        <!--  // End banner Side // -->
                     <div class="clear"></div>
                 </div>
             </div>

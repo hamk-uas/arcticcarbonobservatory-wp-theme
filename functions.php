@@ -176,6 +176,18 @@
 }
 add_filter('upload_mimes', 'font_mime_types');
 
+function fieldobservatory_block_wrapper( $block_content, $block ) {
+	if ( $block['blockName'] === 'core/cover' ) {
+		$content = '<div class="wp-block-cover-full-width">';
+		$content .= $block_content;
+		$content .= '</div>';
+		return $content;
+	}
+	return $block_content;
+}
+
+add_filter( 'render_block', 'fieldobservatory_block_wrapper', 10, 2 );
+
 function add_query_string($url) {
 	return empty($_SERVER['QUERY_STRING'])? $url : $url.'?'.$_SERVER['QUERY_STRING'];
 }

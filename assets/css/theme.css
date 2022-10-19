@@ -37,7 +37,7 @@ a:hover{text-decoration:none;color:#129BC7;}
 .wp-block-media-text .wp-block-media-text__content h2{text-align: left;}
 
 
-.titleContainer{margin-left:9%;margin-right:9%;margin-bottom:20px;}
+/* .titleContainer{margin-left:9%;margin-right:9%;margin-bottom:20px;} */
 h1,h2,h3{clear:both;font-weight:lighter;color:#5E5E5E;font-family:'proxima-nova', sans-serif;}
 h1{font-size:36px;color:#71CDB6;text-transform:uppercase;line-height:36px;letter-spacing:-0.4px;font-weight:bold;padding-bottom:30px;}
 h2{font-size:28px;color:#71CDB6;text-transform:uppercase;line-height:28px;letter-spacing:-0.4px;font-weight:bold;padding-bottom:30px;}
@@ -46,6 +46,7 @@ h4{font-size:26px;color:#5E5E5E;text-transform:uppercase;line-height:28px;letter
 p{font-size:20px;color:#5E5E5E;line-height:32px;letter-spacing:-0.4px;padding-bottom:34px;}
 
 
+.wp-block-columns
 
 .h1p {
     font-family: 'proxima-nova', sans-serif
@@ -187,7 +188,18 @@ header .site-logo{width:200px;float:left;margin-left:7%;padding-top:26px;z-index
 .Banner_secWhite{background:url(https://fieldobservatory.org/wp-content/themes/fieldobservatory/assets/images/padpellollaq90.jpg);background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;height:100%;}
 .Banner_secWhite .bannerside{position:relative;left:5%;top:35%;width: 33%;}
 .bgcolorWhite{visibility:hidden;height:0px;width:100%;background:#5FB4F5;background:-webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,1)), color-stop(0%, rgba(0,0,0,1)), color-stop(100%, rgba(14,12,41,1)));background:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 0%, rgba(14,12,41,1) 100%);filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#5FB4F5', endColorstr='#0E0C29', GradientType=0 );}
-.themeContainer{padding:50px 7% 88px 7%;width:auto;overflow:hidden;background:#fff;}
+
+.wp-block-columns {
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.themeContainer{
+    /* padding:50px 7% 88px 7%; */
+    width:auto;
+    overflow:hidden;
+    background:#fff;
+}
 .themeContainer .Center{overflow:hidden;text-align:center;margin-bottom:50px;}
 /*List bullet style*/
 .themeContainer li::before {
@@ -408,7 +420,7 @@ footer .Cntr a:hover{color:#fff;}
     header.smaller .site-logo {
             margin-left: 15%;
             }
-	.themeContainer{padding-left:15%;padding-right:15%;}
+	/* .themeContainer{padding-left:15%;padding-right:15%;} */
     .BannerContainer{margin-left:15%;margin-right:15%;}
     .menumobile{margin-right:18%;}
 }
@@ -549,7 +561,7 @@ footer .Cntr a:hover{color:#fff;}
         width:20px;
     }
     .lang-item-first{
-        margin-left: 0px
+        margin-left: 0px;
         margin-top: 20px;
     }
     .lang-item{
