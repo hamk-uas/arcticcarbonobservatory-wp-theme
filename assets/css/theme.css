@@ -274,6 +274,51 @@ footer .Cntr a:hover{color:#fff;}
     border-bottom-color: #fff;
 }
 
+.intro-box-with-link {
+    padding-top: 16px;
+    padding-left: 32px;
+    padding-right: 32px;
+    padding-bottom: 16px;
+    margin-left: 15%;
+    margin-right: 15%;
+    position: relative;
+    top: -64px;
+    z-index: 1;
+}
+
+.has-fieldobservatory-highlight-color {
+    color: #71cdb6;
+}
+
+.has-fieldobservatory-highlight-background-color {
+    background-color: #71cdb6;
+}
+
+.has-fieldobservatory-body-color {
+    color: #5e5e5e;
+}
+
+.has-fieldobservatory-body-background-color {
+    background-color: #5e5e5e;
+}
+
+.has-fieldobservatory-black-color {
+    color: #000000;
+}
+
+.has-fieldobservatory-black-background-color {
+    background-color: #000000;
+}
+
+.has-fieldobservatory-white-color {
+    color: #ffffff;
+}
+
+.has-fieldobservatory-white-background-color {
+    background-color: #ffffff;
+}
+
+
 /*Error popup style*/
 .popuptext {
     text-align: center;
@@ -582,6 +627,8 @@ footer .Cntr a:hover{color:#fff;}
 }
     
 }
+
+
 
 
 @media only screen and (max-width: 767px) {

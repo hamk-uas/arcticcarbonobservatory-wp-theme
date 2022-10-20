@@ -5,6 +5,30 @@
 		add_theme_support('title-tag');
 		add_theme_support('custom-logo');
 		add_theme_support('post-thumbnails');
+
+		// add_theme_support('editor-styles');
+		add_theme_support('editor-color-palette', array(
+			array(
+				'name'  => esc_attr__( 'Black', 'fieldobservatory' ),
+				'slug'  => 'fieldobservatory-black',
+				'color' => '#000000',
+			),
+			array(
+				'name'  => esc_attr__( 'White', 'fieldobservatory' ),
+				'slug'  => 'fieldobservatory-white',
+				'color' => '#ffffff',
+			),
+			array(
+				'name'  => esc_attr__( 'Highlight', 'fieldobservatory' ),
+				'slug'  => 'fieldobservatory-highlight',
+				'color' => '#71cdb6',
+			),
+			array(
+				'name'  => esc_attr__( 'Body', 'fieldobservatory' ),
+				'slug'  => 'fieldobservatory-body',
+				'color' => '#5e5e5e',
+			),
+		));
 	}
 	
 	add_action('after_setup_theme','fieldobservatory_theme_support');
@@ -192,5 +216,39 @@ function add_query_string($url) {
 	return empty($_SERVER['QUERY_STRING'])? $url : $url.'?'.$_SERVER['QUERY_STRING'];
 }
 add_filter('pll_the_language_link', 'add_query_string');
+
+function fieldobservatory_block_patterns() {
+	register_block_pattern(
+		'fieldobservatory/intro-pattern',
+		array(
+			'title' => __('Intro pattern', 'intro-pattern'),
+			'description' => _x('Intro pattern description', 'intro-pattern'),
+			'categories' => array('columns'),
+			'content' => '<!-- wp:group {"style":{"color":{"background":"#71cdb6"}},"className":"intro-box-with-link"} -->
+			<div class="wp-block-group intro-box-with-link has-background" style="background-color:#71cdb6"><!-- wp:heading {"textAlign":"center","textColor":"white"} -->
+			<h2 class="has-text-align-center has-white-color has-text-color">Intro title</h2>
+			<!-- /wp:heading -->
+			
+			<!-- wp:paragraph {"align":"center","textColor":"white"} -->
+			<p class="has-text-align-center has-white-color has-text-color">Intro text content</p>
+			<!-- /wp:paragraph -->
+			
+			<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
+			<div class="wp-block-group"><!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+			<div class="wp-block-buttons"><!-- wp:button {"textColor":"white","style":{"border":{"radius":"0px"}},"className":"intro-box-link"} -->
+			<div class="wp-block-button intro-box-link"><a class="wp-block-button__link has-white-color has-text-color" style="border-radius:0px">Add title and link here</a></div>
+			<!-- /wp:button --></div>
+			<!-- /wp:buttons -->
+			
+			<!-- wp:image {"id":930,"width":38,"height":38,"sizeSlug":"large","linkDestination":"none"} -->
+			<figure class="wp-block-image size-large is-resized"><img src="http://localhost/wp-content/uploads/2022/10/ArrowRightWhite.svg" alt="" class="wp-image-930" width="38" height="38"/></figure>
+			<!-- /wp:image --></div>
+			<!-- /wp:group --></div>
+			<!-- /wp:group -->'
+		)
+		);
+}
+
+add_action('init', 'fieldobservatory_block_patterns');
 
 ?>
