@@ -235,18 +235,86 @@ function fieldobservatory_block_patterns() {
 			
 			<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
 			<div class="wp-block-group"><!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-			<div class="wp-block-buttons"><!-- wp:button {"textColor":"white","style":{"border":{"radius":"0px"}},"className":"intro-box-link"} -->
-			<div class="wp-block-button intro-box-link"><a class="wp-block-button__link has-white-color has-text-color" style="border-radius:0px">Add title and link here</a></div>
+			<div class="wp-block-buttons"><!-- wp:button {"backgroundColor":"fieldobservatory-highlight","textColor":"white","style":{"border":{"radius":"0px"}},"className":"intro-box-link"} -->
+			<div class="wp-block-button intro-box-link"><a class="wp-block-button__link has-white-color has-fieldobservatory-highlight-background-color has-text-color has-background" style="border-radius:0px">Add title and link here</a></div>
 			<!-- /wp:button --></div>
-			<!-- /wp:buttons -->
-			
-			<!-- wp:image {"id":930,"width":38,"height":38,"sizeSlug":"large","linkDestination":"none"} -->
-			<figure class="wp-block-image size-large is-resized"><img src="http://localhost/wp-content/uploads/2022/10/ArrowRightWhite.svg" alt="" class="wp-image-930" width="38" height="38"/></figure>
-			<!-- /wp:image --></div>
+			<!-- /wp:buttons --></div>
 			<!-- /wp:group --></div>
 			<!-- /wp:group -->'
 		)
-		);
+	);
+
+	register_block_pattern(
+		'fieldobservatory/case-left-pattern',
+		array(
+			'title' => __('Case left pattern', 'case-left-pattern'),
+			'description' => _x('Case left pattern', 'case-left-pattern'),
+			'categories' => array('columns'),
+			'content' => '<!-- wp:group {"className":"fieldobservatory-case-left fieldobservatory-case"} -->
+			<div class="wp-block-group fieldobservatory-case-left fieldobservatory-case"><!-- wp:columns -->
+			<div class="wp-block-columns"><!-- wp:column {"className":"fieldobservatory-case-column"} -->
+			<div class="wp-block-column fieldobservatory-case-column"><!-- wp:image -->
+			<figure class="wp-block-image"><img alt=""/></figure>
+			<!-- /wp:image --></div>
+			<!-- /wp:column -->
+			
+			<!-- wp:column {"backgroundColor":"fieldobservatory-highlight","className":"fieldobservatory-case-column"} -->
+			<div class="wp-block-column fieldobservatory-case-column has-fieldobservatory-highlight-background-color has-background"><!-- wp:heading {"level":4,"textColor":"fieldobservatory-white"} -->
+			<h4 class="has-fieldobservatory-white-color has-text-color">Add title</h4>
+			<!-- /wp:heading -->
+			
+			<!-- wp:paragraph {"textColor":"fieldobservatory-white","fontSize":"small"} -->
+			<p class="has-fieldobservatory-white-color has-text-color has-small-font-size">Add text</p>
+			<!-- /wp:paragraph -->
+			
+			<!-- wp:group {"className":"fieldobservatory-case-row","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-group fieldobservatory-case-row"><!-- wp:buttons -->
+			<div class="wp-block-buttons"><!-- wp:button {"backgroundColor":"fieldobservatory-highlight","textColor":"fieldobservatory-white","fontSize":"small"} -->
+			<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-fieldobservatory-white-color has-fieldobservatory-highlight-background-color has-text-color has-background">Add link</a></div>
+			<!-- /wp:button --></div>
+			<!-- /wp:buttons --></div>
+			<!-- /wp:group --></div>
+			<!-- /wp:column --></div>
+			<!-- /wp:columns --></div>
+			<!-- /wp:group -->'
+		)
+	);
+
+	register_block_pattern(
+		'fieldobservatory/case-right-pattern',
+		array(
+			'title' => __('Case right pattern', 'case-right-pattern'),
+			'description' => _x('Case right pattern description', 'case-right-pattern'),
+			'categories' => array('columns'),
+			'content' => '<!-- wp:group {"className":"fieldobservatory-case-right fieldobservatory-case"} -->
+			<div class="wp-block-group fieldobservatory-case-right fieldobservatory-case"><!-- wp:columns -->
+			<div class="wp-block-columns"><!-- wp:column {"backgroundColor":"fieldobservatory-highlight","className":"fieldobservatory-case-column"} -->
+			<div class="wp-block-column fieldobservatory-case-column has-fieldobservatory-highlight-background-color has-background"><!-- wp:heading {"level":4,"textColor":"fieldobservatory-white"} -->
+			<h4 class="has-fieldobservatory-white-color has-text-color">Add title</h4>
+			<!-- /wp:heading -->
+			
+			<!-- wp:paragraph {"textColor":"fieldobservatory-white","fontSize":"small"} -->
+			<p class="has-fieldobservatory-white-color has-text-color has-small-font-size">Add text</p>
+			<!-- /wp:paragraph -->
+			
+			<!-- wp:group {"className":"fieldobservatory-case-row","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-group fieldobservatory-case-row"><!-- wp:buttons -->
+			<div class="wp-block-buttons"><!-- wp:button {"backgroundColor":"fieldobservatory-highlight","textColor":"fieldobservatory-white","fontSize":"small"} -->
+			<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-fieldobservatory-white-color has-fieldobservatory-highlight-background-color has-text-color has-background">Add link</a></div>
+			<!-- /wp:button --></div>
+			<!-- /wp:buttons --></div>
+			<!-- /wp:group --></div>
+			<!-- /wp:column -->
+			
+			<!-- wp:column {"className":"fieldobservatory-case-column"} -->
+			<div class="wp-block-column fieldobservatory-case-column"><!-- wp:image -->
+			<figure class="wp-block-image"><img alt=""/></figure>
+			<!-- /wp:image --></div>
+			<!-- /wp:column --></div>
+			<!-- /wp:columns --></div>
+			<!-- /wp:group -->'
+		)
+	);
 }
 
 add_action('init', 'fieldobservatory_block_patterns');

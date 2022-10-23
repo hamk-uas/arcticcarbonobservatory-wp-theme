@@ -26,7 +26,7 @@
                     <div class="clear"></div>
                 </div>
             </div>
-             <div class="bgcolorWhite"></div>
+             <!-- <div class="bgcolorWhite"></div> -->
              <?php } ?>
             <div class="themeContainer"id="page">
                 <?php if( have_posts())

@@ -14,7 +14,7 @@
                 <div class="clear"></div>
             </div>
         </div> -->
-        <div class="bgcolorWhite"></div>
+        <!-- <div class="bgcolorWhite"></div> -->
         <div class="themeContainer"id="home">
             <?php
                 $blocks = parse_blocks(get_the_content());
@@ -88,14 +88,15 @@
                 // }
             ?>
         <div class="Center">
-            <?php if( have_posts())
+            <?php 
+            if( have_posts())
+            {
+                while( have_posts())
                 {
-                    while( have_posts())
-                    {
-                        the_post();
-                        the_content();
-                    }
-                } ?>
+                    the_post();
+                    the_content();
+                }
+            } ?>
         </div>
 <script type="text/javascript">
     document.body.classList.remove('loader');
