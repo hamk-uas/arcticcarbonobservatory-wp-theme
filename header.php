@@ -12,7 +12,52 @@
     ?>
 </head>
 <body>
-            <header id="mainHeader">
+<?php 
+    $defaults = array(
+        'theme_location'  => 'primary',
+        'menu'            => '',
+        'container'       => 'nav',
+        'container_class' => '',
+        'container_id'    => '',
+        'menu_class'      => 'menu',
+        'menu_id'         => '',
+        'echo'            => true,
+        'fallback_cb'     => 'wp_page_menu',
+        'before'          => '',
+        'after'           => '',
+        'link_before'     => '',
+        'link_after'      => '',
+        'items_wrap'      => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+        'depth'           => 0,
+        'walker'          => ''
+       );
+       
+    //    wp_nav_menu( $defaults );
+?>
+<header id="mainHeader">
+    <div class="header-container">
+        <div class="site-logo">
+            <a href="<?php echo home_url(); ?>">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/fieldobslogowhitewithspaces.svg"/>
+            </a>
+        </div>
+        <div class="navigation-container">
+            <nav class="navigation">
+                <?php
+                    wp_nav_menu(
+                        array(
+                            'menu'=>'primary',
+                            'container'=>'',
+                            'theme_location'=>'primary',
+                            'items_wrap'=>'<ul id="" class="">%3$s</ul>'
+                        )  
+                    );
+                ?>
+            </nav>
+        </div>
+    </div>
+</header>
+            <!-- <header id="mainHeader">
                 <div class="Center">
                     <div class="site-logo">
                         <a href="<?php echo home_url(); ?>">
@@ -39,5 +84,7 @@
                 </div>
                 <div class="clear"></div>
             </div>
-        </header>
+        </header> -->
+
+
  </body>
