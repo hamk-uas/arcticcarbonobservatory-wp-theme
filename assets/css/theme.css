@@ -443,20 +443,68 @@ footer .footer-area-contact {
     padding-top: 3%;
 }
 
-footer .Cntr {
+.footer-area-logos {
+    margin-left: 15%;
+    margin-right: 15%;
+    /* width: 100% */
+}
+
+section.footer-area-logos > div:first-child > div:first-child {
+    max-width: 75%;
+}
+
+section.footer-area-logos > div:first-child > div:nth-child(2) {
+    max-width: 25%;
+}
+
+.footer-area-contact a {
+    border-bottom: 1px solid #fff;
+    padding-bottom: 3px;
+    color: white;
+}
+
+/* .footer-area-logos div div:first-of-type {
+    max-width: 70%;
+}
+
+.footer-area-logos div div:nth-child(2) {
+    max-width: 30%;
+} */
+
+/* .footer-area-logos div:first-child + div:first-child {
+    background-color: red;
+} */
+
+/* .footer-area-logos:first-child:first-child {
+    max-width: 70%;
+}
+
+.footer-area-logos:first-child:nth-child(2) {
+    max-width: 30%;
+} */
+
+/* .footer-area-logos div:first-child {
+    width: 65%;
+}
+
+.footer-area-logos div:nth-child(2) {
+    width: 25%;
+} */
+
+/* footer .Cntr {
     padding: 28px 0px;
     max-width: 1100px;
     margin: auto;
-}
+} */
 
 /* footer .Cntr{padding:28px 0px;max-width:1100px;margin: 80vw;} */
-footer .Cntr a {
+/* footer .Cntr a {
     color: #a9abad;
     text-decoration: none;
 }
 
 footer .Cntr a:hover {
     color: #fff;
-}
+} */
 
 /* #endregion Footer settings */
