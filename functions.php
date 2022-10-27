@@ -54,7 +54,7 @@
 	
 	add_action('wp_enqueue_scripts','fielobservatory_register_styles');
 	
-	function fielobservatory_register_scripts(){
+	function fieldobservatory_register_scripts(){
     	$version = wp_get_theme()->version;
 		wp_enqueue_script('fieldobservatory-jquery','https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',array(),'3.5.1',true);
 		wp_enqueue_script('fieldobservatory-global',get_template_directory_uri() . '/assets/js/global.js',array(),$version,true);
@@ -63,18 +63,30 @@
 		wp_enqueue_script('fieldobservatory-mapboxglGeoCoderjs','https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js',array(),true);
 	}	
 	
-	add_action('wp_enqueue_scripts','fielobservatory_register_scripts');
+	add_action('wp_enqueue_scripts','fieldobservatory_register_scripts');
 	
 	function fieldobservatory_widget_areas(){
 		register_sidebar(
 			array(
-				'before_title'=>'',
-				'after_title'=>'',
-				'before_widget'=>'<div class="grid-itemLogo">',
-				'after_widget'=>'</div>',
+				'before_title'=>'<h4>',
+				'after_title'=>'</h4>',
+				'before_widget'=>'<section class="footer-area footer-area-contact footer-area-contact-contacts">',
+				'after_widget'=>'</section>',
 				'name'=>'Footer Area',
-				'id'=>'footer-1',
-				'description'=>'Footer Widget Area'
+				'id'=>'footer-contact',
+				'description'=>'Footer Widget Area Contact'
+			)
+		);
+
+		register_sidebar(
+			array(
+				'before_title'=>'<h4>',
+				'after_title'=>'</h4>',
+				'before_widget'=>'<section class="footer-area footer-area-logos">',
+				'after_widget'=>'</section>',
+				'name'=>'Footer Area',
+				'id'=>'footer-logos',
+				'description'=>'Footer Widget Area logos'
 			)
 		);
 	}
@@ -216,6 +228,11 @@ function add_query_string($url) {
 	return empty($_SERVER['QUERY_STRING'])? $url : $url.'?'.$_SERVER['QUERY_STRING'];
 }
 add_filter('pll_the_language_link', 'add_query_string');
+
+function fieldobservatory_register_string_translations() {
+	pll_register_string('fieldobservatory-contacts', 'Contact us');
+}
+add_action('init', 'fieldobservatory_register_string_translations');
 
 function fieldobservatory_block_patterns() {
 	register_block_pattern(

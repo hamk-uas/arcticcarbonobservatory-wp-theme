@@ -255,6 +255,61 @@ header .navigation-container {
     border-bottom: 0;
 }
 
+.fieldobservatory-toggle-nav {
+    display: none;
+    overflow: hidden;
+}
+
+@media screen and ( max-width: 600px) {
+
+    .navigation ul {
+        display: none;
+    }
+    
+    .fieldobservatory-toggle-nav {
+        display: block;
+        float: right;
+    }
+}
+
+@media screen and ( max-width: 600px) {
+
+    /* 
+    The "responsive" class is added to the topnav with JavaScript when the user 
+    clicks on the icon. This class makes the topnav look 
+    good on small screens (display the links vertically instead of horizontally) 
+    */
+    .navigation.responsive {
+        position: relative;
+    }
+
+    .navigation.responsive a.icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .navigation.responsive ul {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+
+    .navigation.responsive .dropdown {
+        float: none;
+    }
+
+    .navigation.responsive .dropdown-content {
+        position: relative;
+    }
+
+    .navigation.responsive .dropdown .dropbtn {
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
+}
+
 /* #endregion Header settings */
 
 /* #region Editor color templates */
@@ -316,6 +371,10 @@ header .navigation-container {
     z-index: 1;
 }
 
+.intro-box-with-link p a {
+    color: white;
+}
+
 /* Case pattern blocks */
 .fieldobservatory-case .wp-block-columns {
     gap: 0em;
@@ -361,3 +420,43 @@ header .navigation-container {
 }
 
 /* #endregion Pattern settings */
+
+/* #region Footer settings */
+
+footer {
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 1);
+}
+
+footer .footer-area-contact {
+    background: #0E0C29;
+}
+
+.footer-area-contact-contacts {
+    padding-bottom: 2%;
+}
+
+.footer-contact-translation {
+    padding-top: 3%;
+}
+
+footer .Cntr {
+    padding: 28px 0px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* footer .Cntr{padding:28px 0px;max-width:1100px;margin: 80vw;} */
+footer .Cntr a {
+    color: #a9abad;
+    text-decoration: none;
+}
+
+footer .Cntr a:hover {
+    color: #fff;
+}
+
+/* #endregion Footer settings */

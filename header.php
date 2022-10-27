@@ -10,6 +10,16 @@
         wp_head();
         $imageUrl = get_template_directory_uri();
     ?>
+    <script>
+        function toggleNavMenu() {
+          let x = document.getElementById("navigation-element");
+          if (x.className === "navigation") {
+            x.className += " responsive";
+          } else {
+            x.className = "navigation";
+          }
+        }
+    </script>
 </head>
 <body>
 <?php 
@@ -42,7 +52,8 @@
             </a>
         </div>
         <div class="navigation-container">
-            <nav class="navigation">
+            <a href="javascript:void(0);" class="icon fieldobservatory-toggle-nav" onclick="toggleNavMenu()">&#9776;</a>
+            <nav class="navigation" id="navigation-element">
                 <?php
                     wp_nav_menu(
                         array(

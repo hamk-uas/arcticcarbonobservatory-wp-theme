@@ -75,6 +75,15 @@ $(document).ready(function(){
    continuous:true
  });
 
+function toggleNavMenu() {
+  let x = document.getElementById("navigation-element");
+  if (x.className === "navigation") {
+    x.className += " responsive";
+  } else {
+    x.className = "navigation";
+  }
+}
+
   //mobilemenu
   $('.mobile').click(function(){
     var $self = $(this);
