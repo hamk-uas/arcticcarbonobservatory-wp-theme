@@ -158,6 +158,7 @@ async function loadData() {
                                         }]
                                     });
                                 } else {
+                                    geoTiff.buggy = new Date(result.headers.get('Last-Modified')) < new Date("2022-10-25T07:00:00.000Z"); // Older GeoTIFF files had a bug
                                     geoTiff.arrayBuffer = await result.arrayBuffer();
                                     geoTiff.loaded = true; // We are finished and have processed the result
                                     postMessage({
@@ -167,7 +168,8 @@ async function loadData() {
                                             geoTiffListIndex: geoTiffListIndex,
                                             update: {
                                                 loaded: true,
-                                                arrayBuffer: geoTiff.arrayBuffer
+                                                arrayBuffer: geoTiff.arrayBuffer,
+                                                buggy: geoTiff.buggy
                                             }
                                         }]
                                     });
