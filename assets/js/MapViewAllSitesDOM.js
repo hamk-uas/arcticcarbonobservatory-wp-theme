@@ -165,7 +165,7 @@ function viewAllSitesAfterLoadingEssentials() {
             const zoomNeeded = map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance);            
             map.easeTo({
                 center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
-                zoom: (zoomNeeded < 5)? 5: zoomNeeded
+                zoom: (zoomNeeded < map.getZoom() + 1)? map.getZoom() + 1: zoomNeeded
             });
             delete popup.userData;
             popup.remove();
