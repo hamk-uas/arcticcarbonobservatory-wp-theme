@@ -8,6 +8,11 @@ async function initPage() {
     }
 
     await loadEssentials(); // Load sitesGeoJson, blocksGeoJson and chartsJson, and mappy things
+    /*sitesGeoJson.features = sitesGeoJson.features
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value)*/
+
     console.log("sitesGeoJson =");
     console.log(sitesGeoJson);
     console.log("blocksGeoJson =");
@@ -71,7 +76,13 @@ async function initPage() {
             'layout': {
                 'icon-size': 0.8,
                 'icon-allow-overlap': true,
-                //'text-allow-overlap': true,
+                'symbol-sort-key': ['-', 90, ['get', "lat"]],
+                'symbol-z-order': "source",
+                'text-ignore-placement': true,
+                'text-optional': true,
+                'text-padding': 0,
+                'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
+                'text-allow-overlap': true,
                 "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12,

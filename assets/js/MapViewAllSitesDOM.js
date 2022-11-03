@@ -136,9 +136,36 @@ function viewAllSitesAfterLoadingEssentials() {
         });
         addMapEventHandler('click', 'fieldLocationsLayerFar', function (e) {
             document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
+            // Find clicked feature
+            let clickXY = map.project(e.lngLat);
+            let xys = [];
+            let clickedIndex = undefined;
+            let smallestDistanceSquared = undefined;
+            for (let [index, feature] of sitesGeoJson.features.entries()) {
+                xys.push(map.project({lng: feature.properties.lon, lat: feature.properties.lat}));
+                let distanceSquared = (xys[xys.length - 1].x - clickXY.x)*(xys[xys.length - 1].x - clickXY.x) + (xys[xys.length - 1].y - clickXY.y)*(xys[xys.length - 1].y - clickXY.y);
+                if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                    smallestDistanceSquared = distanceSquared;
+                    clickedIndex = index;
+                }
+            }
+            // Find nearest other feature
+            smallestDistanceSquared = undefined;
+            for (let [index, feature] of sitesGeoJson.features.entries()) {
+                if (index != clickedIndex) {
+                    let distanceSquared = (xys[index].x - xys[clickedIndex].x)*(xys[index].x - xys[clickedIndex].x) + (xys[index].y - xys[clickedIndex].y)*(xys[index].y - xys[clickedIndex].y);
+                    if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                        smallestDistanceSquared = distanceSquared;
+                    }
+                }
+            }
+            // Calculate zoom needed to make smallestDistance = targetDistance
+            let smallestDistance = Math.sqrt(smallestDistanceSquared);
+            const targetDistance = 50;
+            const zoomNeeded = map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance);            
             map.easeTo({
-                center: e.lngLat,
-                zoom: map.getZoom() + 1
+                center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
+                zoom: (zoomNeeded < 5)? 5: zoomNeeded
             });
             delete popup.userData;
             popup.remove();
