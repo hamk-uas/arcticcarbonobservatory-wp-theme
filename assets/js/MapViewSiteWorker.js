@@ -157,7 +157,7 @@ async function loadData() {
                                             }
                                         }]
                                     });
-                                } else {
+                                } else {                                    
                                     geoTiff.arrayBuffer = await result.arrayBuffer();
                                     geoTiff.loaded = true; // We are finished and have processed the result
                                     postMessage({
@@ -167,7 +167,7 @@ async function loadData() {
                                             geoTiffListIndex: geoTiffListIndex,
                                             update: {
                                                 loaded: true,
-                                                arrayBuffer: geoTiff.arrayBuffer
+                                                arrayBuffer: geoTiff.arrayBuffer                                                
                                             }
                                         }]
                                     });

@@ -1106,8 +1106,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                             let row = [];
                             for (let x = 0; x <= width; x++) {
                                 if (modelTransformation !== undefined) {
-                                    // y - 1 seems to work here... 
-                                    row.push(transform.forward([modelTransformation[3] + x*modelTransformation[0] + y*modelTransformation[1], modelTransformation[7] - x*modelTransformation[4] - (y - 1)*modelTransformation[5]]));
+                                    row.push(transform.forward([modelTransformation[3] + x*modelTransformation[0] + y*modelTransformation[1], modelTransformation[7] + x*modelTransformation[4] + y*modelTransformation[5]]));
                                 } else {
                                     // y seems to work here...
                                     row.push(transform.forward([modelTiePoint[3] + (x - modelTiePoint[0]) * modelPixelScale[0], modelTiePoint[4] - (y - modelTiePoint[1]) * modelPixelScale[1]]));
