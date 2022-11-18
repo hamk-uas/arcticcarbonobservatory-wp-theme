@@ -187,7 +187,7 @@ function viewAllSitesAfterLoadingEssentials() {
         */
     }
 
-    window.onpopstate = function () { unviewAllSitesAndViewSite(history.state.site); };
+    window.onpopstate = function () { unviewAllSitesAndViewSite(getSiteId()); };
 }
 
 //Filter mapbox layer data

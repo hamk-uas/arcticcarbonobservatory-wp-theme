@@ -1,7 +1,7 @@
 ﻿initPage();
 
 async function initPage() {
-    if (history.state.site !== undefined) {
+    if (getSiteId() !== undefined) {
         viewSiteBeforeLoadEssentials(); // SITE view initialization before loading jsons and map
     } else {
         viewAllSitesBeforeLoadEssentials(); // ALL SITES view initialization before loading jsons and map
@@ -14,101 +14,107 @@ async function initPage() {
     .map(({ value }) => value)*/
 
     console.log("sitesGeoJson =");
-    console.log(sitesGeoJson);
+    console.log(JSON.parse(JSON.stringify(sitesGeoJson))); // Create deep copies so that we can modify these later without affecting the log
     console.log("blocksGeoJson =");
-    console.log(blocksGeoJson);
+    console.log(JSON.parse(JSON.stringify(blocksGeoJson)));
     console.log("chartsJson =");
-    console.log(chartsJson);
+    console.log(JSON.parse(JSON.stringify(chartsJson)));
 
     // Add essential sources and layers
 
-    whenMapLoadedDo(function () {
-        map.addSource('empty', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] }
-        });
-        map.addSource("fieldLocations", {
-            type: "geojson",
-            data: sitesGeoJson,
-            cluster: false,
-            clusterMaxZoom: 14,
-            clusterRadius: 50
-        });
-        map.addLayer({
-            id: 'satelliteZ',
-            type: 'symbol',
-            source: 'empty'
-        });
-        map.addLayer({
-            id: 'blockZ',
-            type: 'symbol',
-            source: 'empty'
-        });
-        map.addLayer({
-            "id": 'fieldLocationsLayerFar',
-            "type": 'circle',
-            "source": 'fieldLocations',
-            /*"maxzoom": 6,*/
-            "filter": ['!has', 'point_count'],
-            "paint": {
-                "circle-radius": 6,
-                "circle-stroke-color": {
-                    property: 'site_type',
-                    type: 'categorical',
-                    stops: Object.entries(siteTypeColors)
-                },
-                "circle-color": {
-                    property: 'site_type',
-                    type: 'categorical',
-                    stops: Object.entries(siteTypeColors)
-                },
-                "circle-stroke-width": 3,
-                "circle-opacity": 0.6,
-                "circle-stroke-opacity": 1
-            }
-        });
-        map.addLayer({
-            "id": 'fieldLocationsLayerNear',
-            "type": 'symbol',
-            "source": 'fieldLocations',
-            "minzoom": 5,
-            "filter": ['!has', 'point_count'],
-            'layout': {
-                'icon-size': 0.8,
-                'icon-allow-overlap': true,
-                'symbol-sort-key': ['-', 90, ['get', "lat"]],
-                'symbol-z-order': "source",
-                'text-ignore-placement': true,
-                'text-optional': true,
-                'text-padding': 0,
-                'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
-                'text-allow-overlap': true,
-                "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 12,
-                'icon-offset': [0, 6],
-                'icon-image': {
-                    property: 'site_type',
-                    type: 'categorical',
-                    stops: [
-                        ['Advanced CarbonAction Site', 'MapMarkerGreen'],
-                        ['Intensive Site', 'MapMarkerBlue'],
-                        ['Svensk Kolinlagring Site', 'MapMarkerDarkGrey'],
-                        ['Valio', 'MapMarkerDarkBlue'],
-                        ['co-carbon', 'MapMarkerDarkGreen'],
-                        ['smear-agri', 'MapMarkerBlack'],
-                    ]
+    console.log("mapEnabled:");
+    console.log(v.mapEnabled);
+    if (v.mapEnabled) {
+        whenMapLoadedDo(function () {
+            map.addSource('empty', {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features: [] }
+            });
+            map.addSource("fieldLocations", {
+                type: "geojson",
+                data: sitesGeoJson,
+                cluster: false,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+            map.addLayer({
+                id: 'satelliteZ',
+                type: 'symbol',
+                source: 'empty'
+            });
+            map.addLayer({
+                id: 'blockZ',
+                type: 'symbol',
+                source: 'empty'
+            });
+            map.addLayer({
+                "id": 'fieldLocationsLayerFar',
+                "type": 'circle',
+                "source": 'fieldLocations',
+                /*"maxzoom": 6,*/
+                "filter": ['!has', 'point_count'],
+                "paint": {
+                    "circle-radius": 6,
+                    "circle-stroke-color": {
+                        property: 'site_type',
+                        type: 'categorical',
+                        stops: Object.entries(siteTypeColors)
+                    },
+                    "circle-color": {
+                        property: 'site_type',
+                        type: 'categorical',
+                        stops: Object.entries(siteTypeColors)
+                    },
+                    "circle-stroke-width": 3,
+                    "circle-opacity": 0.6,
+                    "circle-stroke-opacity": 1
                 }
-            },
-            "paint": {
-                "text-halo-width": 2,
-                "text-halo-blur": 1,
-                "text-halo-color": "#ffffff"
-            }
+            });
+            map.addLayer({
+                "id": 'fieldLocationsLayerNear',
+                "type": 'symbol',
+                "source": 'fieldLocations',
+                "minzoom": 5,
+                "filter": ['!has', 'point_count'],
+                'layout': {
+                    'icon-size': 0.8,
+                    'icon-allow-overlap': true,
+                    'symbol-sort-key': ['-', 90, ['get', "lat"]],
+                    'symbol-z-order': "source",
+                    'text-ignore-placement': true,
+                    'text-optional': true,
+                    'text-padding': 0,
+                    'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
+                    'text-allow-overlap': true,
+                    "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                    'icon-offset': [0, 6],
+                    'icon-image': {
+                        property: 'site_type',
+                        type: 'categorical',
+                        stops: [
+                            ['Advanced CarbonAction Site', 'MapMarkerGreen'],
+                            ['Intensive Site', 'MapMarkerBlue'],
+                            ['Svensk Kolinlagring Site', 'MapMarkerDarkGrey'],
+                            ['Valio', 'MapMarkerDarkBlue'],
+                            ['co-carbon', 'MapMarkerDarkGreen'],
+                            ['smear-agri', 'MapMarkerBlack'],
+                        ]
+                    }
+                },
+                "paint": {
+                    "text-halo-width": 2,
+                    "text-halo-blur": 1,
+                    "text-halo-color": "#ffffff"
+                }
+            });
         });
-    });
-    if (history.state.site !== undefined) {
-        whenMapLoadedDo(function () { setAllSitesMapLayerVisibility("none") });
+    }
+    if (getSiteId() !== undefined) {
+        if (v.mapEnabled) {
+            whenMapLoadedDo(function () { setAllSitesMapLayerVisibility("none") });
+        }
         await viewSiteAfterLoadingEssentials(0); // SITE view initialization after loading jsons and map
     } else {
         viewAllSitesAfterLoadingEssentials(); // ALL SITES view initialization after loading jsons and map

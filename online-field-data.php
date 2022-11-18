@@ -92,6 +92,12 @@ get_footer();
     }
     var fieldobservatoryImagesUrl = "<?php echo get_template_directory_uri(); ?>/assets/images";
     var fieldobservatoryJSUrl = "<?php echo get_template_directory_uri(); ?>/assets/js";    
+    v.mapElementId = "map";
+    v.mapEnabled = true;
+    v.chartContainerElementId = "chart_container";
+    v.creditContainerElementId = "chart_container";
+    v.zoomLevel = 6;
+    v.manageSiteLinkEnabled = true;
 </script>
 <?php $version = wp_get_theme()->version; ?>
 <script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/MapViewFirstDOM.js?ver=<?php echo $version ?>"></script>

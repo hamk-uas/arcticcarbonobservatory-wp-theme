@@ -1,5 +1,13 @@
 ﻿window.onresize = onWindowResize;
 
+function getSiteId() {
+    if (window.hasOwnProperty("v") && window.v !== undefined && v.siteId !== undefined) {
+        return v.siteId;
+    } else {
+        return history.state.site;
+    }
+}
+
 var siteTypeColors = {
     'Advanced CarbonAction Site': '#349a80',
     'Intensive Site': '#129bc7',
@@ -101,7 +109,7 @@ async function loadEssentials() {
                 ...allSitesMapView,
                 bounds: getBoundingBox(sitesGeoJson.features),
             }
-            if (history.state.site === undefined) {
+            if (getSiteId() === undefined && v.mapElementId !== undefined) {
                 return initMap(allSitesMapView);
             };
         }),
@@ -110,33 +118,35 @@ async function loadEssentials() {
                 blocksGeoJson.features.push(...demoBlocksGeoJson.features);
                 mapbackgroundsJson.features.push(...demoMapbackgroundsJson.features);
             };
-            if (history.state.site !== undefined) {
+            if (getSiteId() !== undefined) {
                 // Init map view to site blocks
-                let filteredFeatures = blocksGeoJson.features.filter(feature => (feature.properties.site === history.state.site));
+                let filteredFeatures = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
                 if (filteredFeatures.length == 0) {
                     filteredFeatures = blocksGeoJson.features;
                 }
-                return initMap({
-                    ...siteMapView,
-                    bounds: getBoundingBox(filteredFeatures)
-                });
+                if (v.mapElementId !== undefined) {
+                    return initMap({
+                        ...siteMapView,
+                        bounds: getBoundingBox(filteredFeatures)
+                    });
+                }
             }
         })/*,
             fetch(`js/charts.json?version=2021-02-23c`).then(getJson).then(json => { chartsJson = json }) */
     ];/*
-    if (history.state.site !== undefined) {
+    if (getSiteId() !== undefined) {
         // Fetch site.json early if possible:
         if (sitesGeoJson !== undefined) {
             for (let feature of sitesGeoJson.features) {
-                if (feature.properties.site === history.state.site) {
-                    promises.push(fetch(`${feature.properties.storageUrl}/${history.state.site}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
+                if (feature.properties.site === getSiteId()) {
+                    promises.push(fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
                         siteJson = json;
                     }));
                 }
             }
         }
         if (history.state.demo !== undefined) {
-            siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.site}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
+            siteViewPromises.push(fetch(`${demoStorageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
                 var demoSiteJson = json;
             }));
         }
@@ -196,7 +206,7 @@ async function mapLoadImage(url, id) {
 
 function initMap(initMapView) {
     map = new mapboxgl.Map({
-        container: 'map',
+        container: v.mapElementId,
         style: 'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa',
         ...initMapView,
         locale: {                       
@@ -302,7 +312,7 @@ function setOthersThanMapLoaded(loaded = othersThanMapLoaded) {
 function onWindowResize() {
     // const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     /*
-    if (window.innerWidth <= 1024 && history.state && history.state.site !== undefined) {
+    if (window.innerWidth <= 1024 && history.state && getSiteId() !== undefined) {
         // One column
         let satelliteImages = document.getElementById("satellite_images");
         if (satelliteImages !== null) {
@@ -313,8 +323,8 @@ function onWindowResize() {
         document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
     }*/
 
-    if (history.state.site !== undefined) {
-        if (map !== undefined) {
+    if (getSiteId() !== undefined) {
+        if (v.mapEnabled) {
             whenMapLoadedDo(function () {
                 map.resize()
             });
@@ -337,7 +347,7 @@ function setAllSitesMapLayerVisibility(visibility) {
 }
 
 function whenMapLoadedDo(f) {
-    if (mapLoaded) {
+    if (!v.mapEnabled || mapLoaded) {
         f();
     } else {
         map.once('load', f);

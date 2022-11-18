@@ -685,6 +685,10 @@ function addChartColors(v) {
 
 // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
 function prepCharts(v, siteJson, chartsJson) {   
+    if (v.chartEnabled !== undefined) {
+        chartsJson.charts = chartsJson.charts.filter(chart => v.chartEnabled[chart.id]);
+    }
+
     var sourceTypeToSources = {}; // Dict: sourceType id => source
 
     // Add those sources for which non-empty csvList or geoTiffList exists, to dictionary sourceTypeToSources. This is needed for determining which charts need to be made.
@@ -1547,7 +1551,7 @@ function getChartDivInnerHtml(v, chartId) {
 // Generate chart DIV element html including the DIV tags and all SVG layers
 function getChartDivOuterHtml(v, chartId) {
     // <defs> <rect id="chart_clip_${chartId}" width="${v.dimensions.width}" height="${v.dimensions.topMargin + v.dimensions.height}" x="0" y="0" /> </defs>
-    return `<div onmousemove="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseenter="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseleave="document.getElementById('chart_controls_svg_${chartId}').classList.remove('Entered')" id="chart_div_${chartId}" class="chart_gridcontainer_item"${(chartId === "satelliteImages")? ' style="border: none"' : ''}></div>`;
+    return `<div onmousemove="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseenter="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseleave="document.getElementById('chart_controls_svg_${chartId}').classList.remove('Entered')" id="chart_div_${chartId}" class="chart_gridcontainer_item"${(chartId === "satelliteImages" || !v.mapEnabled)? ' style="border: none"' : ''}></div>`;
 }
 
 function prepXGrid(v) {

@@ -585,14 +585,16 @@ async function viewSite(zoomDuration) {
 function viewSiteBeforeLoadEssentials() {
     document.body.classList.add('ViewSite');
     //Hide filter when ViewSite
-    var filterContainer = document.getElementById("mapFilterContainer");
-    filterContainer.style.display = "none";
+    if (v.mapEnabled) {
+        var filterContainer = document.getElementById("mapFilterContainer");
+        filterContainer.style.display = "none";
+    }
 }
 
 async function viewSiteAfterLoadingEssentials(zoomDuration) {
     // Get all blocks of this site and find and zoom to the minimal bounding box
     //map.resize();
-    let siteBlocks = blocksGeoJson.features.filter(feature => (feature.properties.site === history.state.site));
+    let siteBlocks = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
 
     if (typeof (Worker) == "undefined") {
         throw new Error('Web workers not supported by the browser.')
@@ -621,21 +623,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             topMargin: 47, // Top margin height. (Was 25 until 16.6.2021)
             bottomMargin: 40 // Bottom axis area height.
         },
-        now: now, // Current time at page load
         satelliteImageDate: 0,
-        startDate: now - (62 + 15)* 24 * 60 * 60 * 1000,
-        endDate: now + 15 * 24 * 60 * 60 * 1000,
-        timeZone: "Europe/Helsinki", // TODO: Currently this does nothing
-        minPixelsPerHourTick: 7,
-        minPixelsPerDayTick: 7,
-        minPixelsPerMonthTick: 7,
-        minPixelsPerValTick: 40,
-        minPixelsPerHourTickLabel: 30,
-        minPixelsPerDayTickLabel: 30,
-        minPixelsPerMonthTickLabel: 30,
-        minPixelsPerYearTickLabel: 30,
-        minPixelsPerValTickLabel: 40,
-        minPixelsPerUTCText: 30,
+        now: now, // Current time at page load
+        zoomLevel: v.zoomLevel,
         zoomLevels: [
             30 * 60 * 60 * 1000, // 1 day
             3 * 24 * 60 * 60 * 1000, // 2 days
@@ -650,18 +640,41 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             2 * 365 * 24 * 60 * 60 * 1000, // 2 years
             5 * 365 * 24 * 60 * 60 * 1000 // 5 years
         ],
-        zoomLevel: 6,
+        timeZone: "Europe/Helsinki", // TODO: Currently this does nothing
+        minPixelsPerHourTick: 7,
+        minPixelsPerDayTick: 7,
+        minPixelsPerMonthTick: 7,
+        minPixelsPerValTick: 40,
+        minPixelsPerHourTickLabel: 30,
+        minPixelsPerDayTickLabel: 30,
+        minPixelsPerMonthTickLabel: 30,
+        minPixelsPerYearTickLabel: 30,
+        minPixelsPerValTickLabel: 40,
+        minPixelsPerUTCText: 30,
         page: "MapView", // TODO *** Remove this from NDVI etc. image fetching
         storageUrl: storageUrl,
         storageUrl2: storageUrl2,
         fieldobservatoryLanguage: v.fieldobservatoryLanguage,
-        fieldobservatoryImagesUrl: fieldobservatoryImagesUrl
+        fieldobservatoryImagesUrl: fieldobservatoryImagesUrl,
+        siteId: v.siteId,
+        mapEnabled: v.mapEnabled,
+        chartEnabled: v.chartEnabled,
+        manageSiteLinkEnabled: v.manageSiteLinkEnabled,
+        chartContainerElementId: v.chartContainerElementId,
+        creditContainerElementId: v.creditContainerElementId
     }
     addChartColors(v);
 
+    if (v.zoomLevel == 6) {
+        v.endDate = v.now + v.zoomLevels[v.zoomLevel]*(15/62);
+    } else {
+        v.endDate = v.now + v.zoomLevels[v.zoomLevel]*0.05;
+    }
+    v.startDate = v.now - v.zoomLevels[v.zoomLevel];
+
     // Set site description
     sitesGeoJson.features.forEach(feature => {
-        if (feature.properties.site === history.state.site) {          
+        if (feature.properties.site === getSiteId()) {          
             let managementHTML = (translate(feature.properties, "management", null) == null) ? '' : `
             <tr>
                <td>${translate(t.plaintext_titles, "management")}:</td>
@@ -697,25 +710,31 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             <div id="satelliteImageDiv">
                 <h4 id="Satellite_images">${translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title")}</h4>
             </div>`;
-            if (feature.properties.demo) {
-                document.getElementById('fieldInfo').innerHTML = `${translate(feature.properties, "Name", feature.properties.id)} (demo)`;
-            } else {
-                document.getElementById('fieldInfo').innerHTML = translate(feature.properties, "Name", feature.properties.id);
+            if (v.mapEnabled) {
+                if (feature.properties.demo) {
+                    document.getElementById('fieldInfo').innerHTML = `${translate(feature.properties, "Name", feature.properties.id)} (demo)`;
+                } else {
+                    document.getElementById('fieldInfo').innerHTML = translate(feature.properties, "Name", feature.properties.id);
+                }
+                document.getElementById('siteDescription').innerHTML = description;
             }
-            document.getElementById('siteDescription').innerHTML = description;
         }
     });
-    if (window.innerWidth <= 1024) {
-        // One column
-        document.getElementById("Satellite_images").after(document.getElementById("map"));         // ***
-    } else {
-        document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+    if (v.mapElementId !== undefined) {
+        if (window.innerWidth <= 1024) {
+            // One column
+            document.getElementById("Satellite_images").after(document.getElementById("map"));         // ***
+        } else {
+            document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+        }
     }
 
     if (siteJson === undefined) {
+        console.log(sitesGeoJson.features);
+        console.log(getSiteId());
         for (let feature of sitesGeoJson.features) {
-            if (feature.properties.site === history.state.site) {
-                siteJson = await fetch(`${feature.properties.storageUrl}/${history.state.site}/site.json?date=${getCacheRefreshDate(new Date(now))}`).then(async response => {
+            if (feature.properties.site === getSiteId()) {                
+                siteJson = await fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(new Date(now))}`).then(async response => {
                     if (!response.ok) {
                         throw new Error(`Failed to fetch ${response.url}: ${response.status}`);
                     }
@@ -730,7 +749,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
 
     // Merge sitesGeoJson feature and siteJson properties into siteJson, with siteJson properties taking priority
     sitesGeoJson.features.forEach(feature => {
-        if (feature.properties.site === history.state.site) {
+        if (feature.properties.site === getSiteId()) {
             siteJson = { ...feature.properties, ...siteJson };
         }
     });
@@ -738,7 +757,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     // Merge blocksGeoJson features and siteJson block properties into siteJson, with siteJson block properties taking priority
     siteJson.blocks.forEach((block, index) => {        
         blocksGeoJson.features.forEach(feature => {
-            if (feature.properties.site === history.state.site && feature.properties.id === `${history.state.site}_${block.id}`) {
+            if (feature.properties.site === getSiteId() && feature.properties.id === `${getSiteId()}_${block.id}`) {
                 siteJson.blocks[index] = { ...feature.properties, ...block };
             }
         });
@@ -751,7 +770,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     });
 
     // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
-    prepCharts(v, JSON.parse(JSON.stringify(siteJson)), JSON.parse(JSON.stringify(chartsJson))); // Create deep copies so that the preceding console.log statements show what was loaded
+    prepCharts(v, siteJson, chartsJson); // Create deep copies so that the preceding console.log statements show what was loaded
     // console.log("Charts prepped");
 
     // Create chart DIV and SVG elements in the same order they appear in chartsJson.
@@ -779,10 +798,12 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             nonspecialChartId = chartId;
         //}
     });
-    if (!hasSatelliteImages) {
+    if (v.mapEnabled && !hasSatelliteImages) {
         document.getElementById("satelliteImageDiv").remove()
     }
-    document.getElementById("chart_container").insertAdjacentHTML("beforeend", '<div id="dataCredits"></div>');
+    if (v.creditContainerElementId !== undefined) {
+        document.getElementById(v.creditContainerElementId).insertAdjacentHTML("beforeend", '<div id="dataCredits"></div>');
+    }
     v.dimensions.width = getChartWidth(document.getElementById(`chart_div_${nonspecialChartId}`));
     //console.log("Style: " + chartDiv.style.marginLeft);
     //console.log("chart_container CALCULATED width: " + v.dimensions.width);
@@ -799,114 +820,116 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     mapbackgrounds = mapbackgroundsJson.features.filter(feature => feature.properties.site === v.site.id);
     
     // Add blocks to map
-    whenMapLoadedDo(function () {
-        map.resize(); // Use this, because onWindowResize() screws up map fitBounds execution.
-        if (siteBlocks.length > 0) {
-            // Blocks source
-            map.addSource("blocks", {
-                type: "geojson",
-                data: { ...blocksGeoJson, ...{ features: siteBlocks } }, // Only this site's blocks
-                cluster: false
-            });
-        }
-        // *** Test aerial photo background        
-        if (mapbackgrounds.length > 0) {
-            document.body.classList.add('Obfuscated');
-            for (let layer of map.getStyle().layers) {
-                if (layer.id === "satelliteZ") {
-                    break;
-                }
-                if (layer.id !== "landcover-outdoors") {
-                    map.setLayoutProperty(layer.id, 'visibility', 'none');
-                }
-            };
-            //console.log(map.getStyle().layers);            
-            mapbackgrounds.forEach(function (feature, index) {              
-                map.addSource(
-                    `${v.site.id}_mapbackground_${index}`,
-                    {
-                        type: "image",
-                        url: `${v.site.storageUrl}/${feature.properties.imagePath}`,
-                        coordinates: feature.geometry.coordinates[0] // Order of coordinates: [small~20, big~60], [big~20, big~60], [big~20, small~60], [small~20, small~60]
-                    }
-                );
-                map.addLayer({
-                    'id': `${v.site.id}_mapbackground_${index}`,
-                    'source': `${v.site.id}_mapbackground_${index}`,
-                    'type': 'raster',
-                    'paint': {
-                        'raster-opacity': 1.0,
-                        //'raster-resampling': 'nearest',
-                        'raster-fade-duration': 0
-                    }
-                }, 'satelliteZ');
-            });
-        }
-        // Blocks layer
-        map.addLayer({
-            'id': 'blocks',
-            'type': 'fill',
-            'source': 'blocks',
-            'paint': {
-                //'fill-color': '#fcea62',
-                'fill-opacity': 0
-            },
-        }, "blockZ");
-        //Blocks lines
-        map.addLayer({
-            'id': 'blockLines',
-            'type': 'line',
-            'source': 'blocks',
-            'paint': {
-                'line-color': v.chartColors[1], // Was: '#02B8CE'
-                'line-width': 2,                
-            },
-        }, "blockZ");
-        //Block Name
-        map.addLayer({
-            "id": "blockNames",
-            "type": "symbol",
-            "source": "blocks",
-            "layout": {
-                "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
-                "text-font": [
-                    "DIN Offc Pro Medium",
-                    "Arial Unicode MS Regular"
-                ],
-                "text-size": 12,
-                "text-anchor": "top",
-                "text-allow-overlap": true
-            },
-            "paint": {
-                "text-halo-width": 2,
-                "text-halo-blur": 1,
-                "text-halo-color": "#ffffff"
+    if (v.mapEnabled) {
+        whenMapLoadedDo(function () {
+            map.resize(); // Use this, because onWindowResize() screws up map fitBounds execution.
+            if (siteBlocks.length > 0) {
+                // Blocks source
+                map.addSource("blocks", {
+                    type: "geojson",
+                    data: { ...blocksGeoJson, ...{ features: siteBlocks } }, // Only this site's blocks
+                    cluster: false
+                });
             }
-        }, "blockZ");
-        map.setLayoutProperty("blockNames", 'visibility', "none");
-        map.once('moveend', function () {
-            setAllSitesMapLayerVisibility("none");
-            map.setLayoutProperty("blockNames", 'visibility', "visible");
-            setOthersThanMapLoaded(true);
-            handleEsc = function () {
-                pushState();
-                unviewSiteAndViewAllSites();
-            };
-            //document.getElementById("liMapView").onclick = function (e) {
-            //    e.stopPropagation();
-            //    e.preventDefault();
-            //    handleEsc();
-            //};
-            window.onpopstate = unviewSiteAndViewAllSites;
+            // *** Test aerial photo background        
+            if (mapbackgrounds.length > 0) {
+                document.body.classList.add('Obfuscated');
+                for (let layer of map.getStyle().layers) {
+                    if (layer.id === "satelliteZ") {
+                        break;
+                    }
+                    if (layer.id !== "landcover-outdoors") {
+                        map.setLayoutProperty(layer.id, 'visibility', 'none');
+                    }
+                };
+                //console.log(map.getStyle().layers);            
+                mapbackgrounds.forEach(function (feature, index) {              
+                    map.addSource(
+                        `${v.site.id}_mapbackground_${index}`,
+                        {
+                            type: "image",
+                            url: `${v.site.storageUrl}/${feature.properties.imagePath}`,
+                            coordinates: feature.geometry.coordinates[0] // Order of coordinates: [small~20, big~60], [big~20, big~60], [big~20, small~60], [small~20, small~60]
+                        }
+                    );
+                    map.addLayer({
+                        'id': `${v.site.id}_mapbackground_${index}`,
+                        'source': `${v.site.id}_mapbackground_${index}`,
+                        'type': 'raster',
+                        'paint': {
+                            'raster-opacity': 1.0,
+                            //'raster-resampling': 'nearest',
+                            'raster-fade-duration': 0
+                        }
+                    }, 'satelliteZ');
+                });
+            }
+            // Blocks layer
+            map.addLayer({
+                'id': 'blocks',
+                'type': 'fill',
+                'source': 'blocks',
+                'paint': {
+                    //'fill-color': '#fcea62',
+                    'fill-opacity': 0
+                },
+            }, "blockZ");
+            //Blocks lines
+            map.addLayer({
+                'id': 'blockLines',
+                'type': 'line',
+                'source': 'blocks',
+                'paint': {
+                    'line-color': v.chartColors[1], // Was: '#02B8CE'
+                    'line-width': 2,                
+                },
+            }, "blockZ");
+            //Block Name
+            map.addLayer({
+                "id": "blockNames",
+                "type": "symbol",
+                "source": "blocks",
+                "layout": {
+                    "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
+                    "text-font": [
+                        "DIN Offc Pro Medium",
+                        "Arial Unicode MS Regular"
+                    ],
+                    "text-size": 12,
+                    "text-anchor": "top",
+                    "text-allow-overlap": true
+                },
+                "paint": {
+                    "text-halo-width": 2,
+                    "text-halo-blur": 1,
+                    "text-halo-color": "#ffffff"
+                }
+            }, "blockZ");
+            map.setLayoutProperty("blockNames", 'visibility', "none");
+            map.once('moveend', function () {
+                setAllSitesMapLayerVisibility("none");
+                map.setLayoutProperty("blockNames", 'visibility', "visible");
+                setOthersThanMapLoaded(true);
+                handleEsc = function () {
+                    pushState();
+                    unviewSiteAndViewAllSites();
+                };
+                //document.getElementById("liMapView").onclick = function (e) {
+                //    e.stopPropagation();
+                //    e.preventDefault();
+                //    handleEsc();
+                //};
+                window.onpopstate = unviewSiteAndViewAllSites;
+            });
+            
+            map.setMaxZoom(siteMapView.maxZoom);
+            map.setMinZoom(siteMapView.minZoom);
+            if (siteBlocks.length > 0) {
+                map.fitBounds(getBoundingBox(siteBlocks), { padding: 40, duration: zoomDuration });
+            }
+            //map.setMaxBounds(getBoundingBox(siteBlocks));
         });
-        
-        map.setMaxZoom(siteMapView.maxZoom);
-        map.setMinZoom(siteMapView.minZoom);
-        if (siteBlocks.length > 0) {
-            map.fitBounds(getBoundingBox(siteBlocks), { padding: 40, duration: zoomDuration });
-        }
-        //map.setMaxBounds(getBoundingBox(siteBlocks));
-    });
+    }
 
     let creditStr = "";
 
@@ -1012,9 +1035,14 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         creditStr += '<h4 id="Offline_data">Offline data</h4>';
         creditStr += offlineDataStr;
     }
-    creditStr += `<h4 id="Edit_data">Manage site</h4><p class="h4p"><a href="${v.fieldobservatoryLanguage === "fi"? "https://peltoobservatorio.fi/peltoapp": "https://fieldobservatory.org/fieldapp"}">Enter field management activity data</a> (login required)</p>`;
+    if (v.manageSiteLinkEnabled) {
+        creditStr += `<h4 id="Edit_data">Manage site</h4><p class="h4p"><a href="${v.fieldobservatoryLanguage === "fi"? "https://peltoobservatorio.fi/peltoapp": "https://fieldobservatory.org/fieldapp"}">Enter field management activity data</a> (login required)</p>`;
+    }
     if (creditStr !== "") {
-        document.getElementById("dataCredits").innerHTML = creditStr;
+        let dataCreditsElement = document.getElementById("dataCredits");
+        if (dataCreditsElement) {
+            dataCreditsElement.innerHTML = creditStr;
+        }
     }
 
     // console.log("v =");
