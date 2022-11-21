@@ -680,6 +680,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 break;                
             }
         }
+        if (v.zoomLevel >= v.zoomLevels.length) {
+            v.zoomLevel = v.zoomLevels.length - 1;
+            v.endDate = v.now + v.zoomLevels[v.zoomLevel]*0.05;
+            v.startDate = v.endDate - v.zoomLevels[v.zoomLevel];
+        }
     }
 
     // Set site description
