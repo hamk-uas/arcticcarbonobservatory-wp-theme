@@ -1518,7 +1518,7 @@ function getChartSvgOuterHtml(v, chartId, standalone = false, legendItemCoordina
     </svg>`;
 }
 
-function getChartDivInnerHtml(v, chartId) {
+function getChartSVGDivInnerHtml(v, chartId) {
     var legend = '<div class="chart_legend">';
     var sourceIndex = 0;
     if (chartId === "satelliteImages") {
@@ -1544,14 +1544,16 @@ function getChartDivInnerHtml(v, chartId) {
     return `
     ${chartId === "satelliteImages" ? `<div class="colorbar-container"><img id="colorbar" class="colorbar" style="visibility:visible" width="48px" src="${fieldobservatoryImagesUrl}/colorbar.svg" alt="colorbar"><img id="colorbar_lai" class="colorbar" style="visibility:hidden" width="48px" src="${v.fieldobservatoryImagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI"></div>` : `<h4>${translate(v.charts[chartId], "title")}</h4>`}
     ${getChartSvgOuterHtml(v, chartId)}
-    ${legend}
-    ${translate(v.charts[chartId], "description", null) != null ? `<div class="chart_description"><p>${translate(v.charts[chartId], "description")}</p></div>` : ''}`;
+    ${legend}`;
 }
 
 // Generate chart DIV element html including the DIV tags and all SVG layers
 function getChartDivOuterHtml(v, chartId) {
     // <defs> <rect id="chart_clip_${chartId}" width="${v.dimensions.width}" height="${v.dimensions.topMargin + v.dimensions.height}" x="0" y="0" /> </defs>
-    return `<div onmousemove="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseenter="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseleave="document.getElementById('chart_controls_svg_${chartId}').classList.remove('Entered')" id="chart_div_${chartId}" class="chart_gridcontainer_item"${(chartId === "satelliteImages" || !v.mapEnabled)? ' style="border: none"' : ''}></div>`;
+    return `<div onmousemove="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseenter="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseleave="document.getElementById('chart_controls_svg_${chartId}').classList.remove('Entered')" id="chart_div_${chartId}" class="chart_gridcontainer_item"${(chartId === "satelliteImages")? ' style="border: none"' : ''}>
+    <div id="chart_svg_div_${chartId}"></div>
+    <div>${translate(v.charts[chartId], "description", null) != null ? `<div class="chart_description"><p>${translate(v.charts[chartId], "description")}</p></div>` : ''}</div>
+    </div>`;
 }
 
 function prepXGrid(v) {

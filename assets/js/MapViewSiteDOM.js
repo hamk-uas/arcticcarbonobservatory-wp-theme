@@ -1,6 +1,8 @@
-﻿proj4.defs([['EPSG:4326', 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]']]);
-for (let i = 1; i <= 60; i++) {
-    proj4.defs([[`EPSG:${32600 + i}`, `PROJCS["WGS 84 / UTM zone ${i}N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",${i*6 - 183}],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AUTHORITY["EPSG","${32600 + i}"]]`],]);
+﻿if (window.hasOwnProperty("proj4")) {
+    proj4.defs([['EPSG:4326', 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]']]);
+    for (let i = 1; i <= 60; i++) {
+        proj4.defs([[`EPSG:${32600 + i}`, `PROJCS["WGS 84 / UTM zone ${i}N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",${i*6 - 183}],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AUTHORITY["EPSG","${32600 + i}"]]`],]);
+    }
 }
 
 const cmapPrototype = [ // 257 entries
@@ -551,7 +553,7 @@ function addPermanentDrawingListeners() {
 }
 
 function resizeCharts() {
-    let chartDiv = document.getElementById(`chart_div_${nonspecialChartId}`);
+    let chartDiv = document.getElementById(`chart_svg_div_${nonspecialChartId}`);
     if (chartDiv !== null) {
         v.dimensions.width = getChartWidth(chartDiv);
         prepXGrid(v);
@@ -625,7 +627,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         },
         satelliteImageDate: 0,
         now: now, // Current time at page load
-        zoomLevel: v.zoomLevel,
+        startDate: v.startDate,
         zoomLevels: [
             30 * 60 * 60 * 1000, // 1 day
             3 * 24 * 60 * 60 * 1000, // 2 days
@@ -638,7 +640,8 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             180 * 24 * 60 * 60 * 1000, // half a year
             365 * 24 * 60 * 60 * 1000, // 1 year
             2 * 365 * 24 * 60 * 60 * 1000, // 2 years
-            5 * 365 * 24 * 60 * 60 * 1000 // 5 years
+            5 * 365 * 24 * 60 * 60 * 1000, // 5 years
+            10 * 365 * 24 * 60 * 60 * 1000 // 10 years
         ],
         timeZone: "Europe/Helsinki", // TODO: Currently this does nothing
         minPixelsPerHourTick: 7,
@@ -665,12 +668,19 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
     addChartColors(v);
 
-    if (v.zoomLevel == 6) {
+    if (v.startDate === undefined) {
+        v.zoomLevel = 6;
         v.endDate = v.now + v.zoomLevels[v.zoomLevel]*(15/62);
+        v.startDate = v.now - v.zoomLevels[v.zoomLevel];
     } else {
-        v.endDate = v.now + v.zoomLevels[v.zoomLevel]*0.05;
+        for (v.zoomLevel = 0; v.zoomLevel < v.zoomLevels.length; v.zoomLevel++) {
+            if (v.startDate + v.zoomLevels[v.zoomLevel]*1.10 > v.now) {
+                v.startDate = v.startDate + (v.now - v.startDate)*0.5 - v.zoomLevels[v.zoomLevel]*0.5;
+                v.endDate = v.startDate + v.zoomLevels[v.zoomLevel];
+                break;                
+            }
+        }
     }
-    v.startDate = v.now - v.zoomLevels[v.zoomLevel];
 
     // Set site description
     sitesGeoJson.features.forEach(feature => {
@@ -804,13 +814,13 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (v.creditContainerElementId !== undefined) {
         document.getElementById(v.creditContainerElementId).insertAdjacentHTML("beforeend", '<div id="dataCredits"></div>');
     }
-    v.dimensions.width = getChartWidth(document.getElementById(`chart_div_${nonspecialChartId}`));
+    v.dimensions.width = getChartWidth(document.getElementById(`chart_svg_div_${nonspecialChartId}`));
     //console.log("Style: " + chartDiv.style.marginLeft);
     //console.log("chart_container CALCULATED width: " + v.dimensions.width);
     //console.log("chart_container DEFAULT width: " + document.getElementById('chart_container').offsetWidth);
     v.chartIds.forEach(function (chartId) {
         //console.log(`Create chart ${chartId}`);
-        document.getElementById(`chart_div_${chartId}`).innerHTML = getChartDivInnerHtml(v, chartId);        
+        document.getElementById(`chart_svg_div_${chartId}`).innerHTML = getChartSVGDivInnerHtml(v, chartId);        
     });
 
     // A scrollbar may have appeared. Change chart and map sizes accodingly.    

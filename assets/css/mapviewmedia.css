@@ -99,6 +99,11 @@
     text-transform: uppercase;
 }
 
+.casepage .chart_gridcontainer_item h4 {
+    display: none;
+    visibility: hidden;
+}
+
 p.h1p,
 p.h2p,
 p.h3p,
@@ -116,6 +121,9 @@ p.h4p,
 .chart_gridcontainer_item p {
     padding: 5px 0px 5px 0px;
 }
+
+/*.casepage .chart_gridcontainer_item p{
+}*/
 
 .chart_gridcontainer .fieldInfoDiv td {
     font-size: 18px;
@@ -195,6 +203,14 @@ p.h4p,
     margin-left: 20px;
     text-align: left;
 }
+
+/*.casepage .chart_description {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}*/
 
 /*MAPVIEW CHART HANDLERS*/
 .ChartPanArea {
@@ -396,7 +412,7 @@ p.h4p,
     }
 }
 
-@media only screen and (min-width: 769px) and (max-width: 10000px) {
+@media only screen and (min-width: 769px) {
 
     .mapboxgl-ctrl-top-right {
         /*margin-top: 5%;*/
@@ -418,8 +434,22 @@ p.h4p,
         margin: 5px;
     }
 
+    .casepage.chart_gridcontainer {
+        grid-template-columns: repeat(1,1fr);
+        display: grid;
+        margin-bottom: 5%;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+    
+    .casepage .chart_gridcontainer_item {
+        grid-template-columns: repeat(2,1fr);
+        display: grid;
+    }
+
+
 }
-@media only screen and (min-width: 1920px) and (max-width: 10000px) {
+@media only screen and (min-width: 1920px) {
 
     /*MAPVIEW*/
     .coordinates {
@@ -528,23 +558,23 @@ p.h4p,
         text-align: center;
     }
 
-        .chart_gridcontainer_item h4 {
-            color: #5E5E5E;
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+    .chart_gridcontainer_item h4 {
+        color: #5E5E5E;
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
 
-        .chart_gridcontainer_item p {
-            padding: 5px 0px 5px 0px;
-            font-size: 18px;
-            color: #5E5E5E;
-            font-family: 'proxima-nova', sans-serif;
-            font-weight: 400;
-            margin: 0px;
-            word-spacing: 2px;
-            line-height: 18px;
-        }
+    .chart_gridcontainer_item p {
+        padding: 5px 0px 5px 0px;
+        font-size: 18px;
+        color: #5E5E5E;
+        font-family: 'proxima-nova', sans-serif;
+        font-weight: 400;
+        margin: 0px;
+        word-spacing: 2px;
+        line-height: 18px;
+    }
 
     .view {
         height: 100%;
@@ -631,6 +661,7 @@ p.h4p,
         padding: 5px;
         margin: 5px;
     }
+    
     .popup {
         position: absolute;
         justify-content: center;
@@ -736,6 +767,7 @@ p.h4p,
             padding: 5px;
             margin: 5px;
         }
+
         #map {
             height: 300px; /* Map height for ViewSite*/
         }

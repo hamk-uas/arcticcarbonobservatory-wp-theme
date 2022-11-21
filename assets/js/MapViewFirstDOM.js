@@ -330,11 +330,13 @@ function onWindowResize() {
             });
         }
         resizeCharts();
-        if (window.innerWidth <= 1024) {
-            // One column
-            document.getElementById("Satellite_images").after(document.getElementById("map"));
-        } else {
-            document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+        if (v.mapEnabled) {
+            if (window.innerWidth <= 1024) {
+                // One column
+                document.getElementById("Satellite_images").after(document.getElementById("map"));
+            } else {
+                document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+            }
         }
     }
 }
