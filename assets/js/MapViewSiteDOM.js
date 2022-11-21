@@ -601,7 +601,12 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (typeof (Worker) == "undefined") {
         throw new Error('Web workers not supported by the browser.')
     }
-    worker = new Worker(mapViewSiteWorkerJsUrl);
+
+    // Load Web Worker script possibly not from same origin: https://stackoverflow.com/a/60252783/4770915
+    const workerBlob = new Blob(['importScripts(' + JSON.stringify(mapViewSiteWorkerJsUrl) + ')',], {type: 'application/javascript'});
+    const blobUrl = window.URL.createObjectURL(workerBlob);
+    worker = new Worker(blobUrl);
+    
     worker.postMessage({
         command: "importScript",
         script: mapViewSiteSharedJsUrl
