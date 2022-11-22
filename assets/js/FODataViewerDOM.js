@@ -1,8 +1,8 @@
 ﻿window.onresize = onWindowResize;
 
 function getSiteId() {
-    if (window.hasOwnProperty("v") && window.v !== undefined && v.siteId !== undefined) {
-        return v.siteId;
+    if (foConfig.siteId !== undefined) {
+        return foConfig.siteId;
     } else {
         return history.state.site;
     }
@@ -74,27 +74,26 @@ async function loadEssentials() {
         return response.json();
     }
 
-    let now = new Date(Date.now());
     let siteSelectorViewPromises = [
-        fetch(`${storageUrl2}/fieldobs_sites_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { sitesGeoJson = json; })
+        fetch(`${foConfig.storageUrl}/fieldobs_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { sitesGeoJson = json; })
     ];
     let siteViewPromises = [
-        fetch(`${storageUrl2}/fieldobs_blocks_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { blocksGeoJson = json; }),
-        fetch(`${storageUrl2}/fieldobs_sites_mapbackgrounds.geojson`).then(getJson).then(json => { mapbackgroundsJson = json; })
+        fetch(`${foConfig.storageUrl}/fieldobs_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { blocksGeoJson = json; }),
+        fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson`).then(getJson).then(json => { mapbackgroundsJson = json; })
     ];
     if (history.state.demo !== undefined) {
-        siteSelectorViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
-        siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
-        siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
+        siteSelectorViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
+        siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
+        siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
     }
     let promises = [
         Promise.all(siteSelectorViewPromises).then(async function () {
             sitesGeoJson.features.forEach(function (feature) {
-                feature.properties.storageUrl = storageUrl2;
+                feature.properties.storageUrl = foConfig.storageUrl;
             });
             if (history.state.demo !== undefined) {
                 demoSitesGeoJson.features.forEach(function (feature) {
-                    feature.properties.storageUrl = demoStorageUrl;
+                    feature.properties.storageUrl = foConfig.demoStorageUrl;
                 });
                 sitesGeoJson.features.push(...demoSitesGeoJson.features);
             };
@@ -109,7 +108,7 @@ async function loadEssentials() {
                 ...fODataViewerMap,
                 bounds: getBoundingBox(sitesGeoJson.features),
             }
-            if (getSiteId() === undefined && !v.enableMap) {
+            if (getSiteId() === undefined && foConfig.mapEnabled) {
                 return initMap(fODataViewerMap);
             };
         }),
@@ -124,33 +123,15 @@ async function loadEssentials() {
                 if (filteredFeatures.length == 0) {
                     filteredFeatures = blocksGeoJson.features;
                 }
-                if (!v.enableMap) {
+                if (!foConfig.mapEnabled) {
                     return initMap({
                         ...siteMapView,
                         bounds: getBoundingBox(filteredFeatures)
                     });
                 }
             }
-        })/*,
-            fetch(`js/FODataViewerCharts.json?version=2021-02-23c`).then(getJson).then(json => { chartsJson = json }) */
-    ];/*
-    if (getSiteId() !== undefined) {
-        // Fetch site.json early if possible:
-        if (sitesGeoJson !== undefined) {
-            for (let feature of sitesGeoJson.features) {
-                if (feature.properties.site === getSiteId()) {
-                    promises.push(fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
-                        siteJson = json;
-                    }));
-                }
-            }
-        }
-        if (history.state.demo !== undefined) {
-            siteViewPromises.push(fetch(`${demoStorageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
-                var demoSiteJson = json;
-            }));
-        }
-    }*/
+        })
+    ];
     await Promise.all(promises).catch(function (err) {
         console.log(err); // some coding error in handling happened
         popUpMessageText("Failed to load data", "Please try again later.");
@@ -206,7 +187,7 @@ async function mapLoadImage(url, id) {
 
 function initMap(initMapView) {
     map = new mapboxgl.Map({
-        container: v.mapElementId,
+        container: foConfig.mapElementId,
         style: 'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa',
         ...initMapView,
         locale: {                       
@@ -238,7 +219,7 @@ function initMap(initMapView) {
     });
     setOthersThanMapLoaded(false);
 /*    map.once('load', function () {
-        if (v.fieldobservatoryLanguage !== 'en') {
+        if (foConfig.language !== 'en') {
             console.log("set map language");
             map.setLayoutProperty('country-label', 'text-field', [
                 'get',
@@ -278,12 +259,12 @@ function initMap(initMapView) {
         })
     );*/
     return Promise.all([
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGreen.png`, 'MapMarkerDarkGreen'),
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkBlue.png`, 'MapMarkerDarkBlue'),
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerBlue.png`, 'MapMarkerBlue'),
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerGreen.png`, 'MapMarkerGreen'),
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerDarkGrey'),
-        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerBlack')
+        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkGreen.png`, 'MapMarkerDarkGreen'),
+        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkBlue.png`, 'MapMarkerDarkBlue'),
+        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerBlue.png`, 'MapMarkerBlue'),
+        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerGreen.png`, 'MapMarkerGreen'),
+        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerDarkGrey'),
+        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerBlack')
     ]);
 }
 
@@ -324,13 +305,13 @@ function onWindowResize() {
     }*/
 
     if (getSiteId() !== undefined) {
-        if (v.mapEnabled) {
+        if (foConfig.mapEnabled) {
             whenMapLoadedDo(function () {
                 map.resize()
             });
         }
         resizeCharts();
-        if (v.mapEnabled) {
+        if (foConfig.mapEnabled) {
             if (window.innerWidth <= 1024) {
                 // One column
                 document.getElementById("Satellite_images").after(document.getElementById("map"));
@@ -349,7 +330,7 @@ function setSiteSelectorMapLayerVisibility(visibility) {
 }
 
 function whenMapLoadedDo(f) {
-    if (!v.mapEnabled || mapLoaded) {
+    if (!foConfig.mapEnabled || mapLoaded) {
         f();
     } else {
         map.once('load', f);
@@ -357,6 +338,7 @@ function whenMapLoadedDo(f) {
 }
 
 function getCacheRefreshDate(date) {
+    date = new Date(date);
     return [date.getFullYear(), (date.getMonth() + 1).toString().padStart(2, '0'), date.getDate().toString().padStart(2, '0'), date.getHours().toString().padStart(2, '0')].join('-') + "h";
 }
 
@@ -703,8 +685,6 @@ async function unviewSiteSelectorAndViewSite(site) {
     filterContainer.style.display = "none";
     window.onpopstate = defaultPopstateHandler;
     handleEsc = undefined;    
-    delete(v.siteId);
-    delete(v.startDate);
     updateState({ site: site });
     setOthersThanMapLoaded(false);
     removeMapEventHandlers();
@@ -1249,7 +1229,7 @@ function addPermanentDrawingListeners() {
                     let url = URL.createObjectURL(blob);
                     let downloadLink = document.createElement("a");
                     downloadLink.href = url;
-                    downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(v.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.svg`;
+                    downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.svg`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
@@ -1262,7 +1242,7 @@ function addPermanentDrawingListeners() {
                     let url = URL.createObjectURL(blob);
                     let downloadLink = document.createElement("a");
                     downloadLink.href = url;
-                    downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(v.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.csv`;
+                    downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.csv`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
@@ -1307,7 +1287,7 @@ async function viewSite(zoomDuration) {
 function viewSiteBeforeLoadEssentials() {
     document.body.classList.add('Site');
     //Hide filter when Site
-    if (v.mapEnabled) {
+    if (foConfig.mapEnabled) {
         var filterContainer = document.getElementById("mapFilterContainer");
         filterContainer.style.display = "none";
     }
@@ -1332,9 +1312,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         script: FODataViewerCoreJsUrl
     });
 
-    //console.log(`Date: ${now.toUTCString()}`);
-
-    let now = Date.now().valueOf();
+    //console.log(`Date: ${now.toUTCString()}`);  
 
     v = { // State variables and constants needed by web workers
         charts: {}, // Dictionary: chart id => chart object. These will have sources with parameters merged from sourceType and source.
@@ -1350,9 +1328,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             topMargin: 47, // Top margin height. (Was 25 until 16.6.2021)
             bottomMargin: 40 // Bottom axis area height.
         },
-        satelliteImageDate: 0,
-        now: now, // Current time at page load
-        startDate: v.startDate,
+        satelliteImageDate: 0,        
         zoomLevels: [
             30 * 60 * 60 * 1000, // 1 day
             3 * 24 * 60 * 60 * 1000, // 2 days
@@ -1378,35 +1354,26 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         minPixelsPerMonthTickLabel: 30,
         minPixelsPerYearTickLabel: 30,
         minPixelsPerValTickLabel: 40,
-        minPixelsPerUTCText: 30,
-        storageUrl: storageUrl,
-        storageUrl2: storageUrl2,
-        fieldobservatoryLanguage: v.fieldobservatoryLanguage,
-        fieldobservatoryImagesUrl: fieldobservatoryImagesUrl,
-        siteId: getSiteId(),
-        mapEnabled: v.mapEnabled,
-        chartEnabled: v.chartEnabled,
-        manageSiteLinkEnabled: v.manageSiteLinkEnabled,
-        chartContainerElementId: v.chartContainerElementId,
-        creditContainerElementId: v.creditContainerElementId
+        minPixelsPerUTCText: 30
     }
     addChartColors(v);
 
-    if (v.startDate === undefined) {
+    if (foConfig.startDate === undefined) {
         v.zoomLevel = 6;
-        v.endDate = v.now + v.zoomLevels[v.zoomLevel]*(15/62);
-        v.startDate = v.now - v.zoomLevels[v.zoomLevel];
+        v.startDate = foConfig.now - v.zoomLevels[v.zoomLevel];
+        v.endDate = foConfig.now + v.zoomLevels[v.zoomLevel]*(15/62);
     } else {
+        v.startDate = foConfig.startDate;
         for (v.zoomLevel = 0; v.zoomLevel < v.zoomLevels.length; v.zoomLevel++) {
-            if (v.startDate + v.zoomLevels[v.zoomLevel]*1.10 > v.now) {
-                v.startDate = v.startDate + (v.now - v.startDate)*0.5 - v.zoomLevels[v.zoomLevel]*0.5;
+            if (v.startDate + v.zoomLevels[v.zoomLevel]*1.10 > foConfig.now) {
+                v.startDate = v.startDate + (foConfig.now - v.startDate)*0.5 - v.zoomLevels[v.zoomLevel]*0.5;
                 v.endDate = v.startDate + v.zoomLevels[v.zoomLevel];
                 break;                
             }
         }
         if (v.zoomLevel >= v.zoomLevels.length) {
             v.zoomLevel = v.zoomLevels.length - 1;
-            v.endDate = v.now + v.zoomLevels[v.zoomLevel]*0.05;
+            v.endDate = foConfig.now + v.zoomLevels[v.zoomLevel]*0.05;
             v.startDate = v.endDate - v.zoomLevels[v.zoomLevel];
         }
     }
@@ -1449,7 +1416,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             <div id="satelliteImageDiv">
                 <h4 id="Satellite_images">${translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title")}</h4>
             </div>`;
-            if (v.mapEnabled) {
+            if (foConfig.mapEnabled) {
                 if (feature.properties.demo) {
                     document.getElementById('fieldInfo').innerHTML = `${translate(feature.properties, "Name", feature.properties.id)} (demo)`;
                 } else {
@@ -1473,7 +1440,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         console.log(getSiteId());
         for (let feature of sitesGeoJson.features) {
             if (feature.properties.site === getSiteId()) {                
-                siteJson = await fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(new Date(now))}`).then(async response => {
+                siteJson = await fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(new Date(foConfig.now))}`).then(async response => {
                     if (!response.ok) {
                         throw new Error(`Failed to fetch ${response.url}: ${response.status}`);
                     }
@@ -1521,7 +1488,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             v.satelliteImageLegendId = v.charts[chartId].sourceCategoryList[0].id;
             // Choose the last date that has the maximum number of satellite images.
             let maxNumImages = -1;
-            v.satelliteImageDate = v.now;
+            v.satelliteImageDate = foConfig.now;
             for (let i = 0; i < v.charts[chartId].sourceCategoryList[0].geoTiffDates.length; i++) {
                 let date = v.charts[chartId].sourceCategoryList[0].geoTiffDates[i];
                 if (v.charts[chartId].sourceCategoryList[0].dateToGeoTiffList[date].length >= maxNumImages) {
@@ -1531,20 +1498,20 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             }
             document.getElementById("afterMap").insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
         } else {
-            document.getElementById("chart_container").insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
+            document.getElementById(foConfig.chartContainerElementId).insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
         }
 //        if (!chartId !== "satelliteImages") {
             nonspecialChartId = chartId;
         //}
     });
-    if (!v.mapEnabled || !hasSatelliteImages) {
+    if (!foConfig.mapEnabled || !hasSatelliteImages) {
         let satelliteImageDivElement = document.getElementById("satelliteImageDiv");
         if (satelliteImageDivElement !== null) {
             satelliteImageDivElement.remove();
         }
     }
-    if (v.creditContainerElementId !== undefined) {
-        document.getElementById(v.creditContainerElementId).insertAdjacentHTML("beforeend", '<div id="dataCredits"></div>');
+    if (foConfig.creditContainerElementId !== undefined) {
+        document.getElementById(foConfig.creditContainerElementId).insertAdjacentHTML("beforeend", '<div id="dataCredits"></div>');
     }
     v.dimensions.width = getChartWidth(document.getElementById(`chart_svg_div_${nonspecialChartId}`));
     //console.log("Style: " + chartDiv.style.marginLeft);
@@ -1562,7 +1529,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     mapbackgrounds = mapbackgroundsJson.features.filter(feature => feature.properties.site === v.site.id);
     
     // Add blocks to map
-    if (v.mapEnabled) {
+    if (foConfig.mapEnabled) {
         whenMapLoadedDo(function () {
             map.resize(); // Use this, because onWindowResize() screws up map fitBounds execution.
             if (siteBlocks.length > 0) {
@@ -1632,7 +1599,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 "type": "symbol",
                 "source": "blocks",
                 "layout": {
-                    "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
+                    "text-field": ["coalesce", ['get', `Name_${foConfig.language}`], ['get', 'Name']],
                     "text-font": [
                         "DIN Offc Pro Medium",
                         "Arial Unicode MS Regular"
@@ -1777,8 +1744,8 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         creditStr += '<h4 id="Offline_data">Offline data</h4>';
         creditStr += offlineDataStr;
     }
-    if (v.manageSiteLinkEnabled) {
-        creditStr += `<h4 id="Edit_data">Manage site</h4><p class="h4p"><a href="${v.fieldobservatoryLanguage === "fi"? "https://peltoobservatorio.fi/peltoapp": "https://fieldobservatory.org/fieldapp"}">Enter field management activity data</a> (login required)</p>`;
+    if (foConfig.manageSiteLinkEnabled) {
+        creditStr += `<h4 id="Edit_data">Manage site</h4><p class="h4p"><a href="${foConfig.language === "fi"? "https://peltoobservatorio.fi/peltoapp": "https://fieldobservatory.org/fieldapp"}">Enter field management activity data</a> (login required)</p>`;
     }
     if (creditStr !== "") {
         let dataCreditsElement = document.getElementById("dataCredits");
@@ -1969,6 +1936,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
 
     worker.postMessage({
         command: "vInit",
+        foConfig: foConfig,
         v: v
     });
 
@@ -2397,8 +2365,8 @@ async function initPage() {
     // Add essential sources and layers
 
     console.log("mapEnabled:");
-    console.log(v.mapEnabled);
-    if (v.mapEnabled) {
+    console.log(foConfig.mapEnabled);
+    if (foConfig.mapEnabled) {
         whenMapLoadedDo(function () {
             map.addSource('empty', {
                 type: 'geojson',
@@ -2460,7 +2428,7 @@ async function initPage() {
                     'text-padding': 0,
                     'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
                     'text-allow-overlap': true,
-                    "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
+                    "text-field": ["coalesce", ['get', `Name_${foConfig.language}`], ['get', 'Name']],
                     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                     'text-size': 12,
                     'icon-offset': [0, 6],
@@ -2486,7 +2454,7 @@ async function initPage() {
         });
     }
     if (getSiteId() !== undefined) {
-        if (v.mapEnabled) {
+        if (foConfig.mapEnabled) {
             whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("none") });
         }
         await viewSiteAfterLoadingEssentials(0); // Site view initialization after loading jsons and map

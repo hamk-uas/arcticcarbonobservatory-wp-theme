@@ -4,11 +4,6 @@
     $maintitle = "mainTitle-" . get_locale();
     $mapinfotext = "mapInfoText-" . get_locale();
     ?>
-<script type="text/javascript">
-    var v = {
-    	fieldobservatoryLanguage: "<?php echo explode("_", get_locale())[0]?>" // fi -> fi, sv_SE -> sv, en_US -> en
-    };
-</script>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 <style type="text/css">
 
@@ -79,25 +74,17 @@ get_footer();
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.min.js" integrity="sha512-Nwp3XMQKRvqr376bCa50Hs4X4z5zbsefo63QLa62poTx5o/GhYgjnToCoBZk7bxjeP2y84oEgKNUrpK2+2Czyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- https://github.com/proj4js/proj4js -->
 <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.4/dist-browser/geotiff.min.js"></script> <!-- see https://cdn.jsdelivr.net/npm/geotiff@2.0.4/README.md -->
+<?php include 'foConfig.php'?>
 <script type="text/javascript">
-    mapboxgl.accessToken = "pk.eyJ1IjoiaGFta3NtYXJ0IiwiYSI6ImNreG9sN3p0cDAweTkycG8yZ3B3NHV5cjUifQ.YfKxbZoIH0pR7x2ZU6bDIA";
-
-    var storageUrl = 'https://ilmatieteenlaitos.blob.core.windows.net/fieldobservatory2021-03-19/data';
-    var storageUrl2 = 'https://field-observatory.data.lit.fmi.fi';
-    var demoStorageUrl = 'https://field-observatory-demo.data.lit.fmi.fi';
-    if (!window.hasOwnProperty("v") || window.v === undefined || v.fieldobservatoryLanguage === undefined) {
-        var v = {
-            fieldobservatoryLanguage: "en"
-        };
+    foConfig = {
+        ...foConfig,
+        mapElementId: "map",
+        mapEnabled: true,
+        chartContainerElementId: "chart_container",
+        creditContainerElementId: "chart_container",
+        zoomLevel: 6,
+        manageSiteLinkEnabled: true
     }
-    var fieldobservatoryImagesUrl = "<?php echo get_template_directory_uri(); ?>/assets/images";
-    var fieldobservatoryJSUrl = "<?php echo get_template_directory_uri(); ?>/assets/js";    
-    v.mapElementId = "map";
-    v.mapEnabled = true;
-    v.chartContainerElementId = "chart_container";
-    v.creditContainerElementId = "chart_container";
-    v.zoomLevel = 6;
-    v.manageSiteLinkEnabled = true;
 </script>
 <?php $version = wp_get_theme()->version; ?>
 <script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCharts.js?ver=<?php echo $version ?>"></script>

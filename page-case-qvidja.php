@@ -1,6 +1,8 @@
 <?php include 'page.php'?>
+<?php include 'foConfig.php'?>
 <script type="text/javascript">
-    var v = {
+    foConfig = {
+        ...foConfig,
         siteId: "qvidja",
         startDate: new Date("2018-05-03T13:00:00.000000Z").valueOf()
     };

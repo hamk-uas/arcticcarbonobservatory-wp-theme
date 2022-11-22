@@ -22,7 +22,7 @@ async function loadData() {
                     if (csvStartDate <= v.endDate && csvEndDate >= v.startDate) {                        
                         if (csv.fetchAbortController === undefined) {
                             csv.fetchAbortController = new AbortController();
-                            let path = `${v.site.storageUrl}/${v.site.id}/${csv.url}?date=${getCacheRefreshDate(new Date(v.now))}`;
+                            let path = `${v.site.storageUrl}/${v.site.id}/${csv.url}?date=${getCacheRefreshDate(new Date(foConfig.now))}`;
                             //console.log(`Fetch CSV file ${path}`);
                             let fetchPromise = fetch(path, { method: 'GET', signal: csv.fetchAbortController.signal }).then(async function (result) {
                                 if (!result.ok) {
@@ -139,7 +139,7 @@ async function loadData() {
                     let geoTiffDate = new Date(geoTiff.time);                    
                     if (geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && geoTiffDate.valueOf() == v.satelliteImageDate) {
                         if (geoTiff.fetchAbortController === undefined) {
-                            let path = `${v.site.storageUrl}/${v.site.id}/${geoTiff.url}?date=${getCacheRefreshDate(new Date(v.now))}`;
+                            let path = `${v.site.storageUrl}/${v.site.id}/${geoTiff.url}?date=${getCacheRefreshDate(new Date(foConfig.now))}`;
                             //console.log(`Fetch geoTiff file ${path}`);
                             geoTiff.fetchAbortController = new AbortController();
                             let fetchPromise = fetch(`${path}`, { method: 'GET', signal: geoTiff.fetchAbortController.signal }).then(async function (result) {
@@ -196,7 +196,7 @@ async function loadData() {
                     let geoTiffDate = new Date(geoTiff.time);
                     if (geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && geoTiffDate.valueOf() == v.satelliteImageDate) {
                         if (geoTiff.fetchAbortController === undefined) {
-                            let path = `${v.storageUrl}/${v.site.id}/${geoTiff.url.replace(".tif", "_mapbox_source.json")}?date=${getCacheRefreshDate(new Date(v.now))}`;
+                            let path = `${foConfig.storageUrl}/${v.site.id}/${geoTiff.url.replace(".tif", "_mapbox_source.json")}?date=${getCacheRefreshDate(new Date(foConfig.now))}`;
                             //console.log(`Fetch geoTiff file ${path}`);
                             geoTiff.fetchAbortController = new AbortController();
                             let fetchPromise = fetch(`${path}`, { method: 'GET', signal: geoTiff.fetchAbortController.signal }).then(async function (result) {
@@ -255,7 +255,7 @@ async function loadData() {
                 if (json.loaded === undefined) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
                         if (json.fetchAbortController === undefined) {
-                            let path = `${v.site.storageUrl}/${v.site.id}/${json.url}?date=${getCacheRefreshDate(new Date(v.now))}`;
+                            let path = `${v.site.storageUrl}/${v.site.id}/${json.url}?date=${getCacheRefreshDate(new Date(foConfig.now))}`;
                             console.log(`Fetch json file ${path}`);
                             json.fetchAbortController = new AbortController();
                             let fetchPromise = fetch(`${path}`, { method: 'GET', signal: json.fetchAbortController.signal }).then(async function (result) {
@@ -348,6 +348,7 @@ onmessage = function (e) {
             importScripts(e.data.script);
             break;
         case "vInit": // Init state v
+            foConfig = e.data.foConfig;
             v = e.data.v;
             break;
         case "vUpdate": // Update state v

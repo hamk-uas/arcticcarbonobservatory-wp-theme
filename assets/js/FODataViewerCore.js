@@ -1,4 +1,4 @@
-﻿var ap_plaintext = {
+﻿const ap_plaintext = {
     "AP001": "Broadcast, not incorporated",
     "AP002": "Broadcast, incorporated",
     "AP003": "Banded on surface",
@@ -645,7 +645,7 @@ var t = {
 // Get property of object in the current language.
 // You can pass a fallback value that is returned if the property is not found in the desired language or the default language.
 // If fallback is undefined or not given, then the property name itself returned as the fallback value.
-function translate(object, property, fallback = property, language = v.fieldobservatoryLanguage) {
+function translate(object, property, fallback = property, language = foConfig.language) {
     if (language !== 'en') {
         let translationKey = `${property}_${language}`;
         if (object[translationKey] !== undefined && object[translationKey] != null) {
@@ -661,10 +661,10 @@ function translate(object, property, fallback = property, language = v.fieldobse
 }
 
 function translationKey(object, property) {
-    if (v.fieldobservatoryLanguage === 'en') {
+    if (foConfig.language === 'en') {
         return property;
     } else {
-        let translationKey = `${property}_${v.fieldobservatoryLanguage}`;
+        let translationKey = `${property}_${foConfig.language}`;
         if (object[translationKey] !== undefined) {
             return translationKey;
         } else {
@@ -688,8 +688,8 @@ function prepCharts(v, siteJson, chartsJson) {
     siteJson = JSON.parse(JSON.stringify(siteJson)); // Create copies so that we can modify the variables
     chartsJson = JSON.parse(JSON.stringify(chartsJson));
 
-    if (v.chartEnabled !== undefined) {
-        chartsJson.charts = chartsJson.charts.filter(chart => v.chartEnabled[chart.id]);
+    if (foConfig.chartFilter !== undefined) {
+        chartsJson.charts = chartsJson.charts.filter(chart => foConfig.chartFilter[chart.id]);
     }
 
     var sourceTypeToSources = {}; // Dict: sourceType id => source
@@ -1548,7 +1548,7 @@ function getChartSVGDivInnerHtml(v, chartId) {
     }
     legend += "</div>"
     return `
-    ${chartId === "satelliteImages" ? `<div class="colorbar-container"><img id="colorbar" class="colorbar" style="visibility:visible" width="48px" src="${fieldobservatoryImagesUrl}/colorbar.svg" alt="colorbar"><img id="colorbar_lai" class="colorbar" style="visibility:hidden" width="48px" src="${v.fieldobservatoryImagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI"></div>` : `<h4>${translate(v.charts[chartId], "title")}</h4>`}
+    ${chartId === "satelliteImages" ? `<div class="colorbar-container"><img id="colorbar" class="colorbar" style="visibility:visible" width="48px" src="${foConfig.imagesUrl}/colorbar.svg" alt="colorbar"><img id="colorbar_lai" class="colorbar" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI"></div>` : `<h4>${translate(v.charts[chartId], "title")}</h4>`}
     ${getChartSvgOuterHtml(v, chartId)}
     ${legend}`;
 }
@@ -2536,19 +2536,19 @@ function getDrawingHtmls(v, chartId, standalone = false) {
         drawingHtml += `<g pointer-events="none">${ fractilesHtml }</g>`;
         drawingHtml += linesHtml;
     }
-    if (v.now < v.endDate) {
-        let nowX = (v.now - v.startDate) * pixelsPerMillisecond;
+    if (foConfig.now < v.endDate) {
+        let nowX = (foConfig.now - v.startDate) * pixelsPerMillisecond;
 /*        // Indicate prediction
-        if (maxDate > v.now || forecast == true) {
-            if (v.now > v.startDate) {
+        if (maxDate > foConfig.now || forecast == true) {
+            if (foConfig.now > v.startDate) {
                 drawingBackgroundHtml += `<rect pointer-events="none" x="${nowX.toFixed(1)}" y="0" width="${v.dimensions.width - nowX.toFixed(1)}" height="${height}" style="fill:#ffffff;stroke:none;opacity:0.4" />`;
             } else {
                 drawingBackgroundHtml += `<rect pointer-events="none" x="0" y="0" width="${v.dimensions.width}" height="${height}" style="fill:#ffffff;stroke:none;opacity:0.4" />`;
             }
         }*/
         // Indicate current time
-        if (v.now >= v.startDate) {
-            let dateObject = new Date(v.now);
+        if (foConfig.now >= v.startDate) {
+            let dateObject = new Date(foConfig.now);
             let tooltipString = translate(t.tooltip, 'now')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
             drawingBackgroundHtml += `<line pointer-events="none" x1="${nowX.toFixed(1)}" y1="0" x2="${nowX.toFixed(1)}" y2="${height}" stroke="${v.disabledColor}" stroke-width="1" stroke-dasharray="4" />`;
             drawingBackgroundHtml += `<text pointer-events="none" font-family="sans-serif" font-size="12px" font-weight="bold" fill="${v.disabledColor}" text-anchor="middle" dominant-baseline="middle" x="${nowX.toFixed(1)}" y="${-9}">✓</text>`;
