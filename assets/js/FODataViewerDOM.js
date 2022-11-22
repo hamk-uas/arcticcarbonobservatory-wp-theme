@@ -31,7 +31,7 @@ initStateFromLocationUrl(); // Parse browser URL parameters
 
 var handleEsc = undefined;
 
-var fODataViewerMap = {
+var siteSelectorMapView = {
     fitBoundsOptions: {
         padding: 40,
     },
@@ -88,6 +88,7 @@ async function loadEssentials() {
     }
     let promises = [
         Promise.all(siteSelectorViewPromises).then(async function () {
+            console.log("1");
             sitesGeoJson.features.forEach(function (feature) {
                 feature.properties.storageUrl = foConfig.storageUrl;
             });
@@ -104,12 +105,12 @@ async function loadEssentials() {
                     siteTypeList.push(feature.properties.site_type);
                 }
             });
-            fODataViewerMap = {
-                ...fODataViewerMap,
+            siteSelectorMapView = {
+                ...siteSelectorMapView,
                 bounds: getBoundingBox(sitesGeoJson.features),
             }
             if (getSiteId() === undefined && foConfig.mapEnabled) {
-                return initMap(fODataViewerMap);
+                return initMap(siteSelectorMapView);
             };
         }),
         Promise.all(siteViewPromises).then(async function () {
@@ -123,7 +124,7 @@ async function loadEssentials() {
                 if (filteredFeatures.length == 0) {
                     filteredFeatures = blocksGeoJson.features;
                 }
-                if (!foConfig.mapEnabled) {
+                if (foConfig.mapEnabled) {
                     return initMap({
                         ...siteMapView,
                         bounds: getBoundingBox(filteredFeatures)
@@ -488,7 +489,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
     // Make essential layers visible
     var filterContainer = document.getElementById("mapFilterContainer");
     
-    filterContainerInnerHTML = '';// `<h2 style="padding-bottom:10px;">${translate(w.plaintext, "show sites")}</h2>`;
+    filterContainerInnerHTML = '';
     siteTypeList.forEach(function (siteTypeId) {
         siteType = siteTypes[siteTypeId];
         filterContainerInnerHTML += `
@@ -503,9 +504,9 @@ function viewSiteSelectorAfterLoadingEssentials() {
     whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("visible") });
 
     map.resize();
-    map.setMinZoom(fODataViewerMap.minZoom);
-    map.setMaxZoom(fODataViewerMap.maxZoom);
-    map.fitBounds(fODataViewerMap.bounds, { padding: fODataViewerMap.fitBoundsOptions.padding, duration: 1000 });
+    map.setMinZoom(siteSelectorMapView.minZoom);
+    map.setMaxZoom(siteSelectorMapView.maxZoom);
+    map.fitBounds(siteSelectorMapView.bounds, { padding: siteSelectorMapView.fitBoundsOptions.padding, duration: 1000 });
     //map.flyTo({...defaultMapView, duration:1000 });
     setOthersThanMapLoaded(true);
 
@@ -630,17 +631,6 @@ function viewSiteSelectorAfterLoadingEssentials() {
             delete popup.userData;
             popup.remove();
         });
-        /*
-        addMapEventHandler('idle', () => {
-        });
-        addMapEventHandler('moveend', function () {
-        });
-        addMapEventHandler('sourcedata', function (e) {
-        });
-        addMapEventHandler('error', function (e) {
-            console.log(e.error);
-        });
-        */
     }
 
     window.onpopstate = function () { unviewSiteSelectorAndViewSite(getSiteId()); };
@@ -2350,6 +2340,8 @@ async function initPage() {
     }
 
     await loadEssentials(); // Load sitesGeoJson, blocksGeoJson and chartsJson, and mappy things
+    console.log("map:");
+    console.log(map);
     /*sitesGeoJson.features = sitesGeoJson.features
     .map(value => ({ value, sort: Math.random() }))
     .sort((a, b) => a.sort - b.sort)

@@ -91,9 +91,3 @@ get_footer();
 <script type="text/js-worker" id="fieldobservatory-FODataViewerWorkerJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerWorker.js?ver=<?php echo $version ?>"></script>
 <script type="text/javascript" id="fieldobservatory-FODataViewerCoreJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCore.js?ver=<?php echo $version ?>"></script>
 <script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerDOM.js?ver=<?php echo $version ?>"></script>
-<script>
-console.log("End of field-data.php");
-document.addEventListener('DOMContentLoaded', (event) => {
-  console.log("DOM loaded event");
-})
-</script>
