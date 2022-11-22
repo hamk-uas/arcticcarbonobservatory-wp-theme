@@ -421,6 +421,17 @@ header .navigation-container {
 
 /* #endregion Pattern settings */
 
+/* #region Styling for about page */
+
+.logo-background-box img {
+    background-color: lightgray;
+    border: solid 1px;
+    margin: 16px;
+    padding: 16px;
+}
+
+/* #endregion Styling for about page */
+
 /* #region Footer settings */
 
 footer {
@@ -429,6 +440,7 @@ footer {
     width: 100%;
     text-align: center;
     background: rgba(0, 0, 0, 1);
+    margin-top: 64px;
 }
 
 footer .footer-area-contact {
