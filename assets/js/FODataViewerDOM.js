@@ -88,7 +88,6 @@ async function loadEssentials() {
     }
     let promises = [
         Promise.all(siteSelectorViewPromises).then(async function () {
-            console.log("1");
             sitesGeoJson.features.forEach(function (feature) {
                 feature.properties.storageUrl = foConfig.storageUrl;
             });
