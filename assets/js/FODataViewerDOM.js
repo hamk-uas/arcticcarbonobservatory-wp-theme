@@ -1,4 +1,724 @@
-﻿if (window.hasOwnProperty("proj4")) {
+﻿window.onresize = onWindowResize;
+
+function getSiteId() {
+    if (window.hasOwnProperty("v") && window.v !== undefined && v.siteId !== undefined) {
+        return v.siteId;
+    } else {
+        return history.state.site;
+    }
+}
+
+var siteTypeColors = {
+    'Advanced CarbonAction Site': '#349a80',
+    'Intensive Site': '#129bc7',
+    'Valio': '#114a9c',
+    'Svensk Kolinlagring Site': '#292929',
+    'co-carbon': '#234832',
+    'smear-agri': '#000000'
+};
+
+//Get color by siteType
+function getSiteTypeColor(siteType) {
+    let color = siteTypeColors[siteType];
+    if (color === undefined) {
+        color = "#349a80";
+    }
+    return color;
+}
+
+// Prepare map
+initStateFromLocationUrl(); // Parse browser URL parameters
+
+var handleEsc = undefined;
+
+var fODataViewerMap = {
+    fitBoundsOptions: {
+        padding: 40,
+    },
+    minZoom: 4,
+    maxZoom: 10
+};
+
+var siteMapView = {
+    fitBoundsOptions: {
+        padding: 40,
+    },
+    minZoom: 10,
+    maxZoom: 17
+};
+
+var map;
+var mapLoaded; // Did the map already load?
+var othersThanMapLoaded; // Did other things already load?
+var popup;
+var siteTypes = {}; // All encountered site types
+var siteTypeList = []; // All encountered site types
+
+// Json data needed for site selector view
+var sitesGeoJson;
+var blocksGeoJson;
+var mapbackgroundsJson;
+var demoSitesGeoJson;
+var demoBlocksGeoJson;
+var demoMapbackgroundsJson;
+// Json data needed for site view
+var siteJson;
+
+var geolocateControl;
+
+async function loadEssentials() {
+    async function getJson(response) {
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${response.url}: ${response.status}`);
+        }
+        return response.json();
+    }
+
+    let now = new Date(Date.now());
+    let siteSelectorViewPromises = [
+        fetch(`${storageUrl2}/fieldobs_sites_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { sitesGeoJson = json; })
+    ];
+    let siteViewPromises = [
+        fetch(`${storageUrl2}/fieldobs_blocks_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { blocksGeoJson = json; }),
+        fetch(`${storageUrl2}/fieldobs_sites_mapbackgrounds.geojson`).then(getJson).then(json => { mapbackgroundsJson = json; })
+    ];
+    if (history.state.demo !== undefined) {
+        siteSelectorViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
+        siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
+        siteViewPromises.push(fetch(`${demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(now)}`).then(getJson).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
+    }
+    let promises = [
+        Promise.all(siteSelectorViewPromises).then(async function () {
+            sitesGeoJson.features.forEach(function (feature) {
+                feature.properties.storageUrl = storageUrl2;
+            });
+            if (history.state.demo !== undefined) {
+                demoSitesGeoJson.features.forEach(function (feature) {
+                    feature.properties.storageUrl = demoStorageUrl;
+                });
+                sitesGeoJson.features.push(...demoSitesGeoJson.features);
+            };
+            // Find unique site types
+            sitesGeoJson.features.forEach(function (feature) {
+                if (siteTypes[feature.properties.site_type] === undefined) {
+                    siteTypes[feature.properties.site_type] = feature; // sample feature
+                    siteTypeList.push(feature.properties.site_type);
+                }
+            });
+            fODataViewerMap = {
+                ...fODataViewerMap,
+                bounds: getBoundingBox(sitesGeoJson.features),
+            }
+            if (getSiteId() === undefined && !v.enableMap) {
+                return initMap(fODataViewerMap);
+            };
+        }),
+        Promise.all(siteViewPromises).then(async function () {
+            if (history.state.demo !== undefined) {
+                blocksGeoJson.features.push(...demoBlocksGeoJson.features);
+                mapbackgroundsJson.features.push(...demoMapbackgroundsJson.features);
+            };
+            if (getSiteId() !== undefined) {
+                // Init map view to site blocks
+                let filteredFeatures = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
+                if (filteredFeatures.length == 0) {
+                    filteredFeatures = blocksGeoJson.features;
+                }
+                if (!v.enableMap) {
+                    return initMap({
+                        ...siteMapView,
+                        bounds: getBoundingBox(filteredFeatures)
+                    });
+                }
+            }
+        })/*,
+            fetch(`js/FODataViewerCharts.json?version=2021-02-23c`).then(getJson).then(json => { chartsJson = json }) */
+    ];/*
+    if (getSiteId() !== undefined) {
+        // Fetch site.json early if possible:
+        if (sitesGeoJson !== undefined) {
+            for (let feature of sitesGeoJson.features) {
+                if (feature.properties.site === getSiteId()) {
+                    promises.push(fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
+                        siteJson = json;
+                    }));
+                }
+            }
+        }
+        if (history.state.demo !== undefined) {
+            siteViewPromises.push(fetch(`${demoStorageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(now)}`).then(getJson).then(async (json) => {
+                var demoSiteJson = json;
+            }));
+        }
+    }*/
+    await Promise.all(promises).catch(function (err) {
+        console.log(err); // some coding error in handling happened
+        popUpMessageText("Failed to load data", "Please try again later.");
+    });
+}
+
+// Set state. Keys for which the value is undefined are not stored.
+function setState(state) {
+    state = Object.entries(state).reduce((a, [k, v]) => (v === undefined ? a : (a[k] = v, a)), {}); // Remove everything that has value undefined
+    let url = new URL(window.location.href);
+    url.search = new URLSearchParams(state);
+    history.replaceState(state, "", url.href);
+    for (let languageParent of document.getElementsByClassName("lang-item")) {
+        let languageA = languageParent.firstChild;
+        if (languageA !== undefined) {
+            let languageHref = languageA.href;
+            if (languageHref !== undefined) {
+                let languageUrl = new URL(languageHref);
+                languageUrl.search = url.search;
+                languageA.href = languageUrl.href;
+            }
+        }
+    }      
+}
+
+// Init state from location URL parameters
+function initStateFromLocationUrl() {
+    let sanitized = {};
+    for (let [key, value] of new URLSearchParams(window.location.search)) {
+        sanitized[key] = value.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    }
+    setState(sanitized);
+}
+
+// Update state. Keys for which the value is undefined are removed.
+function updateState(update = {}) {
+    setState({ ...history.state, ...update });
+}
+
+// Push state to history. Do this before any significant updateState.
+function pushState() {
+    history.pushState(history.state, "");
+}
+
+async function mapLoadImage(url, id) {
+    return new Promise((resolve, reject) => {
+        map.loadImage(url, function (error, res) {
+            map.addImage(id, res);
+            resolve();
+        });
+    });
+}
+
+function initMap(initMapView) {
+    map = new mapboxgl.Map({
+        container: v.mapElementId,
+        style: 'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa',
+        ...initMapView,
+        locale: {                       
+            'AttributionControl.ToggleAttribution': translate(t.tooltip, "toggleAttribution"),
+            'AttributionControl.MapFeedback': translate(t.tooltip, "mapFeedback"),
+            'FullscreenControl.Enter': translate(t.tooltip, "enterFullscreen"),
+            'FullscreenControl.Exit': translate(t.tooltip, "exitFullscreen"),
+            'GeolocateControl.FindMyLocation': translate(t.tooltip, "findMyLocation"),
+            'GeolocateControl.LocationNotAvailable': translate(t.tooltip, "locationNotAvailable"),
+            'LogoControl.Title': translate(t.tooltip, "mapboxLogo"),
+            'Map.Title': translate(t.tooltip, "map"),
+            'NavigationControl.ResetBearing': translate(t.tooltip, "resetBearingToNorth"),
+            'NavigationControl.ZoomIn': translate(t.tooltip, "zoomIn"),
+            'NavigationControl.ZoomOut': translate(t.tooltip, "zoomOut"),
+            'ScaleControl.Feet': translate(t.tooltip, 'ft'),
+            'ScaleControl.Meters': translate(t.tooltip, 'm'),
+            'ScaleControl.Kilometers': translate(t.tooltip, 'km'),
+            'ScaleControl.Miles': translate(t.tooltip, 'mi'),
+            'ScaleControl.NauticalMiles': translate(t.tooltip, 'nm'),
+            'ScrollZoomBlocker.CtrlMessage': translate(t.tooltip, "useCtrlPlusScrollToZoomTheMap"),
+            'ScrollZoomBlocker.CmdMessage': translate(t.tooltip, "useCmdPlusScrollToZoomTheMap"),
+            'TouchPanBlocker.Message': translate(t.tooltip, "useTwoFingersToMoveTheMap"),
+        }
+/*        layout: {
+            "country-label": {
+                "text-field": ["get", "name"]
+            }
+        }*/
+    });
+    setOthersThanMapLoaded(false);
+/*    map.once('load', function () {
+        if (v.fieldobservatoryLanguage !== 'en') {
+            console.log("set map language");
+            map.setLayoutProperty('country-label', 'text-field', [
+                'get',
+                'name'
+            ]);
+        }    
+    });*/
+    map.once('load', function () {
+        mapLoaded = true;
+        setOthersThanMapLoaded();
+    }); // Note: this cannot be done using map.loaded()
+    map.dragRotate.disable(); // disable map rotation using right click + drag
+    map.touchZoomRotate.disableRotation(); // disable map rotation using touch rotation gesture
+    popup = new mapboxgl.Popup({ // Create a popup, but don't add it to the map yet.
+        closeButton: false,
+        closeOnClick: false
+    });
+    nav = new mapboxgl.NavigationControl();
+    map.addControl(
+        new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            countries: 'fi'
+        })
+    );
+    geolocateControl = new mapboxgl.GeolocateControl({
+        positionOptions: {
+            enableHighAccuracy: true
+        },
+        trackUserLocation: true
+    });
+    map.addControl(geolocateControl);
+    map.addControl(new mapboxgl.ScaleControl(), 'bottom-right');
+    /*map.addControl(
+        new mapboxgl.FullscreenControl({
+            container: document.querySelector('map')
+        })
+    );*/
+    return Promise.all([
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGreen.png`, 'MapMarkerDarkGreen'),
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkBlue.png`, 'MapMarkerDarkBlue'),
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerBlue.png`, 'MapMarkerBlue'),
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerGreen.png`, 'MapMarkerGreen'),
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerDarkGrey'),
+        mapLoadImage(`${fieldobservatoryImagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerBlack')
+    ]);
+}
+
+function setLoader() {
+    document.body.classList.remove('loaded');
+    document.body.classList.add('loader');
+}
+
+function setLoaded() {
+    document.body.classList.remove('loader');
+    document.body.classList.add('loaded');
+}
+
+// Set loading status. Do not worry about map loading status. It is handled automatically.
+function setOthersThanMapLoaded(loaded = othersThanMapLoaded) {
+    othersThanMapLoaded = loaded;
+    if (loaded) {
+        if (mapLoaded) {
+            setLoaded();
+        }
+    } else {
+        setLoader();
+    }
+}
+
+function onWindowResize() {
+    // const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    /*
+    if (window.innerWidth <= 1024 && history.state && getSiteId() !== undefined) {
+        // One column
+        let satelliteImages = document.getElementById("satellite_images");
+        if (satelliteImages !== null) {
+            satelliteImages.before(document.getElementById("map"));
+        }
+    } else {
+        // Two column
+        document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+    }*/
+
+    if (getSiteId() !== undefined) {
+        if (v.mapEnabled) {
+            whenMapLoadedDo(function () {
+                map.resize()
+            });
+        }
+        resizeCharts();
+        if (v.mapEnabled) {
+            if (window.innerWidth <= 1024) {
+                // One column
+                document.getElementById("Satellite_images").after(document.getElementById("map"));
+            } else {
+                document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+            }
+        }
+    }
+}
+
+function setSiteSelectorMapLayerVisibility(visibility) {
+    map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', visibility);
+    map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', visibility);
+    //map.setLayoutProperty("cluster-countFieldLocations", 'visibility', visibility);
+    //map.setLayoutProperty("clustersFieldLocations", 'visibility', visibility);
+}
+
+function whenMapLoadedDo(f) {
+    if (!v.mapEnabled || mapLoaded) {
+        f();
+    } else {
+        map.once('load', f);
+    }
+}
+
+function getCacheRefreshDate(date) {
+    return [date.getFullYear(), (date.getMonth() + 1).toString().padStart(2, '0'), date.getDate().toString().padStart(2, '0'), date.getHours().toString().padStart(2, '0')].join('-') + "h";
+}
+
+// Get bounding box as [[minLng, maxLng], [minLat, maxLat]] of a feature or features, with or without a starting point boundingBox to be extended by modifying it.
+function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], [-Infinity, -Infinity]]) {
+    function accumulate(feature) {
+        if (feature.geometry.type === "Polygon") {
+            // coordinates[0] is the exterior ring. We use that as holes in the field will always be inside it.
+            boundingBox[0][0] = feature.geometry.coordinates[0].reduce((minLng, LngLat) => Math.min(minLng, parseFloat(LngLat[0])), boundingBox[0][0]);
+            boundingBox[1][0] = feature.geometry.coordinates[0].reduce((maxLng, LngLat) => Math.max(maxLng, parseFloat(LngLat[0])), boundingBox[1][0]);
+            boundingBox[0][1] = feature.geometry.coordinates[0].reduce((minLat, LngLat) => Math.min(minLat, parseFloat(LngLat[1])), boundingBox[0][1]);
+            boundingBox[1][1] = feature.geometry.coordinates[0].reduce((maxLat, LngLat) => Math.max(maxLat, parseFloat(LngLat[1])), boundingBox[1][1]);
+        } else if (feature.geometry.type === "Point") {
+            boundingBox[0][0] = Math.min(boundingBox[0][0], parseFloat(feature.geometry.coordinates[0]));
+            boundingBox[1][0] = Math.max(boundingBox[1][0], parseFloat(feature.geometry.coordinates[0]));
+            boundingBox[0][1] = Math.min(boundingBox[0][1], parseFloat(feature.geometry.coordinates[1]));
+            boundingBox[1][1] = Math.max(boundingBox[1][1], parseFloat(feature.geometry.coordinates[1]));
+        }
+    }
+    if (Array.isArray(featureOrFeatures)) {
+        if (featureOrFeatures.length == 0) {
+            console.warn("Calculated bounding box for empty data");
+            return boundingBox;
+        }
+        featureOrFeatures.forEach(accumulate);
+    } else {
+        accumulate(feature);
+    }
+    return boundingBox;
+}
+
+var tooltipOnceIds = {};
+var tooltipInitiatorToOnceId = {};
+var tooltipInitiatorId;
+var pageX, pageY; // Current mouse position
+let tooltip = document.getElementById("tooltip");
+var tooltipTransitionStart = function() {};
+var tooltipTransitionEnd = function() {};
+var preventTooltipReappearElementId;
+
+tooltip.addEventListener("transitionstart", function(e) {
+    tooltipTransitionStart();
+}, { once: false });
+tooltip.addEventListener("transitionend", function(e) {
+    tooltipTransitionEnd();
+}, { once: false });
+
+document.addEventListener('mousemove', trackMouse, false);
+document.addEventListener('mouseenter', trackMouse, false);
+document.addEventListener('click', (e) => {
+    immediateHideTooltip(tooltipInitiatorId);    
+}, false);
+    
+function trackMouse(e) {
+    pageX = e.pageX;
+    pageY = e.pageY;
+}
+
+function immediateHideTooltip(elementId) {
+    let tooltip = document.getElementById("tooltip");
+    tooltip.className = "tooltip_hidden";
+    preventTooltipReappearElementId = elementId;
+}
+
+function showTooltip(e, initiatorId, text) {
+    // console.log(`showTooltip ${initiatorId}`);
+    if (initiatorId !== preventTooltipReappearElementId) {
+        preventTooltipReappearElementId = undefined;
+        function refreshTextAndPosition() {
+            tooltip.innerHTML = text;
+            tooltip.style.left = pageX + 10 + 'px';
+            tooltip.style.top = pageY + 10 + 'px';
+        }
+
+        function reveal() {
+            refreshTextAndPosition();
+            tooltip.className = "tooltip_reveal";
+        }
+
+        function restartDelay() {
+            tooltip.className = "tooltip_delay";
+            tooltipTransitionStart = function() {
+                tooltipTransitionStart = function() {};
+                reveal();
+            }
+        }
+
+        tooltipInitiatorId = initiatorId;
+        if (tooltip.className === "tooltip_hidden") {
+            window.requestAnimationFrame(restartDelay);
+        } else if (tooltip.className === "tooltip_delay") {
+            window.requestAnimationFrame(restartDelay);
+        } else if (tooltip.className === "tooltip_reveal") {
+            refreshTextAndPosition();
+        } else if (tooltip.className === "tooltip_hide") {
+            tooltipTransitionEnd = function() {};
+            reveal();
+        }
+    }
+}
+
+function hideTooltip(e, initiatorId) {
+    preventTooltipReappearElementId = undefined;
+    if (tooltip.className === "tooltip_delay") {
+        tooltipTransitionStart = function () {};
+        tooltip.className = "tooltip_hidden";
+    } else if (tooltip.className === "tooltip_reveal") {
+        tooltipTransitionEnd = function () {        
+            tooltipTransitionEnd = function() {};
+            tooltip.className = "tooltip_hidden";
+        }
+        tooltip.className = "tooltip_hide";
+    }
+}
+
+var mapEventsAndHandlers = [];
+var nav;
+
+function normalize(string) {
+    return string.trim().toLowerCase();
+}
+
+function viewSiteSelector() {
+    viewSiteSelectorBeforeLoadEssentials();
+    viewSiteSelectorAfterLoadingEssentials();
+}
+
+function viewSiteSelectorBeforeLoadEssentials() {
+    document.body.classList.add('SiteSelector');
+}
+
+
+function addMapEventHandler(...args) {
+    map.on(...args);
+    mapEventsAndHandlers.push(args);
+}
+
+function removeMapEventHandlers() {
+    mapEventsAndHandlers.forEach(function (event) {
+        map.off(...event);
+    });
+    mapEventsAndHandlers = [];
+}
+
+// Open site selector view
+function viewSiteSelectorAfterLoadingEssentials() {
+    // Make essential layers visible
+    var filterContainer = document.getElementById("mapFilterContainer");
+    
+    filterContainerInnerHTML = '';// `<h2 style="padding-bottom:10px;">${translate(w.plaintext, "show sites")}</h2>`;
+    siteTypeList.forEach(function (siteTypeId) {
+        siteType = siteTypes[siteTypeId];
+        filterContainerInnerHTML += `
+        <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilter")}">
+            ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
+            <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" checked>
+            <span class="checkmark" style="background-color:${getSiteTypeColor(siteTypeId)}"></span>
+        </label>`;
+    });
+    filterContainer.innerHTML = filterContainerInnerHTML;
+    filterContainer.style.display = "block";
+    whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("visible") });
+
+    map.resize();
+    map.setMinZoom(fODataViewerMap.minZoom);
+    map.setMaxZoom(fODataViewerMap.maxZoom);
+    map.fitBounds(fODataViewerMap.bounds, { padding: fODataViewerMap.fitBoundsOptions.padding, duration: 1000 });
+    //map.flyTo({...defaultMapView, duration:1000 });
+    setOthersThanMapLoaded(true);
+
+    if (mapEventsAndHandlers.length == 0) {
+        function createNearPopup(e) {
+            // Change the cursor style as a UI indicator.
+            map.getCanvas().style.cursor = 'pointer';
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var name = e.features[0].properties.Name;
+            var siteType = e.features[0].properties.site_type;
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            if (popup.userData !== undefined) {
+                delete popup.userData;
+                popup.remove()
+            }
+            var styleColor = getSiteTypeColor(siteType);
+            popup
+                .setLngLat(coordinates)
+                .setHTML('<h1 id="fieldLocationsLayerNearPopup">' + name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
+                .addTo(map);
+            popup.userData = "near";
+        }
+        addMapEventHandler('mouseenter', 'fieldLocationsLayerNear', createNearPopup);
+        addMapEventHandler('mousemove', 'fieldLocationsLayerNear', function (e) {
+            if (popup.userData === "far") {
+                delete popup.userData;
+                popup.remove();
+            }
+            createNearPopup(e);
+        });
+
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function () {
+            map.getCanvas().style.cursor = '';
+            if (popup.userData === "far") {
+                delete popup.userData;
+                popup.remove();
+            }
+        });
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerNear', function () {
+            map.getCanvas().style.cursor = '';
+            if (popup.userData === "near") {
+                delete popup.userData;
+                popup.remove();
+            }
+        });
+
+        addMapEventHandler('click', 'fieldLocationsLayerNear', async function (e) {
+            document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
+            pushState();
+            await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
+        });
+
+        addMapEventHandler('mouseenter', 'fieldLocationsLayerFar', function (e) {
+            if (popup.userData !== "near") {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                popup
+                    .setLngLat(coordinates)
+                    .setHTML('<h2>' + translate(t.plaintext_titles, "click_to_zoom") + '</h2>')
+                    .addTo(map);
+                popup.userData = "far";
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+            }
+        });
+        addMapEventHandler('mousemove', 'fieldLocationsLayerFar', function (e) {
+            if (popup.userData !== "near") {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                popup.setLngLat(coordinates)
+            }
+        });
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function () {
+            if (popup.userData === "far") {
+                map.getCanvas().style.cursor = '';
+                delete popup.userData;
+                popup.remove();
+            }
+        });
+        addMapEventHandler('click', 'fieldLocationsLayerFar', function (e) {
+            document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
+            // Find clicked feature
+            let clickXY = map.project(e.lngLat);
+            let xys = [];
+            let clickedIndex = undefined;
+            let smallestDistanceSquared = undefined;
+            for (let [index, feature] of sitesGeoJson.features.entries()) {
+                xys.push(map.project({lng: feature.properties.lon, lat: feature.properties.lat}));
+                let distanceSquared = (xys[xys.length - 1].x - clickXY.x)*(xys[xys.length - 1].x - clickXY.x) + (xys[xys.length - 1].y - clickXY.y)*(xys[xys.length - 1].y - clickXY.y);
+                if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                    smallestDistanceSquared = distanceSquared;
+                    clickedIndex = index;
+                }
+            }
+            // Find nearest other feature
+            smallestDistanceSquared = undefined;
+            for (let [index, feature] of sitesGeoJson.features.entries()) {
+                if (index != clickedIndex) {
+                    let distanceSquared = (xys[index].x - xys[clickedIndex].x)*(xys[index].x - xys[clickedIndex].x) + (xys[index].y - xys[clickedIndex].y)*(xys[index].y - xys[clickedIndex].y);
+                    if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                        smallestDistanceSquared = distanceSquared;
+                    }
+                }
+            }
+            // Calculate zoom needed to make smallestDistance = targetDistance
+            let smallestDistance = Math.sqrt(smallestDistanceSquared);
+            const targetDistance = 50;
+            const zoomNeeded = map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance);            
+            map.easeTo({
+                center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
+                zoom: (zoomNeeded < map.getZoom() + 1)? map.getZoom() + 1: zoomNeeded
+            });
+            delete popup.userData;
+            popup.remove();
+        });
+        addMapEventHandler('movestart', function () {
+            delete popup.userData;
+            popup.remove();
+        });
+        /*
+        addMapEventHandler('idle', () => {
+        });
+        addMapEventHandler('moveend', function () {
+        });
+        addMapEventHandler('sourcedata', function (e) {
+        });
+        addMapEventHandler('error', function (e) {
+            console.log(e.error);
+        });
+        */
+    }
+
+    window.onpopstate = function () { unviewSiteSelectorAndViewSite(getSiteId()); };
+}
+
+//Filter mapbox layer data
+function checkCheckBoxes() {
+    map.setFilter(
+        'fieldLocationsLayerNear',
+        null
+    );
+    map.setFilter(
+        'fieldLocationsLayerFar',
+        null
+    );
+    let siteTypePlainText = {
+        "Advanced CarbonAction Site": "Advanced CarbonAction Site",
+        "Intensive Site": "Intensive Site",
+        "Svensk Kolinlagring Site": "Svensk Kolinlagring Site",
+        "Valio": "Valio"
+    }
+    let filterList = siteTypeList.filter(function (siteType) {
+        console.log(`checkBox${siteType.replaceAll(' ', '')}`);
+        return document.getElementById(`checkBox${siteType.replaceAll(' ', '')}`).checked;
+    }).map(siteType => ['==', ['get', 'site_type'], siteType]);
+
+    let base = ['any'];
+    let filter = base.concat(filterList);
+    map.setFilter(
+        'fieldLocationsLayerFar',
+        filter
+    );
+    map.setFilter(
+        'fieldLocationsLayerNear',
+        filter
+    );
+}
+
+async function unviewSiteSelectorAndViewSite(site) {
+    //Hide filters
+    var filterContainer = document.getElementById("mapFilterContainer");
+    filterContainer.style.display = "none";
+    window.onpopstate = defaultPopstateHandler;
+    handleEsc = undefined;    
+    delete(v.siteId);
+    delete(v.startDate);
+    updateState({ site: site });
+    setOthersThanMapLoaded(false);
+    removeMapEventHandlers();
+    popup.remove();
+    map.getCanvas().style.cursor = '';
+    document.body.classList.remove('SiteSelector');    
+    await viewSite(1000);
+}
+
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+};
+
+if (window.hasOwnProperty("proj4")) {
     proj4.defs([['EPSG:4326', 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]']]);
     for (let i = 1; i <= 60; i++) {
         proj4.defs([[`EPSG:${32600 + i}`, `PROJCS["WGS 84 / UTM zone ${i}N",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Transverse_Mercator"],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",${i*6 - 183}],PARAMETER["scale_factor",0.9996],PARAMETER["false_easting",500000],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AUTHORITY["EPSG","${32600 + i}"]]`],]);
@@ -303,8 +1023,8 @@ var nonspecialChartId;
 var mapbackgrounds;
 
 //const versionHash = (new URL(document.getElementById("versioned_js").src)).searchParams.get('v');
-const mapViewSiteWorkerJsUrl = document.getElementById("fieldobservatory-MapViewSiteWorkerJs-js").src;
-const mapViewSiteSharedJsUrl = document.getElementById("fieldobservatory-MapViewSiteSharedJs-js").src;
+const FODataViewerWorkerJsUrl = document.getElementById("fieldobservatory-FODataViewerWorkerJs-js").src;
+const FODataViewerCoreJsUrl = document.getElementById("fieldobservatory-FODataViewerCoreJs-js").src;
 
 function refreshChart(chartId, refreshIndex, xAxisHtml, drawingHtmls) {
     if (xAxisHtml === undefined) {
@@ -585,8 +1305,8 @@ async function viewSite(zoomDuration) {
 }
 
 function viewSiteBeforeLoadEssentials() {
-    document.body.classList.add('ViewSite');
-    //Hide filter when ViewSite
+    document.body.classList.add('Site');
+    //Hide filter when Site
     if (v.mapEnabled) {
         var filterContainer = document.getElementById("mapFilterContainer");
         filterContainer.style.display = "none";
@@ -603,13 +1323,13 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
 
     // Load Web Worker script possibly not from same origin: https://stackoverflow.com/a/60252783/4770915
-    const workerBlob = new Blob(['importScripts(' + JSON.stringify(mapViewSiteWorkerJsUrl) + ')',], {type: 'application/javascript'});
+    const workerBlob = new Blob(['importScripts(' + JSON.stringify(FODataViewerWorkerJsUrl) + ')',], {type: 'application/javascript'});
     const blobUrl = window.URL.createObjectURL(workerBlob);
     worker = new Worker(blobUrl);
     
     worker.postMessage({
         command: "importScript",
-        script: mapViewSiteSharedJsUrl
+        script: FODataViewerCoreJsUrl
     });
 
     //console.log(`Date: ${now.toUTCString()}`);
@@ -659,12 +1379,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         minPixelsPerYearTickLabel: 30,
         minPixelsPerValTickLabel: 40,
         minPixelsPerUTCText: 30,
-        page: "MapView", // TODO *** Remove this from NDVI etc. image fetching
         storageUrl: storageUrl,
         storageUrl2: storageUrl2,
         fieldobservatoryLanguage: v.fieldobservatoryLanguage,
         fieldobservatoryImagesUrl: fieldobservatoryImagesUrl,
-        siteId: v.siteId,
+        siteId: getSiteId(),
         mapEnabled: v.mapEnabled,
         chartEnabled: v.chartEnabled,
         manageSiteLinkEnabled: v.manageSiteLinkEnabled,
@@ -765,7 +1484,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
 
     console.log("siteJson =");
-    console.log(siteJson);
+    console.log(JSON.parse(JSON.stringify(siteJson))); // Create deep copies so that console.log statements show what was loaded
 
     // Merge sitesGeoJson feature and siteJson properties into siteJson, with siteJson properties taking priority
     sitesGeoJson.features.forEach(feature => {
@@ -790,7 +1509,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     });
 
     // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
-    prepCharts(v, siteJson, chartsJson); // Create deep copies so that the preceding console.log statements show what was loaded
+    prepCharts(v, siteJson, chartsJson);
     // console.log("Charts prepped");
 
     // Create chart DIV and SVG elements in the same order they appear in chartsJson.
@@ -818,8 +1537,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             nonspecialChartId = chartId;
         //}
     });
-    if (v.mapEnabled && !hasSatelliteImages) {
-        document.getElementById("satelliteImageDiv").remove()
+    if (!v.mapEnabled || !hasSatelliteImages) {
+        let satelliteImageDivElement = document.getElementById("satelliteImageDiv");
+        if (satelliteImageDivElement !== null) {
+            satelliteImageDivElement.remove();
+        }
     }
     if (v.creditContainerElementId !== undefined) {
         document.getElementById(v.creditContainerElementId).insertAdjacentHTML("beforeend", '<div id="dataCredits"></div>');
@@ -927,19 +1649,19 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             }, "blockZ");
             map.setLayoutProperty("blockNames", 'visibility', "none");
             map.once('moveend', function () {
-                setAllSitesMapLayerVisibility("none");
+                setSiteSelectorMapLayerVisibility("none");
                 map.setLayoutProperty("blockNames", 'visibility', "visible");
                 setOthersThanMapLoaded(true);
                 handleEsc = function () {
                     pushState();
-                    unviewSiteAndViewAllSites();
+                    unviewSiteAndViewSiteSelector();
                 };
                 //document.getElementById("liMapView").onclick = function (e) {
                 //    e.stopPropagation();
                 //    e.preventDefault();
                 //    handleEsc();
                 //};
-                window.onpopstate = unviewSiteAndViewAllSites;
+                window.onpopstate = unviewSiteAndViewSiteSelector;
             });
             
             map.setMaxZoom(siteMapView.maxZoom);
@@ -1259,7 +1981,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     requestWorkerLoadData();
 };
 
-function unviewSiteAndViewAllSites() {    
+function unviewSiteAndViewSiteSelector() {    
     //document.getElementById("liMapView").onclick = null;
     handleEsc = undefined;
     window.onpopstate = defaultPopstateHandler;
@@ -1276,7 +1998,7 @@ function unviewSiteAndViewAllSites() {
     });
     document.getElementById("dataCredits").remove();
     updateState({ site: undefined });
-    document.body.classList.remove('ViewSite');
+    document.body.classList.remove('Site');
     document.body.classList.remove('Obfuscated');
     document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
     // ***
@@ -1295,7 +2017,7 @@ function unviewSiteAndViewAllSites() {
         });        
     }
     popup.remove();
-    viewAllSites()
+    viewSiteSelector()
 }
 
 function setSatelliteImageDate(date, event = null, refreshRelatedChart = true) {
@@ -1648,4 +2370,148 @@ function getTranslationTable() { // Can be called from the browser's debug conso
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+}
+
+initPage();
+
+async function initPage() {
+    if (getSiteId() !== undefined) {
+        viewSiteBeforeLoadEssentials(); // Site view initialization before loading jsons and map
+    } else {
+        viewSiteSelectorBeforeLoadEssentials(); // Site selector initialization before loading jsons and map
+    }
+
+    await loadEssentials(); // Load sitesGeoJson, blocksGeoJson and chartsJson, and mappy things
+    /*sitesGeoJson.features = sitesGeoJson.features
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value)*/
+
+    console.log("sitesGeoJson =");
+    console.log(JSON.parse(JSON.stringify(sitesGeoJson))); // Create deep copies so that console.log statements show what was loaded rather than later modified variables
+    console.log("blocksGeoJson =");
+    console.log(JSON.parse(JSON.stringify(blocksGeoJson)));
+    console.log("chartsJson =");
+    console.log(JSON.parse(JSON.stringify(chartsJson)));
+
+    // Add essential sources and layers
+
+    console.log("mapEnabled:");
+    console.log(v.mapEnabled);
+    if (v.mapEnabled) {
+        whenMapLoadedDo(function () {
+            map.addSource('empty', {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features: [] }
+            });
+            map.addSource("fieldLocations", {
+                type: "geojson",
+                data: sitesGeoJson,
+                cluster: false,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+            map.addLayer({
+                id: 'satelliteZ',
+                type: 'symbol',
+                source: 'empty'
+            });
+            map.addLayer({
+                id: 'blockZ',
+                type: 'symbol',
+                source: 'empty'
+            });
+            map.addLayer({
+                "id": 'fieldLocationsLayerFar',
+                "type": 'circle',
+                "source": 'fieldLocations',
+                /*"maxzoom": 6,*/
+                "filter": ['!has', 'point_count'],
+                "paint": {
+                    "circle-radius": 6,
+                    "circle-stroke-color": {
+                        property: 'site_type',
+                        type: 'categorical',
+                        stops: Object.entries(siteTypeColors)
+                    },
+                    "circle-color": {
+                        property: 'site_type',
+                        type: 'categorical',
+                        stops: Object.entries(siteTypeColors)
+                    },
+                    "circle-stroke-width": 3,
+                    "circle-opacity": 0.6,
+                    "circle-stroke-opacity": 1
+                }
+            });
+            map.addLayer({
+                "id": 'fieldLocationsLayerNear',
+                "type": 'symbol',
+                "source": 'fieldLocations',
+                "minzoom": 5,
+                "filter": ['!has', 'point_count'],
+                'layout': {
+                    'icon-size': 0.8,
+                    'icon-allow-overlap': true,
+                    'symbol-sort-key': ['-', 90, ['get', "lat"]],
+                    'symbol-z-order': "source",
+                    'text-ignore-placement': true,
+                    'text-optional': true,
+                    'text-padding': 0,
+                    'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
+                    'text-allow-overlap': true,
+                    "text-field": ["coalesce", ['get', `Name_${v.fieldobservatoryLanguage}`], ['get', 'Name']],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                    'icon-offset': [0, 6],
+                    'icon-image': {
+                        property: 'site_type',
+                        type: 'categorical',
+                        stops: [
+                            ['Advanced CarbonAction Site', 'MapMarkerGreen'],
+                            ['Intensive Site', 'MapMarkerBlue'],
+                            ['Svensk Kolinlagring Site', 'MapMarkerDarkGrey'],
+                            ['Valio', 'MapMarkerDarkBlue'],
+                            ['co-carbon', 'MapMarkerDarkGreen'],
+                            ['smear-agri', 'MapMarkerBlack'],
+                        ]
+                    }
+                },
+                "paint": {
+                    "text-halo-width": 2,
+                    "text-halo-blur": 1,
+                    "text-halo-color": "#ffffff"
+                }
+            });
+        });
+    }
+    if (getSiteId() !== undefined) {
+        if (v.mapEnabled) {
+            whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("none") });
+        }
+        await viewSiteAfterLoadingEssentials(0); // Site view initialization after loading jsons and map
+    } else {
+        viewSiteSelectorAfterLoadingEssentials(); // Site selector view initialization after loading jsons and map
+    }
+
+    document.addEventListener("keydown", function (event) {
+        if (event.keyCode === 27 && handleEsc !== undefined) {
+            handleEsc();
+        }
+    });
+}
+
+window.onpopstate = defaultPopstateHandler;
+
+function defaultPopstateHandler() {
+    location.reload();
+}
+
+// A $( document ).ready() block.
+window.onload = function () {
+};
+
+function popUpMessageText(title, msg) {
+    var popup = document.getElementById("PopUpMsg");
+    popup.innerHTML = '<p class="h1p">' + title + '<p><p class="h2p">' + msg + '</p>';
 }

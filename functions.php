@@ -49,7 +49,7 @@
 		wp_enqueue_style('fieldobservatory-fontawesome',get_template_directory_uri() . "/assets/css/fontawesome.min.css",array(),'all');
 		wp_enqueue_style('fieldobservatory-mapboxglGeocoder',"https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css",array(),'all');
 		wp_enqueue_style('fieldobservatory-mapboxglcss',"https://api.mapbox.com/mapbox-gl-js/v2.7.1/mapbox-gl.css",array(),'all');
-		wp_enqueue_style('fieldobservatory-mapViewMedia',get_template_directory_uri() . "/assets/css/mapviewmedia.css",array(),$version,'all');
+		wp_enqueue_style('fieldobservatory-FODataViewer',get_template_directory_uri() . "/assets/css/FODataViewer.css",array(),$version,'all');
 	}	
 	
 	add_action('wp_enqueue_scripts','fielobservatory_register_styles');

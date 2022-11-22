@@ -1,5 +1,5 @@
-.ViewSite.loader footer {
-    display: none; /* Hide footer when charts are still being created in ViewSite */
+.Site.loader footer {
+    display: none; /* Hide footer when charts are still being created in Site */
 }
 
 #map {
@@ -10,36 +10,36 @@
     margin-top: 10px;
     width: 100%;
     background-color: #d3cfca;
-    height: 99%; /* Map height for ViewSite*/
+    height: 99%; /* Map height for Site*/
 }
 
 .Obfuscated #map {
     background-color: #fffbd0; /* Yellow map background when no terrain shown */
 }
 
-.ViewAllSites #map {
-   	height: 65vh; /*  Map height for ViewAllSites */
+.SiteSelector #map {
+   	height: 65vh; /*  Map height for SiteSelector */
 }
 
-.ViewSite .mapMainHeader {
-    display: none; /* Hide map main header for ViewSite */
+.Site .mapMainHeader {
+    display: none; /* Hide map main header for Site */
 }
 
-.ViewAllSites .fieldInfoDiv {
-    display: none; /* Hide field info div for ViewAllSites */
+.SiteSelector .fieldInfoDiv {
+    display: none; /* Hide field info div for SiteSelector */
 }
 
 .loader #mainFooter,
 .loader #dataCredits {
-    display: none; /* Hide data credits if we are still loading ViewSite*/
+    display: none; /* Hide data credits if we are still loading Site*/
 }
 
 /* Disable geolocationing for obfuscated site locations */
-.Obfuscated.ViewSite .mapboxgl-ctrl-top-right {
+.Obfuscated.Site .mapboxgl-ctrl-top-right {
     display: none;
 }
 
-.ViewSite .mapboxgl-ctrl-geocoder {
+.Site .mapboxgl-ctrl-geocoder {
     display: none;
 }
 
@@ -243,7 +243,7 @@ p.h4p,
     font-size: 1rem;
 }
 
-.ViewSite .mapboxgl-popup-content p {
+.Site .mapboxgl-popup-content p {
     font-size: 1.5rem;
 }
 
@@ -769,7 +769,7 @@ p.h4p,
         }
 
         #map {
-            height: 300px; /* Map height for ViewSite*/
+            height: 300px; /* Map height for Site*/
         }
         .popup {
             width: 100%;
@@ -868,7 +868,7 @@ p.h4p,
             margin: 5px;
         }
         #map {
-            height: 300px; /* Map height for ViewSite*/
+            height: 300px; /* Map height for Site*/
         }
         .popup {
             width: 100%;
@@ -1060,7 +1060,7 @@ p.h4p,
     }
     
     #map {
-        height: 300px; /* Map height for ViewSite*/
+        height: 300px; /* Map height for Site*/
     }
 
     .popup {
@@ -1110,7 +1110,7 @@ p.h4p,
 }
 
 
-.ViewAllSites .chart_gridcontainer {
+.SiteSelector .chart_gridcontainer {
     grid-template-columns: repeat(1,1fr);
 }
 

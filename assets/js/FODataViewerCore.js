@@ -684,7 +684,10 @@ function addChartColors(v) {
 }
 
 // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
-function prepCharts(v, siteJson, chartsJson) {   
+function prepCharts(v, siteJson, chartsJson) {
+    siteJson = JSON.parse(JSON.stringify(siteJson)); // Create copies so that we can modify the variables
+    chartsJson = JSON.parse(JSON.stringify(chartsJson));
+
     if (v.chartEnabled !== undefined) {
         chartsJson.charts = chartsJson.charts.filter(chart => v.chartEnabled[chart.id]);
     }
@@ -717,6 +720,9 @@ function prepCharts(v, siteJson, chartsJson) {
 
     delete siteJson.sources;
     v.site = siteJson;
+    
+    console.log("chartsJson:");
+    console.log(chartsJson);
 
     // Replace sourceTypes with sources. Add charts that will be made to v.charts.
     chartsJson.charts.forEach(function (chart) {
