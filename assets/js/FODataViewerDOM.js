@@ -136,6 +136,7 @@ async function loadEssentials() {
         console.log(err); // some coding error in handling happened
         popUpMessageText("Failed to load data", "Please try again later.");
     });
+    popUpMessageText("Failed to load data", "Please try again later.");
 }
 
 // Set state. Keys for which the value is undefined are not stored.
@@ -144,7 +145,8 @@ function setState(state) {
     let url = new URL(window.location.href);
     url.search = new URLSearchParams(state);
     history.replaceState(state, "", url.href);
-    for (let languageParent of document.getElementsByClassName("lang-item")) {
+    // Wordpress-specific: include url parameters in language selector
+    for (let languageParent of document.getElementsByClassName("lang-item")) {        
         let languageA = languageParent.firstChild;
         if (languageA !== undefined) {
             let languageHref = languageA.href;
