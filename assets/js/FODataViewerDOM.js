@@ -134,9 +134,7 @@ async function loadEssentials() {
     ];
     await Promise.all(promises).catch(function (err) {
         console.log(err); // some coding error in handling happened
-        popUpMessageText("Failed to load data", "Please try again later.");
     });
-    popUpMessageText("Failed to load data", "Please try again later.");
 }
 
 // Set state. Keys for which the value is undefined are not stored.
@@ -2456,7 +2454,7 @@ async function initPage() {
     }
 
     document.addEventListener("keydown", function (event) {
-        if (event.keyCode === 27 && handleEsc !== undefined) {
+        if ((event.key === "Esc" || event.key === "Escape") && handleEsc !== undefined) {
             handleEsc();
         }
     });
@@ -2471,8 +2469,3 @@ function defaultPopstateHandler() {
 // A $( document ).ready() block.
 window.onload = function () {
 };
-
-function popUpMessageText(title, msg) {
-    var popup = document.getElementById("PopUpMsg");
-    popup.innerHTML = '<p class="h1p">' + title + '<p><p class="h2p">' + msg + '</p>';
-}
