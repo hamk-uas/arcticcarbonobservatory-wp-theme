@@ -14,8 +14,10 @@ var siteTypeColors = {
     'Valio': '#114a9c',
     'Svensk Kolinlagring Site': '#292929',
     'co-carbon': '#234832',
-    'smear-agri': '#000000'
+    'smear-agri': '#000000',
+    'lantmannen': "#23A73F"
 };
+
 
 //Get color by siteType
 function getSiteTypeColor(siteType) {
