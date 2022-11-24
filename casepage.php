@@ -7,6 +7,7 @@
         imagesUrl: "<?php echo get_template_directory_uri(); ?>/assets/images",
         mapEnabled: false,
         chartFilter: {
+            "global": true,
             "carbonStorage": true
         },
         chartContainerElementId: "chart_container",

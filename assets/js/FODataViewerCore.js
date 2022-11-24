@@ -30,6 +30,9 @@ var crop_codes = {
     "WHT": "Wheat (Triticum spp.)",
     "WHT_fi": "Vehnä (Triticum spp.)",
     "WHT_sv": "Vete (Triticum spp.)",
+    "OAT": "Oats (Avena sativa)",
+    "OAT_fi": "Kaura (Avena sativa)",
+    "OAT_sv": "Havre (Avena sativa)",
     "FEP": "Meadow fescue (Festuca pratensis)",
     "FEP_fi": "Nurminata (Festuca pratensis)",
     "FEP_sv": "Ängssvingel(Festuca pratensis)",
@@ -771,9 +774,7 @@ function prepCharts(v, siteJson, chartsJson) {
                 chart.sourceCategories[sourceCategory.id] = sourceCategory;
             });
         }
-        //console.log("sourceCategoryList = ");
-        //console.log(chart.sourceCategoryList);
-        if (chart.sources !== undefined && chart.sources.filter(source => source.sourceType.substr(0, 10) !== "mgmt_event").length > 0) {
+        if (chart.sources !== undefined) {
             // Source can override chart defaults
             chart.sources.forEach(function (source) {
                 if (source.override !== undefined) {
@@ -2574,8 +2575,8 @@ function getDrawingHtmls(v, chartId, standalone = false) {
     // Show management events
     let previousX = (v.satelliteImageDate - v.startDate) * pixelsPerMillisecond;
     let yOffset = 0;
-    if (v.charts["satelliteImages"] !== undefined) {
-        v.charts["satelliteImages"].sources.forEach(function (source, sourceIndex) {
+    if (v.charts["global"] !== undefined) {
+        v.charts["global"].sources.forEach(function (source, sourceIndex) {
             if (source.sourceType === "mgmt_event") {
                 source.jsonList.forEach(function (json, jsonIndex) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
@@ -2608,7 +2609,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         let r = 13 - 1 - ((selected) ? 0.5 : 0);
                                         let startDateObject = new Date(event.start_date);
                                         let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`});
-                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
+                                        drawingHtml += `<circle id="chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = sx;
                                     }
                                 } else if (event.date !== undefined) {
@@ -2626,7 +2627,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="-2" x2="${x.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         let dateObject = new Date(event.date);
                                         let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
-                                        drawingHtml += `<circle id="chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
+                                        drawingHtml += `<circle id="chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = x;
                                     }
                                 }

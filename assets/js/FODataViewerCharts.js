@@ -1,6 +1,19 @@
 var chartsJson = {
     "charts": [
         {
+            "id": "global",
+            "title": "Every chart",
+            "title_fi": "Jokainen kuvaaja",
+            "title_sv": "Varje diagram",
+            "hidden": true,
+            "sourceTypes": [
+                {
+                    "id": "mgmt_event",
+                    "events": true
+                }
+            ]
+        },
+        {
             "id": "satelliteImages",
             "title": "Satellite images",
             "title_fi": "Satelliittikuvat",
@@ -34,18 +47,18 @@ var chartsJson = {
             "sourceTypes": [
                 {
                     "id": "ndviImage",
-                    "sourceCategoryId": "ndviImage"
+                    "sourceCategoryId": "ndviImage",
+                    "satelliteImages": true
                 },
                 {
                     "id": "laiImage",
-                    "sourceCategoryId": "laiImage"
+                    "sourceCategoryId": "laiImage",
+                    "satelliteImages": true
                 },
                 {
                     "id": "ndviNormalizedSumImage",
-                    "sourceCategoryId": "ndviNormalizedSumImage"
-                },
-                {
-                    "id": "mgmt_event"
+                    "sourceCategoryId": "ndviNormalizedSumImage",
+                    "satelliteImages": true
                 }
             ],
         },

@@ -1024,27 +1024,24 @@ function refreshCharts(chartIds, refreshIndex, xAxisHtml) {
 }
 
 function refreshAllCharts(refreshIndex, xAxisHtml) {
-    refreshCharts(v.chartIds, refreshIndex, xAxisHtml);
+    refreshCharts(v.chartIds.filter(chartId => !v.charts[chartId].hidden), refreshIndex, xAxisHtml);
 }
 
 function requestWorkerRefreshCharts(chartIds, refreshIndex) {
     //console.log(`requestWorkerRefreshCharts ${chartIds}, refreshIndex = ${refreshIndex}`)
     chartIds.forEach(function (chartId) {
-        if (!v.charts[chartId].awaitingWorkerRefresh) {
+        let chart = v.charts[chartId];
+        if (!chart.awaitingWorkerRefresh) {
             worker.postMessage({
                 command: "refreshCharts",
                 refreshIndex: refreshIndex,
                 chartIds: [chartId]
             });
-            v.charts[chartId].awaitingWorkerRefresh = true;
+            chart.awaitingWorkerRefresh = true;
         } else {
-            v.charts[chartId].rerequestWorkerRefresh = true;
+            chart.rerequestWorkerRefresh = true;
         }
     });
-}
-
-function requestWorkerRefreshAllCharts(refreshIndex) {
-    requrestRefreshCharts(v.chartIds, refreshIndex);
 }
 
 function requestWorkerLoadData() {
@@ -1074,171 +1071,181 @@ function addTooltip(elementId, text) {
 
 function addTransientDrawingListeners(chartId) {
     let chart = v.charts[chartId];
-    if (v.charts["satelliteImages"] !== undefined) {
-        v.charts["satelliteImages"].sources.forEach(function (source, sourceIndex) {
-            if (source.sourceType === "mgmt_event") {
-                source.jsonList.forEach(function (json, jsonIndex) {
-                    if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate && json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
-                        json.data.management.events.forEach(function (event, eventIndex) {
-                            let eventElementId = `chart_${chartId}_${source.id}_${jsonIndex}_${eventIndex}`;
-                            let eventElement = document.getElementById(eventElementId);
-                            if (eventElement != null) {
-                                if (event.start_date !== undefined && event.end_date !== undefined) {
-                                    eventElement.onclick = function (e) {
-                                        setEventDate(event.start_date, sourceIndex, eventIndex, chartId, e);
-                                        e.stopPropagation();
-                                        e.preventDefault();                            
+    if (!chart.hidden) {
+        if (v.charts["global"] !== undefined) {
+            v.charts["global"].sources.forEach(function (source, sourceIndex) {
+                if (source.events) {
+                    source.jsonList.forEach(function (json, jsonIndex) {
+                        if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate && json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
+                            json.data.management.events.forEach(function (event, eventIndex) {
+                                let eventElementId = `chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}`;
+                                let eventElement = document.getElementById(eventElementId);
+                                if (eventElement != null) {
+                                    if (event.start_date !== undefined && event.end_date !== undefined) {
+                                        eventElement.onclick = function (e) {
+                                            setEventDate(event.start_date, sourceIndex, eventIndex, chartId, e);
+                                            e.stopPropagation();
+                                            e.preventDefault();                            
+                                        }
+                                        eventElement.onmousedown = preventDefault;
+                                    } else if (event.date !== undefined) {
+                                        eventElement.onclick = function (e) {
+                                            setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
+                                            e.stopPropagation();
+                                            e.preventDefault();                            
+                                        }
+                                        eventElement.onmousedown = preventDefault;
                                     }
-                                    eventElement.onmousedown = preventDefault;
-                                } else if (event.date !== undefined) {
-                                    eventElement.onclick = function (e) {
-                                        setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
-                                        e.stopPropagation();
-                                        e.preventDefault();                            
-                                    }
-                                    eventElement.onmousedown = preventDefault;
                                 }
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
-    if (chartId === "satelliteImages") {
-        chart.sourceCategoryList.forEach(function (sourceCategory) {
-            if (chart.visible[sourceCategory.id]) {
-                sourceCategory.geoTiffDates.forEach(function (date, index) {
-                    let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                    let circle = document.getElementById(circleId);
-                    if (circle != null) {
-                        circle.onclick = (e) => setSatelliteImageDate(date, e);
-                        circle.onmousedown = preventDefault;
-                    }
-                });
-            }
-        });
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        if (chartId === "satelliteImages") {
+            chart.sourceCategoryList.forEach(function (sourceCategory) {
+                if (chart.visible[sourceCategory.id]) {
+                    sourceCategory.geoTiffDates.forEach(function (date, index) {
+                        let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
+                        let circle = document.getElementById(circleId);
+                        if (circle != null) {
+                            circle.onclick = (e) => setSatelliteImageDate(date, e);
+                            circle.onmousedown = preventDefault;
+                        }
+                    });
+                }
+            });
+        }
     }
 }
 
 function addPermanentDrawingListeners() {
     v.chartIds.forEach(function (chartId) {
-        let panAreaElementId = `chart_pan_area_${chartId}`
-        let panAreaElement = document.getElementById(panAreaElementId);
-        panAreaElement.onpointerdown = function (e) {
-            let clientXOrigin = e.clientX;
-            let startDateOrigin = v.startDate;
-            let endDateOrigin = v.endDate;
-            panAreaElement.setPointerCapture(e.pointerId);
-            panAreaElement.onpointermove = function (e) {
-                let timeShiftMilliseconds = Math.round((clientXOrigin - e.clientX) / v.dimensions.width * (endDateOrigin - startDateOrigin));
-                v.startDate = startDateOrigin + timeShiftMilliseconds;
-                v.endDate = v.startDate + (endDateOrigin - startDateOrigin);
-                prepXGrid(v);
-                chartRefreshIndex++;
-                refreshChart(chartId, chartRefreshIndex);
-                workerUpdateView();
-                requestWorkerRefreshCharts(v.chartIds.filter(function (id) {
-                    let rect = document.getElementById(`chart_svg_${id}`).getBoundingClientRect();                    
-                    return (id !== chartId && rect.bottom >= 0 && rect.right >= 0 && rect.top < window.innerHeight && rect.left < window.innerWidth);
-                }), chartRefreshIndex);
-                requestWorkerLoadData();
+        let chart = v.charts[chartId];
+        if (!chart.hidden) {
+            let panAreaElementId = `chart_pan_area_${chartId}`
+            let panAreaElement = document.getElementById(panAreaElementId);
+            panAreaElement.onpointerdown = function (e) {
+                let clientXOrigin = e.clientX;
+                let startDateOrigin = v.startDate;
+                let endDateOrigin = v.endDate;
+                panAreaElement.setPointerCapture(e.pointerId);
+                panAreaElement.onpointermove = function (e) {
+                    let timeShiftMilliseconds = Math.round((clientXOrigin - e.clientX) / v.dimensions.width * (endDateOrigin - startDateOrigin));
+                    v.startDate = startDateOrigin + timeShiftMilliseconds;
+                    v.endDate = v.startDate + (endDateOrigin - startDateOrigin);
+                    prepXGrid(v);
+                    chartRefreshIndex++;
+                    refreshChart(chartId, chartRefreshIndex);
+                    workerUpdateView();
+                    requestWorkerRefreshCharts(v.chartIds.filter(function (id) {
+                        if (v.charts[id].hidden) {
+                            return false;
+                        }
+                        let rect = document.getElementById(`chart_svg_${id}`).getBoundingClientRect();                    
+                        return (id !== chartId && rect.bottom >= 0 && rect.right >= 0 && rect.top < window.innerHeight && rect.left < window.innerWidth);
+                    }), chartRefreshIndex);
+                    requestWorkerLoadData();
+                    e.stopPropagation();
+                }
                 e.stopPropagation();
-            }
-            e.stopPropagation();
-            e.preventDefault();
-        };
-        panAreaElement.onpointerup = function (e) {
-            requestWorkerRefreshCharts(v.chartIds.filter(function (id) {
-                let rect = document.getElementById(`chart_svg_${id}`).getBoundingClientRect();
-                return (id !== chartId && !(rect.bottom >= 0 && rect.right >= 0 && rect.top < window.innerHeight && rect.left < window.innerWidth));
-            }), chartRefreshIndex);
-            panAreaElement.releasePointerCapture(e.pointerId);
-            panAreaElement.onpointermove = null;
-            e.stopPropagation();
-        };
-        let zoomXInElementId = `chart_zoom_x_in_${chartId}`;
-        let zoomXIn = document.getElementById(zoomXInElementId);
-        zoomXIn.onmousedown = function (e) {
-            e.preventDefault();
-        };
-        zoomXIn.onclick = function (e) {
-            if (v.zoomLevel > 0) {
-                let centerDate = (v.startDate + v.endDate) * 0.5;
-                v.zoomLevel--;
-                v.startDate = centerDate - v.zoomLevels[v.zoomLevel] * 0.5;
-                v.endDate = v.startDate + v.zoomLevels[v.zoomLevel];
-                prepXGrid(v);
-                chartRefreshIndex++;
-                refreshChart(chartId, chartRefreshIndex);
-                workerUpdateView();
-                requestWorkerRefreshCharts(v.chartIds.filter(id => id !== chartId), chartRefreshIndex);
-                requestWorkerLoadData();
-            }
-            e.stopPropagation();
-            e.preventDefault();
-        };
-        let zoomXOutElementId = `chart_zoom_x_out_${chartId}`;
-        let zoomXOut = document.getElementById(zoomXOutElementId);
-        zoomXOut.onmousedown = function (e) {
-            e.preventDefault();
-        };
-        zoomXOut.onclick = function (e) {
-            if (v.zoomLevel < v.zoomLevels.length - 1) {
-                let centerDate = (v.startDate + v.endDate) * 0.5;
-                v.zoomLevel++;
-                v.startDate = centerDate - v.zoomLevels[v.zoomLevel] * 0.5;
-                v.endDate = v.startDate + v.zoomLevels[v.zoomLevel];
-                prepXGrid(v);
-                chartRefreshIndex++;
-                refreshChart(chartId, chartRefreshIndex);
-                workerUpdateView();
-                requestWorkerRefreshCharts(v.chartIds.filter(id => id !== chartId), chartRefreshIndex);
-                requestWorkerLoadData();
-            }
-            e.stopPropagation();
-        };
-        let download = document.getElementById(`chart_download_${chartId}`);
-        if (download !== null) {
-            function formatDateYYYYMinusMMMinusDD(date) {
-                return [date.getUTCFullYear(), (date.getUTCMonth() + 1).toString().padStart(2, '0'), date.getUTCDate().toString().padStart(2, '0')].join('-');
-            }
-            download.onclick = function (e) {
-                {
-                    // download image
-                    prepYGrid(v, chartId);
-                    let chart = v.charts[chartId];
-                    let svgBoundingClientRect = document.getElementById(`chart_svg_${chartId}`).getBoundingClientRect();                   
-                    //console.log(svgBoundingClientRect);
-                    let legendItemCoordinates = [];
-                    chart.sources.forEach(function (source) {
-                        let legendItemBoundingClientRect = document.getElementById(`chart_${chartId}_legend_element_${source.legendId}`).getBoundingClientRect();
-                        legendItemCoordinates.push([legendItemBoundingClientRect.left - svgBoundingClientRect.left, legendItemBoundingClientRect.top - svgBoundingClientRect.top]);
-                    });
-                    let data = getChartSvgOuterHtml(v, chartId, true, legendItemCoordinates);
-                    let blob = new Blob([data], { type: "image/svg+xml;charset=utf-8" });
-                    let url = URL.createObjectURL(blob);
-                    let downloadLink = document.createElement("a");
-                    downloadLink.href = url;
-                    downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.svg`;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                }
-
-                {
-                    // download table
-                    let data = getChartCsv(v, chartId);
-                    let blob = new Blob([data], { type: "text/csv;charset=utf-8" });
-                    let url = URL.createObjectURL(blob);
-                    let downloadLink = document.createElement("a");
-                    downloadLink.href = url;
-                    downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.csv`;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                }
+                e.preventDefault();
             };
+            panAreaElement.onpointerup = function (e) {
+                requestWorkerRefreshCharts(v.chartIds.filter(function (id) {
+                    if (v.charts[id].hidden) {
+                        return false;
+                    }
+                    let rect = document.getElementById(`chart_svg_${id}`).getBoundingClientRect();
+                    return (id !== chartId && !(rect.bottom >= 0 && rect.right >= 0 && rect.top < window.innerHeight && rect.left < window.innerWidth));
+                }), chartRefreshIndex);
+                panAreaElement.releasePointerCapture(e.pointerId);
+                panAreaElement.onpointermove = null;
+                e.stopPropagation();
+            };
+            let zoomXInElementId = `chart_zoom_x_in_${chartId}`;
+            let zoomXIn = document.getElementById(zoomXInElementId);
+            zoomXIn.onmousedown = function (e) {
+                e.preventDefault();
+            };
+            zoomXIn.onclick = function (e) {
+                if (v.zoomLevel > 0) {
+                    let centerDate = (v.startDate + v.endDate) * 0.5;
+                    v.zoomLevel--;
+                    v.startDate = centerDate - v.zoomLevels[v.zoomLevel] * 0.5;
+                    v.endDate = v.startDate + v.zoomLevels[v.zoomLevel];
+                    prepXGrid(v);
+                    chartRefreshIndex++;
+                    refreshChart(chartId, chartRefreshIndex);
+                    workerUpdateView();
+                    requestWorkerRefreshCharts(v.chartIds.filter(id => id !== chartId && !v.charts[id].hidden), chartRefreshIndex);
+                    requestWorkerLoadData();
+                }
+                e.stopPropagation();
+                e.preventDefault();
+            };
+            let zoomXOutElementId = `chart_zoom_x_out_${chartId}`;
+            let zoomXOut = document.getElementById(zoomXOutElementId);
+            zoomXOut.onmousedown = function (e) {
+                e.preventDefault();
+            };
+            zoomXOut.onclick = function (e) {
+                if (v.zoomLevel < v.zoomLevels.length - 1) {
+                    let centerDate = (v.startDate + v.endDate) * 0.5;
+                    v.zoomLevel++;
+                    v.startDate = centerDate - v.zoomLevels[v.zoomLevel] * 0.5;
+                    v.endDate = v.startDate + v.zoomLevels[v.zoomLevel];
+                    prepXGrid(v);
+                    chartRefreshIndex++;
+                    refreshChart(chartId, chartRefreshIndex);
+                    workerUpdateView();
+                    requestWorkerRefreshCharts(v.chartIds.filter(id => id !== chartId && !v.charts[id].hidden), chartRefreshIndex);
+                    requestWorkerLoadData();
+                }
+                e.stopPropagation();
+            };
+            let download = document.getElementById(`chart_download_${chartId}`);
+            if (download !== null) {
+                function formatDateYYYYMinusMMMinusDD(date) {
+                    return [date.getUTCFullYear(), (date.getUTCMonth() + 1).toString().padStart(2, '0'), date.getUTCDate().toString().padStart(2, '0')].join('-');
+                }
+                download.onclick = function (e) {
+                    {
+                        // download image
+                        prepYGrid(v, chartId);
+                        let svgBoundingClientRect = document.getElementById(`chart_svg_${chartId}`).getBoundingClientRect();                   
+                        //console.log(svgBoundingClientRect);
+                        let legendItemCoordinates = [];
+                        chart.sources.forEach(function (source) {
+                            let legendItemBoundingClientRect = document.getElementById(`chart_${chartId}_legend_element_${source.legendId}`).getBoundingClientRect();
+                            legendItemCoordinates.push([legendItemBoundingClientRect.left - svgBoundingClientRect.left, legendItemBoundingClientRect.top - svgBoundingClientRect.top]);
+                        });
+                        let data = getChartSvgOuterHtml(v, chartId, true, legendItemCoordinates);
+                        let blob = new Blob([data], { type: "image/svg+xml;charset=utf-8" });
+                        let url = URL.createObjectURL(blob);
+                        let downloadLink = document.createElement("a");
+                        downloadLink.href = url;
+                        downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.svg`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    }
+
+                    {
+                        // download table
+                        let data = getChartCsv(v, chartId);
+                        let blob = new Blob([data], { type: "text/csv;charset=utf-8" });
+                        let url = URL.createObjectURL(blob);
+                        let downloadLink = document.createElement("a");
+                        downloadLink.href = url;
+                        downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.csv`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    }
+                };
+            }
         }
     });
 }
@@ -1250,7 +1257,9 @@ function resizeCharts() {
         prepXGrid(v);
 
         v.chartIds.forEach(function (chartId) {
-            document.getElementById(`chart_svg_${chartId}`).innerHTML = getChartSvgInnerHtml(v, chartId);
+            if (!v.charts[chartId].hidden) {
+                document.getElementById(`chart_svg_${chartId}`).innerHTML = getChartSvgInnerHtml(v, chartId);
+            }
         });
         refreshAllCharts();
 
@@ -1473,27 +1482,29 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     // Create chart DIV and SVG elements in the same order they appear in chartsJson.
     let hasSatelliteImages = false;
     v.chartIds.forEach(function (chartId) {        
-        // console.log(`Create chart ${chartId}`);
-        if (chartId === "satelliteImages" && v.charts[chartId].sourceCategoryList.length > 0) {
+        let chart = v.charts[chartId];
+        if (chartId === "satelliteImages" && chart.sourceCategoryList.length > 0) {
             hasSatelliteImages = true;
-            v.satelliteImageLegendId = v.charts[chartId].sourceCategoryList[0].id;
+            v.satelliteImageLegendId = chart.sourceCategoryList[0].id;
             // Choose the last date that has the maximum number of satellite images.
             let maxNumImages = -1;
             v.satelliteImageDate = foConfig.now;
-            for (let i = 0; i < v.charts[chartId].sourceCategoryList[0].geoTiffDates.length; i++) {
-                let date = v.charts[chartId].sourceCategoryList[0].geoTiffDates[i];
-                if (v.charts[chartId].sourceCategoryList[0].dateToGeoTiffList[date].length >= maxNumImages) {
+            for (let i = 0; i < chart.sourceCategoryList[0].geoTiffDates.length; i++) {
+                let date = chart.sourceCategoryList[0].geoTiffDates[i];
+                if (chart.sourceCategoryList[0].dateToGeoTiffList[date].length >= maxNumImages) {
                     v.satelliteImageDate = date;
-                    maxNumImages = Math.min(siteJson.blocks.length, v.charts[chartId].sourceCategoryList[0].dateToGeoTiffList[date].length); // For sanity
+                    maxNumImages = Math.min(siteJson.blocks.length, chart.sourceCategoryList[0].dateToGeoTiffList[date].length); // For sanity
                 }
             }
-            document.getElementById("afterMap").insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
+            if (!chart.hidden) {
+                document.getElementById("afterMap").insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
+            }
         } else {
-            document.getElementById(foConfig.chartContainerElementId).insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
+            if (!chart.hidden) {                
+                document.getElementById(foConfig.chartContainerElementId).insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
+            }
         }
-//        if (!chartId !== "satelliteImages") {
-            nonspecialChartId = chartId;
-        //}
+        nonspecialChartId = chartId;
     });
     if (!foConfig.mapEnabled || !hasSatelliteImages) {
         let satelliteImageDivElement = document.getElementById("satelliteImageDiv");
@@ -1510,7 +1521,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     //console.log("chart_container DEFAULT width: " + document.getElementById('chart_container').offsetWidth);
     v.chartIds.forEach(function (chartId) {
         //console.log(`Create chart ${chartId}`);
-        document.getElementById(`chart_svg_div_${chartId}`).innerHTML = getChartSVGDivInnerHtml(v, chartId);        
+        if (!v.charts[chartId].hidden) {
+            document.getElementById(`chart_svg_div_${chartId}`).innerHTML = getChartSVGDivInnerHtml(v, chartId);        
+        }
     });
 
     // A scrollbar may have appeared. Change chart and map sizes accodingly.    
@@ -1777,7 +1790,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             let source = v.sources[update.sourceId];
             source.csvList[update.csvListIndex] = { ...source.csvList[update.csvListIndex], ...update.update };
             for (let chartId in source.charts) {
-                mustRefreshChartIds[chartId] = true;
+                let chart = v.charts[chartId];
+                if (!chart.hidden) {
+                    mustRefreshChartIds[chartId] = true;
+                }
             }
         });
         chartRefreshIndex++;
@@ -1790,8 +1806,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         e.data.updates.forEach(function (update) {
             let source = v.sources[update.sourceId];
             source.jsonList[update.jsonListIndex] = { ...source.jsonList[update.jsonListIndex], ...update.update };
-            for (let chartId in v.charts) { // Update everything because the data is events that will be plotted in all charts
-                mustRefreshChartIds[chartId] = true;
+            for (let [chartId, chart] of Object.entries(v.charts)) { // Update everything because the data is events that will be plotted in all charts
+                if (!chart.hidden) {
+                    mustRefreshChartIds[chartId] = true;
+                }
             }
         });
         chartRefreshIndex++;
@@ -1804,7 +1822,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             let source = v.sources[update.sourceId];
             let geoTiff = source.geoTiffList[update.geoTiffListIndex] = { ...source.geoTiffList[update.geoTiffListIndex], ...update.update };
             for (let chartId in source.charts) {
-                mustRefreshChartIds[chartId] = true;
+                let chart = v.charts[chartId];
+                if (!chart.hidden) {
+                    mustRefreshChartIds[chartId] = true;
+                }
             }
             //viewSatelliteImage();
             if (geoTiff.arrayBuffer !== undefined) {
@@ -1953,7 +1974,10 @@ function unviewSiteAndViewSiteSelector() {
     removeSatelliteImageSources();
     siteJson = undefined;
     v.chartIds.forEach(function (chartId) {
-        document.getElementById(`chart_div_${chartId}`).remove(); // Remove charts if any
+        let chart = v.charts[chartId];
+        if (!chart.hidden) {
+            document.getElementById(`chart_div_${chartId}`).remove(); // Remove charts if any
+        }
     });
     document.getElementById("dataCredits").remove();
     updateState({ site: undefined });
@@ -2048,7 +2072,7 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
     // Refresh charts
     chartRefreshIndex++;
     refreshChart(chartId, chartRefreshIndex);
-    requestWorkerRefreshCharts(v.chartIds.filter(testChartId => testChartId !== chartId), chartRefreshIndex);
+    requestWorkerRefreshCharts(v.chartIds.filter(testChartId => testChartId !== chartId && !v.charts[testChartId].hidden), chartRefreshIndex);
 }
 
 function toggleLegendItemVisibility(chartId, legendId, event = null) {
@@ -2067,7 +2091,8 @@ function toggleLegendItemVisibility(chartId, legendId, event = null) {
                     document.getElementById(`chart_${chartId}_visible_${otherLegendId}_visible`).style = "visibility: hidden";
                     chart.visible[otherLegendId] = false;
                     // Remove cursor from related chart
-                    if (chart.sourceCategories[otherLegendId].relatedChart !== undefined) {
+                    let relatedChart = chart.sourceCategories[otherLegendId].relatedChart;
+                    if (relatedChart !== undefined && !v.charts[relatedChart].hidden) {
                         mustRefreshChartIds[chart.sourceCategories[otherLegendId].relatedChart] = true;
                     }
                 }
@@ -2092,8 +2117,9 @@ function toggleLegendItemVisibility(chartId, legendId, event = null) {
                 document.getElementById("colorbar").style.visibility = "visible";                
             }
             // Add cursor to related chart
-            if (chart.sourceCategories[legendId].relatedChart !== undefined) {
-                mustRefreshChartIds[chart.sourceCategories[legendId].relatedChart] = true;
+            let relatedChart = chart.sourceCategories[legendId].relatedChart;
+            if (relatedChart !== undefined && !v.charts[relatedChart].hidden) {
+                mustRefreshChartIds[relatedChart] = true;
             }
             // Send update to worker
             worker.postMessage({
