@@ -676,7 +676,7 @@ function translationKey(object, property) {
 function addChartColors(v) {
     v.oldChartColors = ["#71CDB6", "#349A80", "#3DBFCB", "#CDCEC8", "#129BC7", "#64D1F4", "#95E2D6", "#5E5E5E", "#DD9E48", "#BC346D", "#7617D5", "#0E0C29"];
     v.chartColors = ["#71CDB6", "#0B7496", "#7CAD39", "#227222", "#E0D15D", "#A59732", "#C7C7C5", "#5E5E5E", "#DD9E48", "#BC346D", "#7617D5"];
-    v.airColors = [v.chartColors[1], v.oldChartColors[5], v.oldChartColors[4], v.oldChartColors[2]];//[v.oldChartColors[5], v.oldChartColors[4]];
+    v.airColors = [v.chartColors[1], v.oldChartColors[5], v.oldChartColors[4], v.oldChartColors[2]];
     v.temperatureAirColors = [undefined, v.oldChartColors[11]];
     v.waterColors = [v.oldChartColors[4]];
     v.soilColors = [v.chartColors[7], v.chartColors[6], v.chartColors[8], v.chartColors[9], "#000000", "#804000"] // The last ones are not official colors
@@ -1093,20 +1093,36 @@ function prepCharts(v, siteJson, chartsJson) {
         let colorIndex = 0;
         chart.sources.forEach(function (source) {
             if (!isSoilSource[sourceIndex] && !isAirSource[sourceIndex]) {
-                source.color = v.chartColors[colorIndex++];
+                if (colorIndex < v.chartColors.length) {
+                    source.color = v.chartColors[colorIndex++];
+                } else {
+                    source.color = "#000000";
+                }
             }
             sourceIndex++;
         });
         let soilColorIndex = 0;
         soilSources.forEach(function (sourceIndex) {
-            chart.sources[sourceIndex].color = v.soilColors[soilColorIndex++];
+            if (soilColorIndex < v.soilColors.length) {
+                chart.sources[sourceIndex].color = v.soilColors[soilColorIndex++];
+            } else {
+                chart.sources[sourceIndex].color = "#000000";
+            }
         });
         let airColorIndex = 0;
         airSources.forEach(function (sourceIndex) {
             if (chart.id === "temperature") {
-                chart.sources[sourceIndex].color = v.temperatureAirColors[airColorIndex++];
+                if (airColorIndex < v.temperatureAirColors.length) {
+                    chart.sources[sourceIndex].color = v.temperatureAirColors[airColorIndex++];
+                } else {
+                    chart.sources[sourceIndex].color = "#000000";
+                }
             } else {
-                chart.sources[sourceIndex].color = v.airColors[airColorIndex++];
+                if (airColorIndex < v.airColors.length) {
+                    chart.sources[sourceIndex].color = v.airColors[airColorIndex++];
+                } else {
+                    chart.sources[sourceIndex].color = "#000000";
+                }
             }
         });
     });
