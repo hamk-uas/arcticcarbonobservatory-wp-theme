@@ -293,19 +293,6 @@ function setOthersThanMapLoaded(loaded = othersThanMapLoaded) {
 }
 
 function onWindowResize() {
-    // const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    /*
-    if (window.innerWidth <= 1024 && history.state && getSiteId() !== undefined) {
-        // One column
-        let satelliteImages = document.getElementById("satellite_images");
-        if (satelliteImages !== null) {
-            satelliteImages.before(document.getElementById("map"));
-        }
-    } else {
-        // Two column
-        document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
-    }*/
-
     if (getSiteId() !== undefined) {
         if (foConfig.mapEnabled) {
             whenMapLoadedDo(function () {
@@ -327,8 +314,6 @@ function onWindowResize() {
 function setSiteSelectorMapLayerVisibility(visibility) {
     map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', visibility);
     map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', visibility);
-    //map.setLayoutProperty("cluster-countFieldLocations", 'visibility', visibility);
-    //map.setLayoutProperty("clustersFieldLocations", 'visibility', visibility);
 }
 
 function whenMapLoadedDo(f) {
@@ -1258,7 +1243,7 @@ function resizeCharts() {
 
         v.chartIds.forEach(function (chartId) {
             if (!v.charts[chartId].hidden) {
-                document.getElementById(`chart_svg_${chartId}`).innerHTML = getChartSvgInnerHtml(v, chartId);
+                document.getElementById(`chart_svg_div_${chartId}`).innerHTML = getChartSvgOuterHtml(v, chartId);
             }
         });
         refreshAllCharts();
@@ -1291,6 +1276,16 @@ function viewSiteBeforeLoadEssentials() {
         var filterContainer = document.getElementById("mapFilterContainer");
         filterContainer.style.display = "none";
     }
+}
+
+function updateColorbar() {
+    if (v.satelliteImageLegendId === "laiImage") {
+        document.getElementById("chart_colorbar_satelliteImages").style.visibility = "hidden";
+        document.getElementById("chart_colorbar_lai_satelliteImages").style.visibility = "visible";
+    } else {
+        document.getElementById("chart_colorbar_lai_satelliteImages").style.visibility = "hidden";
+        document.getElementById("chart_colorbar_satelliteImages").style.visibility = "visible";                
+    }    
 }
 
 async function viewSiteAfterLoadingEssentials(zoomDuration) {
@@ -1504,7 +1499,37 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 document.getElementById(foConfig.chartContainerElementId).insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
             }
         }
-        nonspecialChartId = chartId;
+        if (!chart.hidden) {
+            document.getElementById(`chart_title_div_${chartId}`).innerHTML = `<h4>${translate(v.charts[chartId], "title")}</h4>`;
+            let title2Div = document.getElementById(`chart_title2_div_${chartId}`);
+            if (title2Div !== null) {
+                title2Div.innerHTML = `<h4>${translate(v.charts[chartId], "title")}</h4>`;
+            }
+            var legend = '';
+            if (chartId === "satelliteImages") {
+                let tooltipString = translate(t.tooltip, "selectSatelliteImageType");
+                v.charts[chartId].sourceCategoryList.forEach(function (sourceCategory) {
+                    let visibleSymbolHtml;
+                    visibleSymbolHtml = getVisibleSymbolHtml(chartId, sourceCategory.id, v.chartColors[0], tooltipString, v.charts[chartId].visible[sourceCategory.id]);
+                    legend += `<span class="chart_legend_element">${visibleSymbolHtml}<span class="chart_legend_text">${translate(sourceCategory, "title")}</span></span>`;
+                });
+            } else {
+                let tooltipString = translate(t.tooltip, "legendItemVisibility");
+                v.charts[chartId].sources.forEach(function (source) {
+                    let visibleSymbolHtml;
+                    if (chartId === 'temperature' && source.rainbow !== undefined) {
+                        visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, `url(#chart_${chartId}_visible_${source.id}_gradient)`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
+                    } else {
+                        visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, source.color, tooltipString, v.charts[chartId].visible[source.legendId]);
+                    }
+                    legend += `<span id="chart_${chartId}_legend_element_${source.legendId}" class="chart_legend_element"><span>${visibleSymbolHtml}</span><span class="chart_legend_text">${source.name}</span></span>`;
+                });
+            }
+            document.getElementById(`chart_legend_div_${chartId}`).innerHTML = legend;
+            document.getElementById(`chart_description_div_${chartId}`).innerHTML = 
+            `${translate(v.charts[chartId], "description", null) != null ? `<p>${translate(v.charts[chartId], "description")}</p>` : ''}`;
+            nonspecialChartId = chartId;
+        }
     });
     if (!foConfig.mapEnabled || !hasSatelliteImages) {
         let satelliteImageDivElement = document.getElementById("satelliteImageDiv");
@@ -1522,9 +1547,13 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     v.chartIds.forEach(function (chartId) {
         //console.log(`Create chart ${chartId}`);
         if (!v.charts[chartId].hidden) {
-            document.getElementById(`chart_svg_div_${chartId}`).innerHTML = getChartSVGDivInnerHtml(v, chartId);        
+            document.getElementById(`chart_svg_div_${chartId}`).innerHTML = getChartSvgOuterHtml(v, chartId);
         }
     });
+
+    if (hasSatelliteImages) {
+        updateColorbar();
+    }
 
     // A scrollbar may have appeared. Change chart and map sizes accodingly.    
     resizeCharts();
@@ -2109,13 +2138,7 @@ function toggleLegendItemVisibility(chartId, legendId, event = null) {
                 }
             });
             v.satelliteImageLegendId = legendId;
-            if (v.satelliteImageLegendId === "laiImage") {
-                document.getElementById("colorbar").style.visibility = "hidden";
-                document.getElementById("colorbar_lai").style.visibility = "visible";
-            } else {
-                document.getElementById("colorbar_lai").style.visibility = "hidden";
-                document.getElementById("colorbar").style.visibility = "visible";                
-            }
+            updateColorbar();
             // Add cursor to related chart
             let relatedChart = chart.sourceCategories[legendId].relatedChart;
             if (relatedChart !== undefined && !v.charts[relatedChart].hidden) {

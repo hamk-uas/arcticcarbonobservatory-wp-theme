@@ -1,10 +1,6 @@
 <script type="text/javascript">
     foConfig = {
         ...foConfig,
-        storageUrl: 'https://field-observatory.data.lit.fmi.fi',
-        demoStorageUrl: 'https://field-observatory-demo.data.lit.fmi.fi',
-        language: "<?php echo explode("_", get_locale())[0]?>", // fi -> fi, sv_SE -> sv, en_US -> en
-        imagesUrl: "<?php echo get_template_directory_uri(); ?>/assets/images",
         mapEnabled: false,
         chartFilter: {
             "global": true,
@@ -14,7 +10,16 @@
         creditContainerElementId: undefined,
         zoomLevel: 11,
         manageSiteLinkEnabled: false,
-        now: Date.now().valueOf()
+        chartDivInnerHTMLTemplate: `
+        <div class="casepage_chart_svg_and_legend_div">
+            <div id="chart_title_div_chartId" class="chart_title_div"></div>
+            <div id="chart_svg_div_chartId" class="chart_svg_div"></div>
+            <div id="chart_legend_div_chartId" class="chart_legend_div"></div>
+        </div>
+        <div class="casepage_chart_title_and_description_div">
+            <div id="chart_title2_div_chartId" class="chart_title2_div"></div>
+            <div id="chart_description_div_chartId" class="chart_description"></div>
+        </div>`
     }
     foConfig.language = "fi"; // Override language.
 </script>

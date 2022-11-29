@@ -68,19 +68,11 @@
     line-height: 28px;
 }
 
-.colorbar-container {
-    position: relative;
-    margin-left: 24px;
-}
-
-.colorbar {
-    position: absolute;
-}
-
 .chart_gridcontainer {
     display: grid;
     grid-template-columns: repeat(2,1fr);
     grid-gap: 25px;
+    margin-bottom: 20px;
 }
 
 .chart_gridcontainer_item {
@@ -90,18 +82,56 @@
     text-align: center;
     display: block;
     padding-top: 10px;
+    position: relative;
 }
 
 .chart_gridcontainer_item h4 {
+    padding-bottom: 0px;
+    margin-bottom: 10px;
+}
+
+/*.casepage.chart_gridcontainer_item {
+    display: flex;
+    flex-direction: row;    
+}*/
+
+.chart_colorbar_container {
+    position: absolute;
+    margin-left: 24px;
+}
+
+.chart_title_div h4 {
     color: #5E5E5E;
     font-size: 24px;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-.casepage .chart_gridcontainer_item h4 {
+.casepage .chart_title_div {
+    display: block;
+}
+
+.casepage .chart_title2_div {
     display: none;
-    visibility: hidden;
+}
+
+
+#chart_title_div_satelliteImages {
+    display: none;
+}
+/*
+.casepage_chart_svg_and_legend_div {
+    width: 66%;
+}*/
+
+.casepage_chart_title_and_description_div {
+    /*width: 34%;*/
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: -10px;
 }
 
 p.h1p,
@@ -121,9 +151,6 @@ p.h4p,
 .chart_gridcontainer_item p {
     padding: 5px 0px 5px 0px;
 }
-
-/*.casepage .chart_gridcontainer_item p{
-}*/
 
 .chart_gridcontainer .fieldInfoDiv td {
     font-size: 18px;
@@ -158,15 +185,12 @@ p.h4p,
     font: 14px sans-serif;
 }
 
-.chart_legend {
+.chart_legend_div {
     margin-top: 5px;
     margin-right: 5px;
     margin-bottom: 10px;
     margin-left: 90px;
     padding-left: 4px;
-    /*display: grid;
-    grid-auto-rows: max-content;*/
-    /*grid-template-columns: repeat(4, auto);*/
     text-align: start;
     display: flex;
     flex-wrap: wrap;
@@ -431,23 +455,38 @@ p.h4p,
         display: grid;
         grid-template-columns: repeat(2,1fr);
         padding: 5px;
-        margin: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
     .casepage.chart_gridcontainer {
         grid-template-columns: repeat(1,1fr);
         display: grid;
-        margin-bottom: 5%;
-        margin-left: 5%;
-        margin-right: 5%;
+        margin-bottom: 40px;
+        margin-inline: max(20px,50% - 1280px/2)
     }
-    
+
     .casepage .chart_gridcontainer_item {
         grid-template-columns: repeat(2,1fr);
         display: grid;
     }
 
+    .casepage .chart_gridcontainer_item h4 {
+        margin-bottom: 0px;
+    }    
 
+    .casepage_chart_title_and_description_div {
+        padding-top: 20px;
+        padding-bottom: 50px;    
+    }
+
+    .casepage .chart_title_div {
+        display: none;
+    }
+
+    .casepage .chart_title2_div {
+        display: block;
+    }
 }
 @media only screen and (min-width: 1920px) {
 
@@ -548,7 +587,8 @@ p.h4p,
         display: grid;
         grid-template-columns: repeat(2,1fr);
         padding: 5px;
-        margin: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
     .chart_gridcontainer_item {
@@ -659,7 +699,8 @@ p.h4p,
         display: grid;
         grid-template-columns: repeat(2,1fr);
         padding: 5px;
-        margin: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
     
     .popup {
@@ -765,7 +806,8 @@ p.h4p,
             display: grid;
             grid-template-columns: repeat(1,1fr);
             padding: 5px;
-            margin: 5px;
+            margin-left: 5px;
+            margin-right: 5px;
         }
 
         #map {
@@ -865,7 +907,8 @@ p.h4p,
             display: grid;
             grid-template-columns: repeat(1,1fr);
             padding: 5px;
-            margin: 5px;
+            margin-left: 5px;
+            margin-right: 5px;
         }
         #map {
             height: 300px; /* Map height for Site*/
@@ -1043,7 +1086,8 @@ p.h4p,
         display: grid;
         grid-template-columns: repeat(1,1fr);
         padding: 5px;
-        margin: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
     .view h4 {
@@ -1083,7 +1127,7 @@ p.h4p,
             /* left: 50%; */
             /* margin-left: -80px; */
             margin-left: 0;
-        }
+        }    
 }
     @media only screen and (max-width: 1199px) {
 
@@ -1104,7 +1148,7 @@ p.h4p,
     
 }
 @media screen and (max-width: 500px) {
-    .chart_legend {
+    .chart_legend_div {
         margin-left: 10px;
     }
 }

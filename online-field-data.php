@@ -83,7 +83,12 @@ get_footer();
         chartContainerElementId: "chart_container",
         creditContainerElementId: "chart_container",
         zoomLevel: 6,
-        manageSiteLinkEnabled: true
+        manageSiteLinkEnabled: true,
+        chartDivInnerHTMLTemplate: `
+        <div id="chart_title_div_chartId" class="chart_title_div"></div>
+        <div id="chart_svg_div_chartId" class="chart_svg_div"></div>
+        <div id="chart_legend_div_chartId" class="chart_legend_div"></div>
+        <div id="chart_description_div_chartId" class="chart_description"></div>`
     }
 </script>
 <?php $version = wp_get_theme()->version; ?>

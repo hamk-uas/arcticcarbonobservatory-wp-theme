@@ -1541,41 +1541,13 @@ function getChartSvgOuterHtml(v, chartId, standalone = false, legendItemCoordina
     </svg>`;
 }
 
-function getChartSVGDivInnerHtml(v, chartId) {
-    var legend = '<div class="chart_legend">';
-    var sourceIndex = 0;
-    if (chartId === "satelliteImages") {
-        let tooltipString = translate(t.tooltip, "selectSatelliteImageType");
-        v.charts[chartId].sourceCategoryList.forEach(function (sourceCategory) {
-            let visibleSymbolHtml;
-            visibleSymbolHtml = getVisibleSymbolHtml(chartId, sourceCategory.id, v.chartColors[0], tooltipString, v.charts[chartId].visible[sourceCategory.id]);
-            legend += `<span class="chart_legend_element">${visibleSymbolHtml}<span class="chart_legend_text">${translate(sourceCategory, "title")}</span></span>`;
-        });
-    } else {
-        let tooltipString = translate(t.tooltip, "legendItemVisibility");
-        v.charts[chartId].sources.forEach(function (source) {
-            let visibleSymbolHtml;
-            if (chartId === 'temperature' && source.rainbow !== undefined) {
-                visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, `url(#chart_${chartId}_visible_${source.id}_gradient)`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
-            } else {
-                visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, source.color, tooltipString, v.charts[chartId].visible[source.legendId]);
-            }
-            legend += `<span id="chart_${chartId}_legend_element_${source.legendId}" class="chart_legend_element"><span>${visibleSymbolHtml}</span><span class="chart_legend_text">${source.name}</span></span>`;
-        });
-    }
-    legend += "</div>"
-    return `
-    ${chartId === "satelliteImages" ? `<div class="colorbar-container"><img id="colorbar" class="colorbar" style="visibility:visible" width="48px" src="${foConfig.imagesUrl}/colorbar.svg" alt="colorbar"><img id="colorbar_lai" class="colorbar" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI"></div>` : `<h4>${translate(v.charts[chartId], "title")}</h4>`}
-    ${getChartSvgOuterHtml(v, chartId)}
-    ${legend}`;
-}
-
-// Generate chart DIV element html including the DIV tags and all SVG layers
+// Generate those chart-specific divs that do not need resizing
 function getChartDivOuterHtml(v, chartId) {
-    // <defs> <rect id="chart_clip_${chartId}" width="${v.dimensions.width}" height="${v.dimensions.topMargin + v.dimensions.height}" x="0" y="0" /> </defs>
     return `<div onmousemove="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseenter="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseleave="document.getElementById('chart_controls_svg_${chartId}').classList.remove('Entered')" id="chart_div_${chartId}" class="chart_gridcontainer_item"${(chartId === "satelliteImages")? ' style="border: none"' : ''}>
-    <div id="chart_svg_div_${chartId}"></div>
-    <div>${translate(v.charts[chartId], "description", null) != null ? `<div class="chart_description"><p>${translate(v.charts[chartId], "description")}</p></div>` : ''}</div>
+    ${chartId === "satelliteImages"? `<div id="chart_colorbar_container_${chartId}" class="chart_colorbar_container">
+        <img id="chart_colorbar_${chartId}" class="chart_colorbar" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar.svg" alt="colorbar"><img id="chart_colorbar_lai_${chartId}" class="chart_colorbar_lai" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI">
+    </div>`: ''}
+    ${foConfig.chartDivInnerHTMLTemplate.replaceAll("chartId", chartId)}
     </div>`;
 }
 
