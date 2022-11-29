@@ -42,9 +42,6 @@ var siteSelectorMapView = {
 };
 
 var siteMapView = {
-    fitBoundsOptions: {
-        padding: 40,
-    },
     minZoom: 10,
     maxZoom: 17
 };
@@ -127,8 +124,8 @@ async function loadEssentials() {
                 }
                 if (foConfig.mapEnabled) {
                     return initMap({
-                        ...siteMapView,
-                        bounds: getBoundingBox(filteredFeatures)
+                        ...siteMapView/*,
+                        bounds: getBoundingBox(filteredFeatures)*/
                     });
                 }
             }
@@ -188,7 +185,8 @@ async function mapLoadImage(url, id) {
 }
 
 function initMap(initMapView) {
-    map = new mapboxgl.Map({
+    let mapParams = {
+        accessToken: foConfig.mapboxgl.accessToken,
         container: foConfig.mapElementId,
         style: 'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa',
         ...initMapView,
@@ -218,7 +216,8 @@ function initMap(initMapView) {
                 "text-field": ["get", "name"]
             }
         }*/
-    });
+    };
+    map = new mapboxgl.Map(mapParams);
     setOthersThanMapLoaded(false);
 /*    map.once('load', function () {
         if (foConfig.language !== 'en') {
@@ -242,7 +241,7 @@ function initMap(initMapView) {
     nav = new mapboxgl.NavigationControl();
     map.addControl(
         new MapboxGeocoder({
-            accessToken: mapboxgl.accessToken,
+            accessToken: foConfig.mapboxgl.accessToken,
             mapboxgl: mapboxgl,
             countries: 'fi'
         })
@@ -492,7 +491,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
     map.resize();
     map.setMinZoom(siteSelectorMapView.minZoom);
     map.setMaxZoom(siteSelectorMapView.maxZoom);
-    map.fitBounds(siteSelectorMapView.bounds, { padding: siteSelectorMapView.fitBoundsOptions.padding, duration: 1000 });
+    map.fitBounds(siteSelectorMapView.bounds, { padding: 40, duration: 1000 });
     //map.flyTo({...defaultMapView, duration:1000 });
     setOthersThanMapLoaded(true);
 
