@@ -188,7 +188,7 @@ function initMap(initMapView) {
     let mapParams = {
         accessToken: foConfig.mapboxgl.accessToken,
         container: foConfig.mapElementId,
-        style: 'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa',
+        style: foConfig.mapStyleURL,
         ...initMapView,
         locale: {                       
             'AttributionControl.ToggleAttribution': translate(t.tooltip, "toggleAttribution"),
@@ -210,7 +210,8 @@ function initMap(initMapView) {
             'ScrollZoomBlocker.CtrlMessage': translate(t.tooltip, "useCtrlPlusScrollToZoomTheMap"),
             'ScrollZoomBlocker.CmdMessage': translate(t.tooltip, "useCmdPlusScrollToZoomTheMap"),
             'TouchPanBlocker.Message': translate(t.tooltip, "useTwoFingersToMoveTheMap"),
-        }
+        },
+        language: "fi"
 /*        layout: {
             "country-label": {
                 "text-field": ["get", "name"]

@@ -80,6 +80,7 @@ get_footer();
         ...foConfig,
         mapElementId: "map",
         mapEnabled: true,
+        mapStyleURL: "mapbox://styles/hamksmart/clb3oj6mg000414p9riomkyt4", //'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa'
         chartContainerElementId: "chart_container",
         creditContainerElementId: "chart_container",
         zoomLevel: 6,
