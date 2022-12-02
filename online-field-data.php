@@ -80,7 +80,7 @@ get_footer();
         ...foConfig,
         mapElementId: "map",
         mapEnabled: true,
-        mapStyleURL: "mapbox://styles/hamksmart/clb3oj6mg000414p9riomkyt4", //'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa'
+        mapStyleURL: "mapbox://styles/hamksmart/clb3oj6mg000414p9riomkyt4?ver=<?php echo wp_get_theme()->version ?>", //'mapbox://styles/hamksmart/ckxpt8jt31cge14mu5nkf4qwa'
         chartContainerElementId: "chart_container",
         creditContainerElementId: "chart_container",
         zoomLevel: 6,
@@ -92,8 +92,7 @@ get_footer();
         <div id="chart_description_div_chartId" class="chart_description"></div>`
     }
 </script>
-<?php $version = wp_get_theme()->version; ?>
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCharts.js?ver=<?php echo $version ?>"></script>
-<script type="text/js-worker" id="fieldobservatory-FODataViewerWorkerJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerWorker.js?ver=<?php echo $version ?>"></script>
-<script type="text/javascript" id="fieldobservatory-FODataViewerCoreJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCore.js?ver=<?php echo $version ?>"></script>
-<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerDOM.js?ver=<?php echo $version ?>"></script>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCharts.js?ver=<?php echo wp_get_theme()->version ?>"></script>
+<script type="text/js-worker" id="fieldobservatory-FODataViewerWorkerJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerWorker.js?ver=<?php echo wp_get_theme()->version ?>"></script>
+<script type="text/javascript" id="fieldobservatory-FODataViewerCoreJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCore.js?ver=<?php echo wp_get_theme()->version ?>"></script>
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerDOM.js?ver=<?php echo wp_get_theme()->version ?>"></script>
