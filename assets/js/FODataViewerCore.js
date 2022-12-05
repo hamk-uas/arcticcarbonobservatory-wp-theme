@@ -982,12 +982,17 @@ function prepCharts(v, siteJson, chartsJson) {
     v.chartIds.forEach(function (chartId) {
         let chart = v.charts[chartId];
         let sourceNameDups = {};
-        chart.sources.forEach(function (source) {
+        chart.sources.forEach(function (source) {            
             if (source.block !== undefined) {
                 let block = v.site.blockIdToBlock[source.block];
-                source.name = translate(block, "Name");
-                if (source.name === undefined) {
-                    source.name = `${translate(t.plaintext, "plot")} ${source.block}`;
+                if (block === undefined) {
+                    console.warn(`Chart ${chartId} source ${source.id} has unknown block ${source.block}. Assigning to site`)
+                    source.name = v.site.Name;
+                } else {
+                    source.name = translate(block, "Name");
+                    if (source.name === undefined) {
+                        source.name = `${translate(t.plaintext, "plot")} ${source.block}`;
+                    }
                 }
             } else if (source.blockGroup !== undefined) {
                 source.name = `${translate(t.plaintext, "plotgroup")} ${source.blockGroup}`;
@@ -1001,7 +1006,7 @@ function prepCharts(v, siteJson, chartsJson) {
             }
             if (source.sourceCategoryId !== undefined) {
                 if (chart.sourceCategories[source.sourceCategoryId] === undefined) {
-                    console.warning(`Removed unknown sourceCategory ${source.sourceCategoryId} from chart ${chart.id} source ${source.id}.`);
+                    console.warn(`Removed unknown sourceCategory ${source.sourceCategoryId} from chart ${chart.id} source ${source.id}.`);
                     delete source.sourceCategoryId;
                 }
             }
