@@ -37,7 +37,7 @@ var siteSelectorMapView = {
     fitBoundsOptions: {
         padding: 40,
     },
-    minZoom: 4,
+    minZoom: 5,
     maxZoom: 10
 };
 
@@ -577,7 +577,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
             const zoomNeeded = map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance);            
             map.easeTo({
                 center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
-                zoom: (zoomNeeded < map.getZoom() + 1)? map.getZoom() + 1: zoomNeeded
+                zoom: (zoomNeeded < map.getZoom() + 1.5)? map.getZoom() + 1.5: zoomNeeded
             });
             popup.remove();
         });
@@ -2408,16 +2408,20 @@ async function initPage() {
     console.log(foConfig.mapEnabled);
     if (foConfig.mapEnabled) {
         whenMapLoadedDo(function () {
+            map.on('sourcedata', (e) => {
+                console.log(e);
+            });
             map.addSource('empty', {
                 type: 'geojson',
                 data: { type: 'FeatureCollection', features: [] }
             });
-            map.addSource("fieldLocations", {
+            map.addSource("fieldLocationsNear", {
                 type: "geojson",
-                data: sitesGeoJson,
-                cluster: false,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
+                data: sitesGeoJson
+            });
+            map.addSource("fieldLocationsFar", { // Separately so that we can check loading status
+                type: "geojson",
+                data: sitesGeoJson
             });
             map.addLayer({
                 id: 'satelliteZ',
@@ -2432,8 +2436,8 @@ async function initPage() {
             map.addLayer({
                 "id": 'fieldLocationsLayerFar',
                 "type": 'circle',
-                "source": 'fieldLocations',
-                "maxzoom": 5,
+                "source": 'fieldLocationsFar',
+                "maxzoom": 5.5,
                 "filter": ['!has', 'point_count'],
                 "paint": {
                     "circle-radius": 6,
@@ -2544,8 +2548,8 @@ async function initPage() {
             map.addLayer({
                 "id": 'fieldLocationsLayerNear',
                 "type": 'symbol',
-                "source": 'fieldLocations',
-                "minzoom": 5,
+                "source": 'fieldLocationsNear',
+                "minzoom": 5.5,
                 "filter": ['!has', 'point_count'],
                 'layout': {
                     'icon-size': 1.0,
