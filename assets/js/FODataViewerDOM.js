@@ -15,7 +15,8 @@ var siteTypeColors = {
     'Svensk Kolinlagring Site': '#292929',
     'co-carbon': '#234832',
     'smear-agri': '#000000',
-    'lantmannen': "#23A73F"
+    'lantmannen': "#23A73F",
+    'default': '#000000'
 };
 
 
@@ -23,7 +24,7 @@ var siteTypeColors = {
 function getSiteTypeColor(siteType) {
     let color = siteTypeColors[siteType];
     if (color === undefined) {
-        color = "#349a80";
+        color = siteTypeColors["default"];
     }
     return color;
 }
@@ -2518,7 +2519,7 @@ async function initPage() {
                     offset++;
                 }
             }
-            let iconStops = [];
+            let iconImages = {};
             for (const [siteType, color] of Object.entries(siteTypeColors)) {
                 let rgb = [];
                 for (let c = 0; c < 3; c++) {
@@ -2536,7 +2537,7 @@ async function initPage() {
                     }
                 }
                 map.addImage(`icon_image_${siteType}`, { width: width, height: height, data: imageData });
-                iconStops.push([siteType, `icon_image_${siteType}`])
+                iconImages[siteType] = `icon_image_${siteType}`;
             }
             map.addLayer({
                 "id": 'fieldLocationsLayerNear',
@@ -2559,11 +2560,11 @@ async function initPage() {
                     'text-size': 12,
                     'text-offset': [0, -1.95],
                     'icon-offset': [0, 1-height/2],
-                    //'icon-translate': [0, 1-height/2],
                     'icon-image': {
                         property: 'site_type',
                         type: 'categorical',
-                        stops: iconStops
+                        stops: Object.entries(iconImages),
+                        default: iconImages["default"]
                     }
                 },
                 "paint": {
