@@ -318,6 +318,7 @@ function onWindowResize() {
 }
 
 function setSiteSelectorMapLayerVisibility(visibility) {
+    map.setLayoutProperty("fieldLocationsLayerFarExt", 'visibility', visibility);
     map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', visibility);
     map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', visibility);
 }
@@ -531,25 +532,25 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 .addTo(map);
         }
 
-        addMapEventHandler('mouseover', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('mouseover', 'fieldLocationsLayerFarExt', function (e) {
             map.getCanvas().style.cursor = 'pointer';
         });
-        addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerFarExt', function (e) {
             map.getCanvas().style.cursor = 'default';
         });
 
-        addMapEventHandler('mouseenter', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('mouseenter', 'fieldLocationsLayerFarExt', function (e) {
             popup.remove();
             createFarPopup(e);
         });
-        addMapEventHandler('mousemove', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('mousemove', 'fieldLocationsLayerFarExt', function (e) {
             popup.remove();
             createFarPopup(e);
         });
-        addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function () {
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerFarExt', function () {
             popup.remove();
         });
-        addMapEventHandler('click', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('click', 'fieldLocationsLayerFarExt', function (e) {
             document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
             // Find clicked feature
             let clickXY = map.project(e.lngLat);
@@ -626,11 +627,15 @@ function viewSiteSelectorAfterLoadingEssentials() {
 //Filter mapbox layer data
 function checkCheckBoxes() {
     map.setFilter(
-        'fieldLocationsLayerNear',
+        'fieldLocationsLayerFarExt',
         null
     );
     map.setFilter(
         'fieldLocationsLayerFar',
+        null
+    );
+    map.setFilter(
+        'fieldLocationsLayerNear',
         null
     );
     let siteTypePlainText = {
@@ -646,6 +651,10 @@ function checkCheckBoxes() {
 
     let base = ['any'];
     let filter = base.concat(filterList);
+    map.setFilter(
+        'fieldLocationsLayerFarExt',
+        filter
+    );
     map.setFilter(
         'fieldLocationsLayerFar',
         filter
@@ -2438,6 +2447,18 @@ async function initPage() {
                 source: 'empty'
             });
             map.addLayer({
+                "id": 'fieldLocationsLayerFarExt',
+                "type": 'circle',
+                "source": 'fieldLocations',
+                "filter": ['!has', 'point_count'],
+                "paint": {
+                    "circle-radius": 20,
+                    "circle-stroke-width": 0,
+                    "circle-opacity": 0,
+                }
+            });
+
+            map.addLayer({
                 "id": 'fieldLocationsLayerFar',
                 "type": 'circle',
                 "source": 'fieldLocations',
@@ -2461,12 +2482,12 @@ async function initPage() {
                 }
             });
             // Generate icon
-            const width = 37;
-            const height = 43;
-            const bigCenterX = 17.5;
-            const bigCenterY = 17.5;
-            const bigOuterRadius = 12*Math.sqrt(2);
-            const bigInnerRadius = 12.5;
+            const width = 41;
+            const height = 49;
+            const bigCenterX = 19.5;
+            const bigCenterY = 19.5;
+            const bigOuterRadius = 14*Math.sqrt(2);
+            const bigInnerRadius = 15;
             const centerDotData = new Float32Array(width * height);
             const coloredAreaData = new Float32Array(width * height);
             let offset = 0;
@@ -2568,7 +2589,7 @@ async function initPage() {
                     "text-field": ["coalesce", ['get', `Name_${foConfig.language}`], ['get', 'Name']],
                     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                     'text-size': 12,
-                    'text-offset': [0, -1.95],
+                    'text-offset': [0, -2.3],
                     'icon-offset': [0, 1-height/2],
                     'icon-image': {
                         property: 'site_type',
@@ -2588,9 +2609,11 @@ async function initPage() {
                 //console.log(map.getZoom());
                 if (getSiteId() === undefined) {
                     if (map.getZoom() < 5.5) {
+                        map.setLayoutProperty("fieldLocationsLayerFarExt", 'visibility', "visible");
                         map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', "visible");
                         map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', "none");
                     } else {
+                        map.setLayoutProperty("fieldLocationsLayerFarExt", 'visibility', "none");
                         map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', "none");
                         map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', "visible");
                         map.setLayerZoomRange("fieldLocationsLayerNear", 0, 24);
