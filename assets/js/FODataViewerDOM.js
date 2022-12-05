@@ -2408,18 +2408,11 @@ async function initPage() {
     console.log(foConfig.mapEnabled);
     if (foConfig.mapEnabled) {
         whenMapLoadedDo(function () {
-            map.on('sourcedata', (e) => {
-                console.log(e);
-            });
             map.addSource('empty', {
                 type: 'geojson',
                 data: { type: 'FeatureCollection', features: [] }
             });
-            map.addSource("fieldLocationsNear", {
-                type: "geojson",
-                data: sitesGeoJson
-            });
-            map.addSource("fieldLocationsFar", { // Separately so that we can check loading status
+            map.addSource("fieldLocations", {
                 type: "geojson",
                 data: sitesGeoJson
             });
@@ -2436,7 +2429,7 @@ async function initPage() {
             map.addLayer({
                 "id": 'fieldLocationsLayerFar',
                 "type": 'circle',
-                "source": 'fieldLocationsFar',
+                "source": 'fieldLocations',
                 "maxzoom": 5.5,
                 "filter": ['!has', 'point_count'],
                 "paint": {
@@ -2548,7 +2541,7 @@ async function initPage() {
             map.addLayer({
                 "id": 'fieldLocationsLayerNear',
                 "type": 'symbol',
-                "source": 'fieldLocationsNear',
+                "source": 'fieldLocations',
                 "minzoom": 5.5,
                 "filter": ['!has', 'point_count'],
                 'layout': {
