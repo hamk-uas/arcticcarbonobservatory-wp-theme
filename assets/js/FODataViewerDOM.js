@@ -505,7 +505,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
     if (mapEventsAndHandlers.length == 0) {
 
-        function createFarPopup(e) {
+        function createFarPopup(e, near = false) {
             var coordinates = e.features[0].geometry.coordinates.slice();
             // Ensure that if the map is zoomed out such that multiple copies of the feature are visible, the popup appears over the copy being pointed to.
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -513,7 +513,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
             }
             popup
                 .setLngLat(coordinates)
-                .setOffset([0, 0])
+                .setOffset([0, (near)? -21: 0])
                 .setHTML('<h2>' + translate(t.plaintext_titles, "click_to_zoom") + '</h2>')
                 .addTo(map);
         }        
@@ -550,19 +550,19 @@ function viewSiteSelectorAfterLoadingEssentials() {
         addMapEventHandler('mouseleave', 'fieldLocationsLayerFarExt', function () {
             popup.remove();
         });
-        addMapEventHandler('click', 'fieldLocationsLayerFarExt', function (e) {
-            document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
+
+        function getSiteIndexAndSmallestDistanceSquared(e) {
             // Find clicked feature
-            let clickXY = map.project(e.lngLat);
+            let clickXY = map.project({lng: e.features[0].geometry.coordinates[0], lat: e.features[0].geometry.coordinates[1]});
             let xys = [];
             let clickedIndex = undefined;
             let smallestDistanceSquared = undefined;
             for (let [index, feature] of sitesGeoJson.features.entries()) {
-                xys.push(map.project({lng: feature.properties.lon, lat: feature.properties.lat}));
+                xys.push({...map.project({lng: feature.properties.lon, lat: feature.properties.lat}), Name: feature.properties.Name});
                 let distanceSquared = (xys[xys.length - 1].x - clickXY.x)*(xys[xys.length - 1].x - clickXY.x) + (xys[xys.length - 1].y - clickXY.y)*(xys[xys.length - 1].y - clickXY.y);
                 if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
                     smallestDistanceSquared = distanceSquared;
-                    clickedIndex = index;
+                    clickedIndex = index;                    
                 }
             }
             // Find nearest other feature
@@ -575,6 +575,10 @@ function viewSiteSelectorAfterLoadingEssentials() {
                     }
                 }
             }
+            return [clickedIndex, smallestDistanceSquared];
+        }
+
+        function zoomSite(clickedIndex, smallestDistanceSquared) {
             // Calculate zoom needed to make smallestDistance = targetDistance
             let smallestDistance = Math.sqrt(smallestDistanceSquared);
             const targetDistance = 50;
@@ -584,6 +588,12 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 zoom: (zoomNeeded < map.getZoom() + 1.5)? map.getZoom() + 1.5: zoomNeeded
             });
             popup.remove();
+        }
+
+        addMapEventHandler('click', 'fieldLocationsLayerFarExt', function (e) {
+            document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            zoomSite(clickedIndex, smallestDistanceSquared);
         });
 
         addMapEventHandler('mouseover', 'fieldLocationsLayerNear', function (e) {
@@ -596,11 +606,21 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         addMapEventHandler('mouseenter', 'fieldLocationsLayerNear', function (e) {
             popup.remove();
-            createNearPopup(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            if (Math.sqrt(smallestDistanceSquared) < 40) {
+                createFarPopup(e, true);
+            } else {
+                createNearPopup(e);
+            }
         });
         addMapEventHandler('mousemove', 'fieldLocationsLayerNear', function (e) {
             popup.remove();
-            createNearPopup(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            if (Math.sqrt(smallestDistanceSquared) < 40) {
+                createFarPopup(e, true);
+            } else {
+                createNearPopup(e);
+            }
         });
 
         addMapEventHandler('mouseleave', 'fieldLocationsLayerNear', function () {
@@ -609,8 +629,13 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         addMapEventHandler('click', 'fieldLocationsLayerNear', async function (e) {
             document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
-            pushState();
-            await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            if (Math.sqrt(smallestDistanceSquared) < 40) {
+                zoomSite(clickedIndex, smallestDistanceSquared);
+            } else {
+                pushState();
+                await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
+            }
         });
 
         addMapEventHandler('move', function () {
