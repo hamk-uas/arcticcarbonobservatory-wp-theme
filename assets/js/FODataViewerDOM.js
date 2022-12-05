@@ -37,8 +37,8 @@ var handleEsc = undefined;
 var siteSelectorMapView = {
     fitBoundsOptions: {
         padding: 40,
-    },
-    minZoom: 5,
+    },    
+    minZoom: 4,
     maxZoom: 10
 };
 
