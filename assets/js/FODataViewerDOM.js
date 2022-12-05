@@ -1,5 +1,7 @@
 ﻿window.onresize = onWindowResize;
 
+layerVisibilityBackup = {}
+
 function getSiteId() {
     if (foConfig.siteId !== undefined) {
         return foConfig.siteId;
@@ -529,10 +531,10 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 .addTo(map);
         }
 
-        map.on('mouseover', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('mouseover', 'fieldLocationsLayerFar', function (e) {
             map.getCanvas().style.cursor = 'pointer';
         });
-        map.on('mouseleave', 'fieldLocationsLayerFar', function (e) {
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function (e) {
             map.getCanvas().style.cursor = 'default';
         });
 
@@ -583,10 +585,10 @@ function viewSiteSelectorAfterLoadingEssentials() {
             popup.remove();
         });
 
-        map.on('mouseover', 'fieldLocationsLayerNear', function (e) {
+        addMapEventHandler('mouseover', 'fieldLocationsLayerNear', function (e) {
             map.getCanvas().style.cursor = 'pointer';
         });
-        map.on('mouseleave', 'fieldLocationsLayerNear', function (e) {
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerNear', function (e) {
             map.getCanvas().style.cursor = 'default';
         });
         
@@ -610,7 +612,10 @@ function viewSiteSelectorAfterLoadingEssentials() {
             await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
         });
 
-        addMapEventHandler('movestart', function () {
+        addMapEventHandler('move', function () {
+            popup.remove();
+        });
+        addMapEventHandler('moveend', function () {
             popup.remove();
         });
     }
@@ -1576,8 +1581,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                     if (layer.id === "satelliteZ") {
                         break;
                     }
-                    if (layer.id !== "landcover-outdoors") {
-                        map.setLayoutProperty(layer.id, 'visibility', 'none');
+                    if (layer.id !== "landcover-outdoors") {                        
+                        if (map.getLayoutProperty(layer.id, 'visibility') === 'visible' || map.getLayoutProperty(layer.id, 'visibility') === undefined) {
+                            layerVisibilityBackup[layer.id] = 'visible';
+                            map.setLayoutProperty(layer.id, 'visibility', 'none');
+                        }
                     }
                 };
                 //console.log(map.getStyle().layers);            
@@ -2016,7 +2024,9 @@ function unviewSiteAndViewSiteSelector() {
                 break;
             }
             if (layer.id !== "landcover-outdoors") {
-                map.setLayoutProperty(layer.id, 'visibility', 'visible');
+                if (layerVisibilityBackup[layer.id] === 'visible') {
+                    map.setLayoutProperty(layer.id, 'visibility', 'visible');
+                }
             }
         };
         mapbackgrounds.forEach(function (feature, index) {
@@ -2573,6 +2583,7 @@ async function initPage() {
                     "text-halo-color": "#ffffff"
                 }
             });
+            // Custom zoom-dependent layer visibility. Keeps the disappearing layer visible all the way through zooming
             map.on('moveend', function () {
                 //console.log(map.getZoom());
                 if (getSiteId() === undefined) {
@@ -2585,7 +2596,7 @@ async function initPage() {
                         map.setLayerZoomRange("fieldLocationsLayerNear", 0, 24);
                     }
                 }
-            });            
+            });
         });
     }
     if (getSiteId() !== undefined) {
