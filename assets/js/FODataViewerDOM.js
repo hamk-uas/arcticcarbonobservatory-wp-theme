@@ -237,7 +237,10 @@ function initMap(initMapView) {
     map.touchZoomRotate.disableRotation(); // disable map rotation using touch rotation gesture
     popup = new mapboxgl.Popup({ // Create a popup, but don't add it to the map yet.
         closeButton: false,
-        closeOnClick: false
+        closeOnClick: false,
+        closeOnMove: false,
+        //focusAfterOpen: false,
+        className: 'map-popup'
     });
     nav = new mapboxgl.NavigationControl();
     map.addControl(
@@ -497,85 +500,51 @@ function viewSiteSelectorAfterLoadingEssentials() {
     setOthersThanMapLoaded(true);
 
     if (mapEventsAndHandlers.length == 0) {
-        function createNearPopup(e) {
-            // Change the cursor style as a UI indicator.
-            map.getCanvas().style.cursor = 'pointer';
+
+        function createFarPopup(e) {
             var coordinates = e.features[0].geometry.coordinates.slice();
-            var name = e.features[0].properties.Name;
-            var siteType = e.features[0].properties.site_type;
-            // Ensure that if the map is zoomed out such that multiple
-            // copies of the feature are visible, the popup appears
-            // over the copy being pointed to.
+            // Ensure that if the map is zoomed out such that multiple copies of the feature are visible, the popup appears over the copy being pointed to.
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
-            // Populate the popup and set its coordinates
-            // based on the feature found.
-            if (popup.userData !== undefined) {
-                delete popup.userData;
-                popup.remove()
-            }
-            var styleColor = getSiteTypeColor(siteType);
             popup
                 .setLngLat(coordinates)
-                .setHTML('<h1 id="fieldLocationsLayerNearPopup">' + name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
+                .setOffset([0, 0])
+                .setHTML('<h2>' + translate(t.plaintext_titles, "click_to_zoom") + '</h2>')
                 .addTo(map);
-            popup.userData = "near";
+        }        
+
+        function createNearPopup(e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            // Ensure that if the map is zoomed out such that multiple copies of the feature are visible, the popup appears over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+            var siteType = e.features[0].properties.site_type;
+            popup
+                .setLngLat(coordinates)
+                .setOffset([0, -21])
+                .setHTML('<h1>' + e.features[0].properties.Name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
+                .addTo(map);
         }
-        addMapEventHandler('mouseenter', 'fieldLocationsLayerNear', createNearPopup);
-        addMapEventHandler('mousemove', 'fieldLocationsLayerNear', function (e) {
-            if (popup.userData === "far") {
-                delete popup.userData;
-                popup.remove();
-            }
-            createNearPopup(e);
-        });
 
-        addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function () {
-            map.getCanvas().style.cursor = '';
-            if (popup.userData === "far") {
-                delete popup.userData;
-                popup.remove();
-            }
+        map.on('mouseover', 'fieldLocationsLayerFar', function (e) {
+            map.getCanvas().style.cursor = 'pointer';
         });
-        addMapEventHandler('mouseleave', 'fieldLocationsLayerNear', function () {
-            map.getCanvas().style.cursor = '';
-            if (popup.userData === "near") {
-                delete popup.userData;
-                popup.remove();
-            }
-        });
-
-        addMapEventHandler('click', 'fieldLocationsLayerNear', async function (e) {
-            document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
-            pushState();
-            await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
+        map.on('mouseleave', 'fieldLocationsLayerFar', function (e) {
+            map.getCanvas().style.cursor = 'default';
         });
 
         addMapEventHandler('mouseenter', 'fieldLocationsLayerFar', function (e) {
-            if (popup.userData !== "near") {
-                var coordinates = e.features[0].geometry.coordinates.slice();
-                popup
-                    .setLngLat(coordinates)
-                    .setHTML('<h2>' + translate(t.plaintext_titles, "click_to_zoom") + '</h2>')
-                    .addTo(map);
-                popup.userData = "far";
-                // Change the cursor style as a UI indicator.
-                map.getCanvas().style.cursor = 'pointer';
-            }
+            popup.remove();
+            createFarPopup(e);
         });
         addMapEventHandler('mousemove', 'fieldLocationsLayerFar', function (e) {
-            if (popup.userData !== "near") {
-                var coordinates = e.features[0].geometry.coordinates.slice();
-                popup.setLngLat(coordinates)
-            }
+            popup.remove();
+            createFarPopup(e);
         });
         addMapEventHandler('mouseleave', 'fieldLocationsLayerFar', function () {
-            if (popup.userData === "far") {
-                map.getCanvas().style.cursor = '';
-                delete popup.userData;
-                popup.remove();
-            }
+            popup.remove();
         });
         addMapEventHandler('click', 'fieldLocationsLayerFar', function (e) {
             document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
@@ -610,11 +579,37 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
                 zoom: (zoomNeeded < map.getZoom() + 1)? map.getZoom() + 1: zoomNeeded
             });
-            delete popup.userData;
             popup.remove();
         });
+
+        map.on('mouseover', 'fieldLocationsLayerNear', function (e) {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'fieldLocationsLayerNear', function (e) {
+            map.getCanvas().style.cursor = 'default';
+        });
+        
+
+        addMapEventHandler('mouseenter', 'fieldLocationsLayerNear', function (e) {
+            popup.remove();
+            createNearPopup(e);
+        });
+        addMapEventHandler('mousemove', 'fieldLocationsLayerNear', function (e) {
+            popup.remove();
+            createNearPopup(e);
+        });
+
+        addMapEventHandler('mouseleave', 'fieldLocationsLayerNear', function () {
+            popup.remove();
+        });
+
+        addMapEventHandler('click', 'fieldLocationsLayerNear', async function (e) {
+            document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
+            pushState();
+            await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
+        });
+
         addMapEventHandler('movestart', function () {
-            delete popup.userData;
             popup.remove();
         });
     }
@@ -2199,7 +2194,10 @@ function removeSatelliteImageSources() {
 }
 
 function addVegetationIndexPopup(mapSourceId, e) {
-    popup.setLngLat(e.lngLat).setHTML(`<p>${e.features[0].properties.vegetationIndex}: ${e.features[0].properties.val.toFixed(3)}</p>`).addTo(map);
+    popup.setLngLat(e.lngLat)
+        .setOffset([0, 0])
+        .setHTML(`<p>${e.features[0].properties.vegetationIndex}: ${e.features[0].properties.val.toFixed(3)}</p>`)
+        .addTo(map);
 }
 
 function satelliteImageLayerMouseMove(e) {
@@ -2435,7 +2433,7 @@ async function initPage() {
                 "id": 'fieldLocationsLayerFar',
                 "type": 'circle',
                 "source": 'fieldLocations',
-                /*"maxzoom": 6,*/
+                "maxzoom": 5,
                 "filter": ['!has', 'point_count'],
                 "paint": {
                     "circle-radius": 6,
@@ -2454,6 +2452,95 @@ async function initPage() {
                     "circle-stroke-opacity": 1
                 }
             });
+            // Generate icon
+            const width = 37;
+            const height = 43;
+            const bigCenterX = 17.5;
+            const bigCenterY = 17.5;
+            const bigOuterRadius = 12*Math.sqrt(2);
+            const bigInnerRadius = 12.5;
+            const centerDotData = new Float32Array(width * height);
+            const coloredAreaData = new Float32Array(width * height);
+            let offset = 0;
+            for (let pixelCenterRelY = - 0.5 - bigCenterY; pixelCenterRelY < height - bigCenterY - 1; pixelCenterRelY++) {
+                let absPixelCenterRelY = Math.abs(pixelCenterRelY);
+                for (let pixelCenterRelX = - 0.5 - bigCenterX; pixelCenterRelX < width - bigCenterX - 1; pixelCenterRelX++) {
+                    let absPixelCenterRelX = Math.abs(pixelCenterRelX);
+                    let rotatedX = Math.sqrt(2)*0.5 * (pixelCenterRelX + pixelCenterRelY);
+                    let rotatedY = Math.sqrt(2)*0.5 * (pixelCenterRelY - pixelCenterRelX);
+                    if (rotatedX >= 0 && rotatedY >= 0) {
+                        // Colored tip using rotated coordinates
+                        if (rotatedX <= bigOuterRadius + 0.25 && rotatedY <= bigOuterRadius + 0.25) {
+                            if (rotatedX > bigOuterRadius - 0.25 || rotatedY > bigOuterRadius - 0.25) {
+                                // Antialiasing
+                                if (rotatedX > bigOuterRadius - 0.25 && rotatedY > bigOuterRadius - 0.25) {
+                                    coloredAreaData[offset] = 0.25; 
+                                } else {
+                                    coloredAreaData[offset] = 0.5;
+                                }
+                            } else {
+                                coloredAreaData[offset] = 1;
+                            }
+                        }
+                    } else {
+                        // Round colored area
+                        if ((absPixelCenterRelX - Math.sqrt(2)*0.25)*(absPixelCenterRelX - Math.sqrt(2)*0.25) + (absPixelCenterRelY - Math.sqrt(2))*(absPixelCenterRelY - Math.sqrt(2)*0.25) < bigOuterRadius*bigOuterRadius) {
+                            if ((absPixelCenterRelX + Math.sqrt(2)*0.25)*(absPixelCenterRelX + Math.sqrt(2)*0.25) + (absPixelCenterRelY + Math.sqrt(2)*0.25)*(absPixelCenterRelY + Math.sqrt(2)*0.25) > bigOuterRadius*bigOuterRadius) {
+                                // Antialising of the edge
+                                let overSample = 16;
+                                for (let y = absPixelCenterRelY - 0.5 + 0.5/overSample; y < absPixelCenterRelY + 0.5; y += 1/overSample) {
+                                    for (let x = absPixelCenterRelX - 0.5 + 0.5/overSample; x < absPixelCenterRelX + 0.5; x += 1/overSample) {
+                                        if (x*x + y*y < bigOuterRadius*bigOuterRadius) {
+                                            coloredAreaData[offset] += 1/(overSample*overSample);
+                                        }
+                                    }
+                                }
+                            } else {
+                                coloredAreaData[offset] = 1;
+                            }
+                        }
+                    }
+                    // Center dot
+                    if (coloredAreaData[offset] > 0) {
+                        if ((absPixelCenterRelX - Math.sqrt(2)*0.25)*(absPixelCenterRelX - Math.sqrt(2)*0.25) + (absPixelCenterRelY - Math.sqrt(2)*0.25)*(absPixelCenterRelY - Math.sqrt(2)*0.25) < bigInnerRadius*bigInnerRadius) {
+                            if ((absPixelCenterRelX + Math.sqrt(2)*0.25)*(absPixelCenterRelX + Math.sqrt(2)*0.25) + (absPixelCenterRelY + Math.sqrt(2)*0.25)*(absPixelCenterRelY + Math.sqrt(2)*0.25) > bigInnerRadius*bigInnerRadius) {
+                                // Antialising of the edge
+                                let overSample = 16;
+                                for (let y = absPixelCenterRelY - 0.5 + 0.5/overSample; y < absPixelCenterRelY + 0.5; y += 1/overSample) {
+                                    for (let x = absPixelCenterRelX - 0.5 + 0.5/overSample; x < absPixelCenterRelX + 0.5; x += 1/overSample) {
+                                        if (x*x + y*y < bigInnerRadius*bigInnerRadius) {
+                                            centerDotData[offset] += 1/(overSample*overSample);
+                                        }
+                                    }
+                                }
+                            } else {
+                                centerDotData[offset] = 1;
+                            }
+                        }
+                    }
+                    offset++;
+                }
+            }
+            let iconStops = [];
+            for (const [siteType, color] of Object.entries(siteTypeColors)) {
+                let rgb = [];
+                for (let c = 0; c < 3; c++) {
+                    rgb.push(parseInt(color.substring(1 + c*2, 1 + c*2 + 2), 16));
+                }
+                const imageData = new Uint8Array(width * height * 4);
+                let offset = 0;
+                for (let y = 0; y < height; y++) {                    
+                    for (let x = 0; x < width; x++) {
+                        imageData[offset*4] = Math.round(255*centerDotData[offset] + rgb[0]*(1 - centerDotData[offset]));
+                        imageData[offset*4 + 1] = Math.round(255*centerDotData[offset] + rgb[1]*(1 - centerDotData[offset]));
+                        imageData[offset*4 + 2] = Math.round(255*centerDotData[offset] + rgb[2]*(1 - centerDotData[offset]));
+                        imageData[offset*4 + 3] = Math.round(coloredAreaData[offset]*255);
+                        offset++;
+                    }
+                }
+                map.addImage(`icon_image_${siteType}`, { width: width, height: height, data: imageData });
+                iconStops.push([siteType, `icon_image_${siteType}`])
+            }
             map.addLayer({
                 "id": 'fieldLocationsLayerNear',
                 "type": 'symbol',
@@ -2461,30 +2548,25 @@ async function initPage() {
                 "minzoom": 5,
                 "filter": ['!has', 'point_count'],
                 'layout': {
-                    'icon-size': 0.8,
+                    'icon-size': 1.0,
                     'icon-allow-overlap': true,
                     'symbol-sort-key': ['-', 90, ['get', "lat"]],
                     'symbol-z-order': "source",
                     'text-ignore-placement': true,
                     'text-optional': true,
                     'text-padding': 0,
-                    'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
+                    //'text-variable-anchor': ["center", "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right"],
                     'text-allow-overlap': true,
                     "text-field": ["coalesce", ['get', `Name_${foConfig.language}`], ['get', 'Name']],
                     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                     'text-size': 12,
-                    'icon-offset': [0, 6],
+                    'text-offset': [0, -1.95],
+                    'icon-offset': [0, 1-height/2],
+                    //'icon-translate': [0, 1-height/2],
                     'icon-image': {
                         property: 'site_type',
                         type: 'categorical',
-                        stops: [
-                            ['Advanced CarbonAction Site', 'MapMarkerGreen'],
-                            ['Intensive Site', 'MapMarkerBlue'],
-                            ['Svensk Kolinlagring Site', 'MapMarkerDarkGrey'],
-                            ['Valio', 'MapMarkerDarkBlue'],
-                            ['co-carbon', 'MapMarkerDarkGreen'],
-                            ['smear-agri', 'MapMarkerBlack'],
-                        ]
+                        stops: iconStops
                     }
                 },
                 "paint": {

@@ -243,7 +243,17 @@ p.h4p,
     transition: 0.5s;
 }
 
-/*Map point popup style*/
+/*Mapbox popup style*/
+
+.map-popup {
+    pointer-events: none;
+    user-select: none;
+}
+
+.map-popup * {
+    pointer-events: none;
+    user-select: none;
+}
 
 .mapboxgl-popup-content {
     font: 200 15px/22px 'proxima-nova', sans-serif;
