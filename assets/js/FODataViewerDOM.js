@@ -2431,7 +2431,7 @@ async function initPage() {
                 "id": 'fieldLocationsLayerFar',
                 "type": 'circle',
                 "source": 'fieldLocations',
-                "maxzoom": 5.5,
+                //"maxzoom": 5.5,
                 "filter": ['!has', 'point_count'],
                 "paint": {
                     "circle-radius": 6,
@@ -2573,6 +2573,19 @@ async function initPage() {
                     "text-halo-color": "#ffffff"
                 }
             });
+            map.on('moveend', function () {
+                //console.log(map.getZoom());
+                if (getSiteId() === undefined) {
+                    if (map.getZoom() < 5.5) {
+                        map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', "visible");
+                        map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', "none");
+                    } else {
+                        map.setLayoutProperty("fieldLocationsLayerFar", 'visibility', "none");
+                        map.setLayoutProperty("fieldLocationsLayerNear", 'visibility', "visible");
+                        map.setLayerZoomRange("fieldLocationsLayerNear", 0, 24);
+                    }
+                }
+            });            
         });
     }
     if (getSiteId() !== undefined) {
