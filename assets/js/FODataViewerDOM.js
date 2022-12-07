@@ -477,7 +477,6 @@ function viewSiteSelectorAfterLoadingEssentials() {
     var filterContainer = document.getElementById("mapFilterContainer");
     
     filterContainerInnerHTML = '';
-    console.log(filterSiteTypeEnabled);
     siteTypeList.forEach(function (siteTypeId) {
         siteType = siteTypes[siteTypeId];
         filterContainerInnerHTML += `
