@@ -113,7 +113,7 @@ async function loadEssentials() {
                 bounds: getBoundingBox(sitesGeoJson.features),
             }
             if (getSiteId() === undefined && foConfig.mapEnabled) {
-                return initMap(siteSelectorMapView);
+                initMap(siteSelectorMapView);
             };
         }),
         Promise.all(siteViewPromises).then(async function () {
@@ -128,7 +128,7 @@ async function loadEssentials() {
                     filteredFeatures = blocksGeoJson.features;
                 }
                 if (foConfig.mapEnabled) {
-                    return initMap({
+                    initMap({
                         ...siteMapView/*,
                         bounds: getBoundingBox(filteredFeatures)*/
                     });
@@ -268,14 +268,6 @@ function initMap(initMapView) {
             container: document.querySelector('map')
         })
     );*/
-    return Promise.all([
-        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkGreen.png`, 'MapMarkerDarkGreen'),
-        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkBlue.png`, 'MapMarkerDarkBlue'),
-        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerBlue.png`, 'MapMarkerBlue'),
-        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerGreen.png`, 'MapMarkerGreen'),
-        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerDarkGrey'),
-        mapLoadImage(`${foConfig.imagesUrl}/MapMarkerDarkGrey.png`, 'MapMarkerBlack')
-    ]);
 }
 
 function setLoader() {

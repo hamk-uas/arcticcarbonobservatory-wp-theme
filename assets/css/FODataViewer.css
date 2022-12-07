@@ -100,6 +100,14 @@
     margin-left: 24px;
 }
 
+.chart_colorbar {
+    position: absolute;
+}
+
+.chart_lai {
+    position: relative;
+}
+
 .chart_title_div h4 {
     color: #5E5E5E;
     font-size: 24px;
