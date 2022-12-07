@@ -595,7 +595,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
             if (smallestDistanceSquared !== undefined) {
                 let smallestDistance = Math.sqrt(smallestDistanceSquared);
                 const targetDistance = 50;
-                zoom = Math.min(zoom, map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance));
+                zoom = Math.max(zoom, map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance));
             }
             map.easeTo({
                 center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
