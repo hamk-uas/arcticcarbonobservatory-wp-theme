@@ -507,7 +507,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
             }
             popup
                 .setLngLat(coordinates)
-                .setOffset([0, (near)? -21: 0])
+                .setOffset([0, (near)? -25: 0])
                 .setHTML('<h2>' + translate(t.plaintext_titles, "click_to_zoom") + '</h2>')
                 .addTo(map);
         }        
@@ -521,7 +521,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
             var siteType = e.features[0].properties.site_type;
             popup
                 .setLngLat(coordinates)
-                .setOffset([0, -21])
+                .setOffset([0, -25])
                 .setHTML('<h1>' + e.features[0].properties.Name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
                 .addTo(map);
         }
@@ -547,6 +547,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         function getSiteIndexAndSmallestDistanceSquared(e) {
             // Find clicked feature
+            e.features.sort((a, b) => a.properties.lat - b.properties.lat) // Priorize based on latitude
             let clickedXY = map.project({lng: e.features[0].properties.lon, lat: e.features[0].properties.lat});
             let clickedIndex = undefined;
             for (let [index, feature] of sitesGeoJson.features.entries()) {
