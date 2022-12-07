@@ -1478,8 +1478,6 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
 
     if (siteJson === undefined) {
-        console.log(sitesGeoJson.features);
-        console.log(getSiteId());
         for (let feature of sitesGeoJson.features) {
             if (feature.properties.site === getSiteId()) {                
                 siteJson = await fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(new Date(foConfig.now))}`).then(async response => {
@@ -2461,8 +2459,6 @@ async function initPage() {
 
     // Add essential sources and layers
 
-    console.log("mapEnabled:");
-    console.log(foConfig.mapEnabled);
     if (foConfig.mapEnabled) {
         whenMapLoadedDo(function () {
             map.addSource('empty', {

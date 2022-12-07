@@ -724,9 +724,6 @@ function prepCharts(v, siteJson, chartsJson) {
     delete siteJson.sources;
     v.site = siteJson;
     
-    console.log("chartsJson:");
-    console.log(chartsJson);
-
     // Replace sourceTypes with sources. Add charts that will be made to v.charts.
     chartsJson.charts.forEach(function (chart) {
         chart.sourceTypes.forEach(function (sourceType) {
