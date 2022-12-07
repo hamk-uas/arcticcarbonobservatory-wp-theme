@@ -547,19 +547,35 @@ function viewSiteSelectorAfterLoadingEssentials() {
             popup.remove();
         });
 
-        function getSiteIndexAndSmallestDistanceSquared(e) {
+        function getSiteIndexAndSmallestDistanceSquared(e, near = false) {
             // Find clicked feature
-            e.features.sort((a, b) => a.properties.lat - b.properties.lat) // Priorize based on latitude
-            let clickedXY = map.project({lng: e.features[0].properties.lon, lat: e.features[0].properties.lat});
+            let clickedXY = undefined;
             let clickedIndex = undefined;
-            for (let [index, feature] of sitesGeoJson.features.entries()) {
-                if (feature.properties.id === e.features[0].properties.id) {
-                    clickedIndex = index;
-                    break;
+            let smallestDistanceSquared = undefined;
+            if (near) {
+                e.features.sort((a, b) => a.properties.lat - b.properties.lat) // Priorize based on latitude                
+                clickedXY = map.project({lng: e.features[0].properties.lon, lat: e.features[0].properties.lat});
+                for (let [index, feature] of sitesGeoJson.features.entries()) {
+                    if (feature.properties.id === e.features[0].properties.id) {
+                        clickedIndex = index;
+                        break;
+                    }
                 }
+            } else {                
+                for (let [index, feature] of sitesGeoJson.features.entries()) {
+                    if (filterSiteTypeEnabled[feature.properties.site_type]) {
+                        let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
+                        let distanceSquared = (xy.x - e.point.x)*(xy.x - e.point.x) + (xy.y - e.point.y)*(xy.y - e.point.y);
+                        if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                            smallestDistanceSquared = distanceSquared;
+                            clickedXY = xy;
+                            clickedIndex = index;                            
+                        }
+                    }
+                }
+                smallestDistanceSquared = undefined;
             }
             // Find nearest other feature
-            let smallestDistanceSquared = undefined;
             for (let [index, feature] of sitesGeoJson.features.entries()) {
                 if (index != clickedIndex && filterSiteTypeEnabled[feature.properties.site_type]) {
                     let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
@@ -600,7 +616,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         addMapEventHandler('mouseenter', 'fieldLocationsLayerNear', function (e) {
             popup.remove();
-            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e, true);
             if (Math.sqrt(smallestDistanceSquared) < 40) {
                 createFarPopup(clickedIndex, true);
             } else {
@@ -609,7 +625,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
         });
         addMapEventHandler('mousemove', 'fieldLocationsLayerNear', function (e) {
             popup.remove();
-            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e, true);
             if (Math.sqrt(smallestDistanceSquared) < 40) {
                 createFarPopup(clickedIndex, true);
             } else {
@@ -623,7 +639,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         addMapEventHandler('click', 'fieldLocationsLayerNear', async function (e) {
             document.activeElement.blur(); // Disable Firefox mouse wheel scrolling of map
-            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e, true);
             if (Math.sqrt(smallestDistanceSquared) < 40) {
                 zoomSite(clickedIndex, smallestDistanceSquared);
             } else {
@@ -2477,7 +2493,6 @@ async function initPage() {
                     "circle-opacity": 0,
                 }
             });
-
             map.addLayer({
                 "id": 'fieldLocationsLayerFar',
                 "type": 'circle',
