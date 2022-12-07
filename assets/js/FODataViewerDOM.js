@@ -477,12 +477,13 @@ function viewSiteSelectorAfterLoadingEssentials() {
     var filterContainer = document.getElementById("mapFilterContainer");
     
     filterContainerInnerHTML = '';
+    console.log(filterSiteTypeEnabled);
     siteTypeList.forEach(function (siteTypeId) {
         siteType = siteTypes[siteTypeId];
         filterContainerInnerHTML += `
         <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilter")}">
             ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
-            <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" checked>
+            <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" ${filterSiteTypeEnabled[siteTypeId]? "checked" : ""}>
             <span class="checkmark" style="background-color:${getSiteTypeColor(siteTypeId)}"></span>
         </label>`;
     });
@@ -590,12 +591,15 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         function zoomSite(clickedIndex, smallestDistanceSquared) {
             // Calculate zoom needed to make smallestDistance = targetDistance
-            let smallestDistance = Math.sqrt(smallestDistanceSquared);
-            const targetDistance = 50;
-            const zoomNeeded = map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance);            
+            let zoom = map.getZoom() + 1.5;
+            if (smallestDistanceSquared !== undefined) {
+                let smallestDistance = Math.sqrt(smallestDistanceSquared);
+                const targetDistance = 50;
+                zoom = Math.min(zoom, map.getZoom() + Math.log2(targetDistance) - Math.log2(smallestDistance));
+            }
             map.easeTo({
                 center: {lng: sitesGeoJson.features[clickedIndex].properties.lon, lat: sitesGeoJson.features[clickedIndex].properties.lat},
-                zoom: (zoomNeeded < map.getZoom() + 1.5)? map.getZoom() + 1.5: zoomNeeded
+                zoom: zoom
             });
             popup.remove();
         }
