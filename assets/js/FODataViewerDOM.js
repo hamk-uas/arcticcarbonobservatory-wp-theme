@@ -499,12 +499,12 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
     if (mapEventsAndHandlers.length == 0) {
 
-        function createFarPopup(e, near = false) {
-            var coordinates = e.features[0].geometry.coordinates.slice();
+        function createFarPopup(siteIndex, near = false) {
+            var coordinates = sitesGeoJson.features[siteIndex].geometry.coordinates.slice();
             // Ensure that if the map is zoomed out such that multiple copies of the feature are visible, the popup appears over the copy being pointed to.
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            /*while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
+            }*/
             popup
                 .setLngLat(coordinates)
                 .setOffset([0, (near)? -25: 0])
@@ -512,17 +512,17 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 .addTo(map);
         }        
 
-        function createNearPopup(e) {
-            var coordinates = e.features[0].geometry.coordinates.slice();
+        function createNearPopup(siteIndex) {
+            var coordinates = sitesGeoJson.features[siteIndex].geometry.coordinates.slice();
             // Ensure that if the map is zoomed out such that multiple copies of the feature are visible, the popup appears over the copy being pointed to.
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            /*while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
-            var siteType = e.features[0].properties.site_type;
+            }*/
+            var siteType = sitesGeoJson.features[siteIndex].properties.site_type;
             popup
                 .setLngLat(coordinates)
                 .setOffset([0, -25])
-                .setHTML('<h1>' + e.features[0].properties.Name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
+                .setHTML('<h1>' + sitesGeoJson.features[siteIndex].properties.Name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
                 .addTo(map);
         }
 
@@ -535,11 +535,13 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         addMapEventHandler('mouseenter', 'fieldLocationsLayerFarExt', function (e) {
             popup.remove();
-            createFarPopup(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            createFarPopup(clickedIndex);
         });
         addMapEventHandler('mousemove', 'fieldLocationsLayerFarExt', function (e) {
             popup.remove();
-            createFarPopup(e);
+            const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
+            createFarPopup(clickedIndex);
         });
         addMapEventHandler('mouseleave', 'fieldLocationsLayerFarExt', function () {
             popup.remove();
@@ -600,18 +602,18 @@ function viewSiteSelectorAfterLoadingEssentials() {
             popup.remove();
             const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
             if (Math.sqrt(smallestDistanceSquared) < 40) {
-                createFarPopup(e, true);
+                createFarPopup(clickedIndex, true);
             } else {
-                createNearPopup(e);
+                createNearPopup(clickedIndex);
             }
         });
         addMapEventHandler('mousemove', 'fieldLocationsLayerNear', function (e) {
             popup.remove();
             const [clickedIndex, smallestDistanceSquared] = getSiteIndexAndSmallestDistanceSquared(e);
             if (Math.sqrt(smallestDistanceSquared) < 40) {
-                createFarPopup(e, true);
+                createFarPopup(clickedIndex, true);
             } else {
-                createNearPopup(e);
+                createNearPopup(clickedIndex);
             }
         });
 
@@ -626,7 +628,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 zoomSite(clickedIndex, smallestDistanceSquared);
             } else {
                 pushState();
-                await unviewSiteSelectorAndViewSite(e.features[0].properties.site);
+                await unviewSiteSelectorAndViewSite(sitesGeoJson.features[clickedIndex].properties.id);
             }
         });
 
