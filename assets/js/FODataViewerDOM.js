@@ -1,6 +1,7 @@
 ﻿window.onresize = onWindowResize;
 
-layerVisibilityBackup = {}
+var layerVisibilityBackup = {}
+var filterSiteTypeEnabled = {}
 
 function getSiteId() {
     if (foConfig.siteId !== undefined) {
@@ -104,6 +105,7 @@ async function loadEssentials() {
                 if (siteTypes[feature.properties.site_type] === undefined) {
                     siteTypes[feature.properties.site_type] = feature; // sample feature
                     siteTypeList.push(feature.properties.site_type);
+                    filterSiteTypeEnabled[feature.properties.site_type] = true;
                 }
             });
             siteSelectorMapView = {
@@ -553,23 +555,20 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         function getSiteIndexAndSmallestDistanceSquared(e) {
             // Find clicked feature
-            let clickXY = map.project({lng: e.features[0].geometry.coordinates[0], lat: e.features[0].geometry.coordinates[1]});
-            let xys = [];
+            let clickedXY = map.project({lng: e.features[0].properties.lon, lat: e.features[0].properties.lat});
             let clickedIndex = undefined;
-            let smallestDistanceSquared = undefined;
             for (let [index, feature] of sitesGeoJson.features.entries()) {
-                xys.push({...map.project({lng: feature.properties.lon, lat: feature.properties.lat}), Name: feature.properties.Name});
-                let distanceSquared = (xys[xys.length - 1].x - clickXY.x)*(xys[xys.length - 1].x - clickXY.x) + (xys[xys.length - 1].y - clickXY.y)*(xys[xys.length - 1].y - clickXY.y);
-                if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
-                    smallestDistanceSquared = distanceSquared;
-                    clickedIndex = index;                    
+                if (feature.properties.id === e.features[0].properties.id) {
+                    clickedIndex = index;
+                    break;
                 }
             }
             // Find nearest other feature
-            smallestDistanceSquared = undefined;
+            let smallestDistanceSquared = undefined;
             for (let [index, feature] of sitesGeoJson.features.entries()) {
-                if (index != clickedIndex) {
-                    let distanceSquared = (xys[index].x - xys[clickedIndex].x)*(xys[index].x - xys[clickedIndex].x) + (xys[index].y - xys[clickedIndex].y)*(xys[index].y - xys[clickedIndex].y);
+                if (index != clickedIndex && filterSiteTypeEnabled[feature.properties.site_type]) {
+                    let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
+                    let distanceSquared = (xy.x - clickedXY.x)*(xy.x - clickedXY.x) + (xy.y - clickedXY.y)*(xy.y - clickedXY.y);
                     if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
                         smallestDistanceSquared = distanceSquared;
                     }
@@ -669,13 +668,16 @@ function checkCheckBoxes() {
         "Svensk Kolinlagring Site": "Svensk Kolinlagring Site",
         "Valio": "Valio"
     }
+    filterSiteTypeEnabled = {}
     let filterList = siteTypeList.filter(function (siteType) {
         console.log(`checkBox${siteType.replaceAll(' ', '')}`);
-        return document.getElementById(`checkBox${siteType.replaceAll(' ', '')}`).checked;
+        filterSiteTypeEnabled[siteType] = document.getElementById(`checkBox${siteType.replaceAll(' ', '')}`).checked;
+        return filterSiteTypeEnabled[siteType];
     }).map(siteType => ['==', ['get', 'site_type'], siteType]);
 
     let base = ['any'];
     let filter = base.concat(filterList);
+    console.log(filterList);
     map.setFilter(
         'fieldLocationsLayerFarExt',
         filter
