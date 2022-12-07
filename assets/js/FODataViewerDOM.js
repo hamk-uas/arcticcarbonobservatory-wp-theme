@@ -670,14 +670,12 @@ function checkCheckBoxes() {
     }
     filterSiteTypeEnabled = {}
     let filterList = siteTypeList.filter(function (siteType) {
-        console.log(`checkBox${siteType.replaceAll(' ', '')}`);
         filterSiteTypeEnabled[siteType] = document.getElementById(`checkBox${siteType.replaceAll(' ', '')}`).checked;
         return filterSiteTypeEnabled[siteType];
     }).map(siteType => ['==', ['get', 'site_type'], siteType]);
 
     let base = ['any'];
     let filter = base.concat(filterList);
-    console.log(filterList);
     map.setFilter(
         'fieldLocationsLayerFarExt',
         filter
