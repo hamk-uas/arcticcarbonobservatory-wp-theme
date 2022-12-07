@@ -1550,7 +1550,11 @@ function getChartSvgOuterHtml(v, chartId, standalone = false, legendItemCoordina
 function getChartDivOuterHtml(v, chartId) {
     return `<div onmousemove="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseenter="document.getElementById('chart_controls_svg_${chartId}').classList.add('Entered')" onmouseleave="document.getElementById('chart_controls_svg_${chartId}').classList.remove('Entered')" id="chart_div_${chartId}" class="chart_gridcontainer_item"${(chartId === "satelliteImages")? ' style="border: none"' : ''}>
     ${chartId === "satelliteImages"? `<div id="chart_colorbar_container_${chartId}" class="chart_colorbar_container">
-        <img id="chart_colorbar_${chartId}" class="chart_colorbar" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar.svg" alt="colorbar"><img id="chart_colorbar_lai_${chartId}" class="chart_colorbar_lai" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI">
+        <span id="chart_colorbar_cumNDVI_title_${chartId}" class="chart_colorbar_title chart_colorbar_cumNDVI_title" style="visibility:hidden">${t.vegetationIndex["ndviNormalizedSumImage"]}</span>
+        <span id="chart_colorbar_nvdi_title_${chartId}" class="chart_colorbar_title chart_colorbar_ndvi_title" style="visibility:hidden">${t.vegetationIndex["ndviImage"]}</span>
+        <span id="chart_colorbar_lai_title_${chartId}" class="chart_colorbar_title chart_colorbar_lai_title" style="visibility:hidden">${t.vegetationIndex["laiImage"]}</span>
+        <img id="chart_colorbar_${chartId}" class="chart_colorbar" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar.svg" alt="colorbar">
+        <img id="chart_colorbar_lai_${chartId}" class="chart_colorbar_lai" style="visibility:hidden" width="48px" src="${foConfig.imagesUrl}/colorbar_lai_8.svg" alt="colorbar LAI">
     </div>`: ''}
     ${foConfig.chartDivInnerHTMLTemplate.replaceAll("chartId", chartId)}
     </div>`;

@@ -98,14 +98,24 @@
 .chart_colorbar_container {
     position: absolute;
     margin-left: 24px;
+    text-align: left;
 }
 
 .chart_colorbar {
     position: absolute;
 }
 
-.chart_lai {
-    position: relative;
+.chart_colorbar_title {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.chart_colorbar_cumNDVI_title {
+    position: absolute;
+}
+
+.chart_colorbar_ndvi_title {
+    position: absolute;
 }
 
 .chart_title_div h4 {

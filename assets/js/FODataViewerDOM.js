@@ -1325,13 +1325,11 @@ function viewSiteBeforeLoadEssentials() {
 }
 
 function updateColorbar() {
-    if (v.satelliteImageLegendId === "laiImage") {
-        document.getElementById("chart_colorbar_satelliteImages").style.visibility = "hidden";
-        document.getElementById("chart_colorbar_lai_satelliteImages").style.visibility = "visible";
-    } else {
-        document.getElementById("chart_colorbar_lai_satelliteImages").style.visibility = "hidden";
-        document.getElementById("chart_colorbar_satelliteImages").style.visibility = "visible";                
-    }    
+    document.getElementById("chart_colorbar_satelliteImages").style.visibility = v.satelliteImageLegendId !== "laiImage"? "visible" : "hidden";
+    document.getElementById("chart_colorbar_lai_satelliteImages").style.visibility = v.satelliteImageLegendId === "laiImage"? "visible" : "hidden";
+    document.getElementById("chart_colorbar_cumNDVI_title_satelliteImages").style.visibility = v.satelliteImageLegendId === "ndviNormalizedSumImage"? "visible" : "hidden";
+    document.getElementById("chart_colorbar_nvdi_title_satelliteImages").style.visibility = v.satelliteImageLegendId === "ndviImage"? "visible" : "hidden";
+    document.getElementById("chart_colorbar_lai_title_satelliteImages").style.visibility = v.satelliteImageLegendId === "laiImage"? "visible" : "hidden";    
 }
 
 async function viewSiteAfterLoadingEssentials(zoomDuration) {
