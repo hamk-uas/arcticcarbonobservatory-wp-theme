@@ -35,6 +35,10 @@ function getSiteTypeColor(siteType) {
 // Prepare map
 initStateFromLocationUrl(); // Parse browser URL parameters
 
+function zoomToSiteSelectorInitialZoom() {
+    map.fitBounds(siteSelectorMapView.bounds, { padding: 40, duration: 1000 });
+}
+
 var handleEsc = undefined;
 
 var siteSelectorMapView = {
@@ -451,7 +455,7 @@ function normalize(string) {
 
 function viewSiteSelector() {
     viewSiteSelectorBeforeLoadEssentials();
-    viewSiteSelectorAfterLoadingEssentials();
+    viewSiteSelectorAfterLoadingEssentials();    
 }
 
 function viewSiteSelectorBeforeLoadEssentials() {
@@ -493,7 +497,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
     map.resize();
     map.setMinZoom(siteSelectorMapView.minZoom);
     map.setMaxZoom(siteSelectorMapView.maxZoom);
-    map.fitBounds(siteSelectorMapView.bounds, { padding: 40, duration: 1000 });
+    zoomToSiteSelectorInitialZoom();
     //map.flyTo({...defaultMapView, duration:1000 });
     setOthersThanMapLoaded(true);
 
@@ -660,6 +664,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
     }
 
     window.onpopstate = function () { unviewSiteSelectorAndViewSite(getSiteId()); };
+    handleEsc = zoomToSiteSelectorInitialZoom;
 }
 
 //Filter mapbox layer data
@@ -715,7 +720,7 @@ async function unviewSiteSelectorAndViewSite(site) {
     removeMapEventHandlers();
     popup.remove();
     map.getCanvas().style.cursor = '';
-    document.body.classList.remove('SiteSelector');    
+    document.body.classList.remove('SiteSelector');
     await viewSite(1000);
 }
 
@@ -1337,7 +1342,6 @@ function updateColorbar() {
 
 async function viewSiteAfterLoadingEssentials(zoomDuration) {
     // Get all blocks of this site and find and zoom to the minimal bounding box
-    //map.resize();
     let siteBlocks = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
 
     if (typeof (Worker) == "undefined") {
@@ -1489,6 +1493,8 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             }
         }
     }
+
+    onWindowResize(); // Reorganize layout for small screen
 
     console.log("siteJson =");
     console.log(JSON.parse(JSON.stringify(siteJson))); // Create deep copies so that console.log statements show what was loaded
