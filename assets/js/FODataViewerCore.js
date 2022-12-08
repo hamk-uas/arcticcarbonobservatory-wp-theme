@@ -233,7 +233,10 @@ var t = {
         plot_sv: "skifte",
         plotgroup: "plot group",
         plotgroup_fi: "lohkoryhmä",
-        plotgroup_sv: "skiftesgrupp"
+        plotgroup_sv: "skiftesgrupp",
+        unkwnown: "unknown",
+        unknown_fi: "ei tiedossa",
+        unknown_sv: "okänd"
     },
     mgmt_operations_event_choice_plaintext: {
         "planting": "Planting",
@@ -649,6 +652,12 @@ var t = {
 // You can pass a fallback value that is returned if the property is not found in the desired language or the default language.
 // If fallback is undefined or not given, then the property name itself returned as the fallback value.
 function translate(object, property, fallback = property, language = foConfig.language) {
+    if (property == null) {
+        console.log(object);
+        console.log(t.plaintext);
+        console.log(t.plaintext["unknown"]);
+        return translate(t.plaintext, "unknown", "unknown", language);        
+    }
     if (language !== 'en') {
         let translationKey = `${property}_${language}`;
         if (object[translationKey] !== undefined && object[translationKey] != null) {
@@ -656,7 +665,7 @@ function translate(object, property, fallback = property, language = foConfig.la
         }
     }
     // Fall back to English
-    if (object[property] !== undefined && object[property] != null) {
+    if (object[property] != null) {
         return object[property];
     } else {
         return fallback;
