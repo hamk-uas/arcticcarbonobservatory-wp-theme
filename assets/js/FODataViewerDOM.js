@@ -552,11 +552,11 @@ function viewSiteSelectorAfterLoadingEssentials() {
         });
 
         function getSiteIndexAndSmallestDistanceSquared(e, near = false) {
-            // Find clicked feature
             let clickedXY = undefined;
             let clickedIndex = undefined;
             let smallestDistanceSquared = undefined;
             if (near) {
+                // Find clicked feature
                 e.features.sort((a, b) => a.properties.lat - b.properties.lat) // Priorize based on latitude                
                 clickedXY = map.project({lng: e.features[0].properties.lon, lat: e.features[0].properties.lat});
                 for (let [index, feature] of sitesGeoJson.features.entries()) {
@@ -565,7 +565,18 @@ function viewSiteSelectorAfterLoadingEssentials() {
                         break;
                     }
                 }
+                // Find nearest other feature
+                for (let [index, feature] of sitesGeoJson.features.entries()) {
+                    if (index != clickedIndex && filterSiteTypeEnabled[feature.properties.site_type]) {
+                        let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
+                        let distanceSquared = (xy.x - clickedXY.x)*(xy.x - clickedXY.x) + (xy.y - clickedXY.y)*(xy.y - clickedXY.y);
+                        if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                            smallestDistanceSquared = distanceSquared;
+                        }
+                    }
+                }
             } else {                
+                // Find clicked feature
                 for (let [index, feature] of sitesGeoJson.features.entries()) {
                     if (filterSiteTypeEnabled[feature.properties.site_type]) {
                         let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
@@ -578,14 +589,17 @@ function viewSiteSelectorAfterLoadingEssentials() {
                     }
                 }
                 smallestDistanceSquared = undefined;
-            }
-            // Find nearest other feature
-            for (let [index, feature] of sitesGeoJson.features.entries()) {
-                if (index != clickedIndex && filterSiteTypeEnabled[feature.properties.site_type]) {
-                    let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
-                    let distanceSquared = (xy.x - clickedXY.x)*(xy.x - clickedXY.x) + (xy.y - clickedXY.y)*(xy.y - clickedXY.y);
-                    if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
-                        smallestDistanceSquared = distanceSquared;
+                // Find nearest other feature (using each feature under the pointer as a reference)
+                for (let referenceFeature of e.features) {
+                    let referenceXY = map.project({lng: referenceFeature.properties.lon, lat: referenceFeature.properties.lat});
+                    for (let feature of sitesGeoJson.features) {
+                        if (referenceFeature.properties.id !== feature.properties.id && filterSiteTypeEnabled[feature.properties.site_type]) {
+                            let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
+                            let distanceSquared = (xy.x - referenceXY.x)*(xy.x - referenceXY.x) + (xy.y - referenceXY.y)*(xy.y - referenceXY.y);
+                            if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
+                                smallestDistanceSquared = distanceSquared;
+                            }
+                        }
                     }
                 }
             }
