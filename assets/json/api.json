@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.3",
+    "openapi": "3.1",
     "servers": [
         {
             "url": "https://api.fieldobservatory.org"
@@ -28,24 +28,24 @@
                 "operationId": "management",
                 "parameters": [
                     {
-                      "in": "path",
-                      "name": "site",
-                      "description": "site ID",
-                      "required": true,
-                      "schema": {
-                        "type": "string"
-                      }
+                        "in": "path",
+                        "name": "site",
+                        "description": "site ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
                     "404": {
-                        "$ref": "#/components/responses/not_found"
+                        "description": "not found"
                     },
                     "200": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "https://raw.githubusercontent.com/hamk-uas/fieldobservatory-data-schemas/main/management-data.schema.json"
+                                    "$ref": "management-event.schema.json"
                                 }
                             }
                         },
