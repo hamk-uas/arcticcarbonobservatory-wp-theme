@@ -45,7 +45,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "management-event.schema.json"
+                                    "$ref": "management-data.schema.json"
                                 }
                             }
                         },
