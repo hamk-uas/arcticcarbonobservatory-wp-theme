@@ -1,44 +1,233 @@
-﻿const ap_plaintext = {
-    "AP001": "Broadcast, not incorporated",
-    "AP002": "Broadcast, incorporated",
-    "AP003": "Banded on surface",
-    "AP004": "Banded beneath surface",
-    "AP005": "Applied in irrigation water",
-    "AP006": "Foliar spray",
-    "AP007": "Bottom of hole",
-    "AP008": "On the seed",
-    "AP009": "Injected",
-    "AP011": "Broadcast on flooded/saturated soil, none in soil",
-    "AP012": "Broadcast on flooded/saturated soil, 15% in soil",
-    "AP013": "Broadcast on flooded/saturated soil, 30% in soil",
-    "AP014": "Broadcast on flooded/saturated soil, 45% in soil",
-    "AP015": "Broadcast on flooded/saturated soil, 60% in soil",
-    "AP016": "Broadcast on flooded/saturated soil, 75% in soil",
-    "AP017": "Broadcast on flooded/saturated soil, 90% in soil",
-    "AP018": "Band on saturated soil, 2 cm flood, 92% in soil",
-    "AP019": "Deeply placed urea super granules/pellets, 95% in soil",
-    "AP020": "Deeply placed urea super granules/pellets, 100% in soil",
-    "AP999": "Unknown/not given",
-    "AP999_fi": "Ei tiedossa",
-    "AP999_sv": "Okänd metod"
+﻿// Compile JSON Schema to expand each $ref and to flatten each allOf
+function compileJsonSchema(schemaJson, rootSchema = schemaJson, path = "#") {
+    schemaJson.path = path; // To help with debugging elsewhere
+    //console.log(`${path}`);
+    if (rootSchema.titleIds === undefined) {
+        rootSchema.titleIds = {};
+        for (const [key, value] of Object.entries(rootSchema["@context"])) {
+            if (value["@id"] === "dc:title") {
+                rootSchema.titleIds[key] = true;
+            }
+        }
+    }
+    // Flatten allOf
+    if (schemaJson.allOf !== undefined) {
+        let allOf = schemaJson.allOf;
+        delete schemaJson.allOf;
+        for (let subSchema of allOf) {
+            for (const [key, value] of Object.entries(subSchema)) {
+                if (schemaJson[key] !== undefined) {
+                    console.warn("Cannot flatten JSON Schema allOf:")
+                    console.warn(allOf);
+                } else {
+                    schemaJson[key] = value;                
+                }
+            }
+        }
+    }
+    // Recursively compile each oneOf
+    if (schemaJson.oneOf !== undefined) {
+        for (let [index, subSchema] of schemaJson.oneOf.entries()) {
+            compileJsonSchema(subSchema, rootSchema, `${path}/oneOf[${index}]`);
+        }
+    }
+    // Expand $ref
+    if (schemaJson["$ref"] !== undefined) {
+        //console.log(`Expand ${path}/$ref`)
+        let ref_path = schemaJson["$ref"].split('/');
+        let ref = undefined;
+        for (const step of ref_path) {            
+            if (step === "#") {
+                ref = rootSchema;
+            } else {
+                if (ref[step] !== undefined) {
+                    ref = ref[step];
+                } else {
+                    ref = undefined;
+                    console.warn(`Cannot resolve $ref: ${schemaJson["$ref"]}, failing at step ${step}`);
+                }
+            }
+        }        
+        if (ref !== undefined) {
+            for (const [key, value] of Object.entries(ref)) {
+                schemaJson[key] = value;
+            }
+        }
+        delete schemaJson["$ref"]
+    }
+    // Recursively compile items
+    if (schemaJson.items !== undefined) {
+        compileJsonSchema(schemaJson.items, rootSchema, `${path}/items`)
+    }
+    // Recursively compile properties
+    if (schemaJson.properties !== undefined) {
+        for (let [propertyId, subSchema] of Object.entries(schemaJson.properties)) {
+            compileJsonSchema(subSchema, rootSchema, `${path}/properties/${propertyId}`)
+        }
+    }
 }
 
-var crop_codes = {
-    "FRG": "Timothy (Phleum pratense)",
-    "FRG_fi": "Timotei (Phleum pratense)",
-    "FRG_sv": "Timotej (Phleum pratense)",
-    "WHT": "Wheat (Triticum spp.)",
-    "WHT_fi": "Vehnä (Triticum spp.)",
-    "WHT_sv": "Vete (Triticum spp.)",
-    "OAT": "Oats (Avena sativa)",
-    "OAT_fi": "Kaura (Avena sativa)",
-    "OAT_sv": "Havre (Avena sativa)",
-    "FEP": "Meadow fescue (Festuca pratensis)",
-    "FEP_fi": "Nurminata (Festuca pratensis)",
-    "FEP_sv": "Ängssvingel(Festuca pratensis)",
-    "BAR": "Barley (Hordeum vulgare)",
-    "BAR_fi": "Barley (Hordeum vulgare)",
-    "BAR_sv": "Korn (Hordeum vulgare)",
+// Resolve the object from the JSON Schema that matches the JSON and return the resolved schema
+function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSchema = schema, titleIds = undefined, jsonPath = "event") {
+    //console.log(`Validating ${jsonPath} with ${schema.path}`);
+    // Copy titles, copy to valuetitle if a title already exists
+    for (const titleId of Object.keys(rootSchema.titleIds)) {
+        if (schema[titleId] !== undefined) {
+            //console.log(`Add title ${titleId}: ${schema[titleId]}`);
+            if (resolvedSchema[titleId] === undefined) {
+                resolvedSchema[titleId] = schema[titleId];
+            } else {
+                resolvedSchema[`value${titleId}`] = schema[titleId];
+            }
+        }
+    }
+    // Copy type from schema
+    if (schema.type !== undefined) {
+        resolvedSchema.type = schema.type;
+    }
+    // Copy format from schema
+    if (schema.format !== undefined) {
+        resolvedSchema.format = schema.format;
+    }
+    // Copy const from schema
+    if (schema.const !== undefined) {
+        resolvedSchema.const = schema.const;
+    }
+    // Copy x-ui from schema
+    if (schema["x-ui"] !== undefined) {
+        resolvedSchema["x-ui"] = schema["x-ui"];
+    }
+    if (resolvedSchema.type === "object") {
+        // Fail validation if the object is an array, a string, a number, or a boolean.
+        if (["boolean", "number", "string"].includes(typeof json) || Array.isArray(json)) {            
+            console.warn(`Failed JSON validation at ${schema.path}. Expected object, got: ${json}`)
+            return;
+        }
+        // Handle properties of object type schema
+        if (schema.properties !== undefined) {
+            // Copy properties from schema to resolved schema, resolving each property
+            for (const [propertyId, propertySchema] of Object.entries(schema.properties)) {
+                let resolvedPropertySchema = {};
+                if (resolvedSchema.properties !== undefined && resolvedSchema.properties[propertyId] !== undefined) {
+                    resolvedPropertySchema = resolvedSchema.properties[propertyId];
+                }
+                // console.log(`property ${propertyId}`);
+                resolveJsonSchema(json !== undefined? json[propertyId] : undefined, resolvedPropertySchema, propertySchema, rootJson, rootSchema, titleIds, `${jsonPath}[${propertyId}]`);
+                if (resolvedSchema.properties === undefined) {
+                    resolvedSchema.properties = {};
+                }
+                resolvedSchema.properties[propertyId] = resolvedPropertySchema;
+            }
+        }
+        // Handle oneOf
+        if (schema.oneOf !== undefined) {
+            // Apply the matching element of a oneOf
+            let subSchema = schema.oneOf.find(function (subSchema) {
+                if (subSchema.properties) {
+                    for (const [propertyId, property] of Object.entries(subSchema.properties)) {
+                        if (property.const !== undefined && json[propertyId] !== undefined && json[propertyId] === property.const ) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
+            if (subSchema !== undefined) {
+                // console.log("oneOf match");
+                resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);
+            } else {
+                console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for: ${JSON.stringify(json)}`)
+            }
+        }
+    }
+    if (resolvedSchema.type === "array") {        
+        // Fail validation if the object is an array, a string, a number, or a boolean.
+        if (["boolean", "number", "string"].includes(typeof json) || !Array.isArray(json)) {            
+            console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected array, got: ${JSON.stringify(json)}`)
+            return;
+        }
+        resolvedSchema.items = []
+        for (let [index, element] of json.entries()) {
+            let resolvedItemSchema = {}
+            //console.log("element");
+            resolveJsonSchema(element, resolvedItemSchema, schema.items, rootJson, rootSchema, titleIds, `${jsonPath}[${index}]`);
+            resolvedSchema.items.push(resolvedItemSchema);
+        }
+    }
+    if (resolvedSchema.type === "string") {
+        // Fail validation if the object is a boolean, a number, an array, or an object
+        if (["boolean", "number", "object"].includes(typeof json)) { // typeof Array is also "object"
+            console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected string, got: ${JSON.stringify(json)}`)
+            return;
+        }
+        // Handle string oneOf
+        if (schema.oneOf !== undefined) {
+            // Apply the matching element of a oneOf
+            let subSchema = schema.oneOf.find(function (subSchema) {
+                if (subSchema.const !== undefined && json !== undefined && json === subSchema.const ) {
+                    return true;
+                }
+                return false;
+            });
+            if (subSchema !== undefined) {
+                // console.log("string oneOf match");
+                resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);
+            } else {
+                console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for: ${JSON.stringify(json)}`)
+            }
+        }
+    }
+    // console.log(`Resolved ${schema.path}: ${JSON.stringify(resolvedSchema)}`);
+}
+
+function jsonToText(json, resolvedSchema, bannedProperties = []) {
+    if (json === undefined) return "";
+    let text = "";
+    let title = null;
+    let titleIsUnitless = false;
+    if (resolvedSchema["x-ui"] !== undefined) {
+        title = translate(resolvedSchema["x-ui"], "unitless_title", null);
+        if (title !== null && resolvedSchema["x-ui"].unit !== undefined) {           
+            titleIsUnitless = true;
+        } else {
+            title = null;
+        }
+    }
+    if (title === null) {
+        title = translate(resolvedSchema, "title", null);
+    }
+    if (title !== null) {
+        text += `${title}`;
+        let valuetitle = translate(resolvedSchema, "valuetitle", null);
+        if (valuetitle !== null) {
+            text += `: ${valuetitle}\n`;
+        } else if (resolvedSchema.type === "number") {
+            if (titleIsUnitless) {
+                text += `: ${json} ${resolvedSchema["x-ui"].unit}\n`;
+            } else {
+                text += `: ${json}\n`;
+            }
+        } else {                
+            text += "\n"
+        }
+    }
+    if (resolvedSchema.type === "object") {
+        for (const [propertyId, propertySchema] of Object.entries(resolvedSchema.properties)) {
+            if (!bannedProperties.includes(propertyId) && json[propertyId] !== undefined) {
+                //console.log(`property ${propertyId} jsonToText`);
+                text += jsonToText(json[propertyId], propertySchema, bannedProperties);
+            }
+        }
+    }
+    if (resolvedSchema.type === "array") {
+        for (let [index, itemResolvedSchema] of resolvedSchema.items.entries()) {
+            //console.log(`array[${index}] jsonToText`);
+            text += `•&nbsp;`
+            text += jsonToText(json[index], itemResolvedSchema, bannedProperties).split("\n").filter(str => str.length).join(`\n&nbsp;&nbsp;`) + "\n";
+        }
+    }
+    //console.log(text);
+    return text;
 }
 
 // Translations
@@ -208,13 +397,6 @@ var t = {
         "VFSA": "very fine sand",
         "VFSAL": "very fine sandy loam"
     },
-    mgmt_operations_event_variable_is_freeform: {
-        "mgmt_event_notes": true,
-        "planting_notes": true,
-        "harvest_comments": true,
-        "org_material_notes": true,
-        "tillage_treatment_notes": true,
-    },
     plaintext: {
         air: "air",
         air_fi: "ilma",
@@ -238,414 +420,11 @@ var t = {
         unknown_fi: "ei tiedossa",
         unknown_sv: "okänd"
     },
-    mgmt_operations_event_choice_plaintext: {
-        "planting": "Planting",
-        "planting_fi": "Kylvö",
-        "planting_sv": "Sådd",
-        "fertilizer": "Fertilizer application",
-        "fertilizer_fi": "Lannoitteen levitys",
-        "fertilizer_sv": "Spridning av gödslingsmedel",
-        "irrigation": "Irrigation application",
-        "irrigation_fi": "Kastelu",
-        "irrigation_sv": "Bevattning",
-        "tillage": "Tillage application",
-        "tillage_fi": "Maan muokkaus",
-        "tillage_sv": "Markens bearbetning",
-        "organic_material": "Organic material application",
-        "organic_material_fi": "Eloperäisen aineen levitys",
-        "organic_material_sv": "Applicering av organiskt material",
-        "grazing": "Grazing",
-        "grazing_fi": "Laidunnus",
-        "grazing_sv": "Betning",
-        "harvest": "Harvest",
-        "harvest_fi": "Sadonkorjuu",
-        "harvest_sv": "Skörd",
-        "bed_prep": "Raised bed preparation",
-        "bed_prep_fi": "Kohopenkki",
-        "bed_prep_sv": "Upphöjd odlingsbädd",
-        "inorg_mulch": "Placement of inorganic mulch",
-        "inorg_mulch_fi": "Katteen levitys",
-        "inorg_mulch_sv": "Applicering av oorganisk kompost",
-        "Inorg_mul_rem": "Removal of inorganic mulch",
-        "Inorg_mul_rem_fi": "Katteen poisto",
-        "Inorg_mul_rem_sv": "Borttagning av oorganisk kompost",
-        "chemicals": "Chemicals application",
-        "chemicals_fi": "Kemikaalin levitys",
-        "chemicals_sv": "Applicering av kemikalier",
-        "mowing": "Mowing",
-        "mowing_fi": "Ruohonleikkuu",
-        "mowing_sv": "Gräsklippning",
-        "observation": "Observation",
-        "observation_fi": "Havainto",
-        "observation_sv": "Observation",
-        "weeding": "Mechanical extraction of weeds",
-        "weeding_fi": "Rikkaruohojen kitkeminen",
-        "weeding_sv": "Rensning av ogräs",
-        "other": "Other management event",
-        "other_fi": "Muu toimenpide",
-        "other_sv": "Annan åtgärd"
-    },
     mgmt_operations_variable_name_plaintext: {
         "block": "Block",
         "block_fi": "Lohko",
         "block_sv": "Skifte",
-        "mgmt_event_notes": "Description",
-        "mgmt_event_notes_fi": "Kuvaus",
-        "mgmt_event_notes_sv": "Beskrivning",
-        "planted_crop": "Planted crop",
-        "planted_crop_fi": "Kylvetty laji",
-        "planted_crop_sv": "Sådd gröda",
-        "planting_material_weight": "Planting material weight (kg/ha)",
-        "planting_material_weight_fi": "Kylvetyn materiaalin paino (kg/ha)",
-        "planting_material_weight_sv": "Vikt av sådd material (kg/ha)",
-        "planting_depth": "Planting depth (mm)",
-        "planting_depth_fi": "Kylvösyvyys (mm)",
-        "planting_depth_fi": "Sådjup (mm)",
-        "planting_material": "Planting material",
-        "planting_material_fi": "Kylvetty materiaali",
-        "planting_material_sv": "Sådd material",
-        "planting_material_source": "Planting material source",
-        "planting_material_source_fi": "Kylvetyn materiaalin alkuperä",
-        "planting_material_source_sv": "Ursprung på sådda materialet",
-        "planting_notes": "Planting notes",
-        "planting_notes_fi": "Kylvömuistiinpanot",
-        "planting_notes_sv": "Såddanteckningar",
-        "harvest_area": "Harvest area (ha)",
-        "harvest_area_fi": "Korjattu pinta-ala (ha)",
-        "harvest_area_sv": "Skördat område (ha)",
-        "harvest_crop": "Harvest crop",
-        "harvest_crop_fi": "Korjattu laji",
-        "harvest_crop_sv": "Skördad gröda",
-        "harvest_operat_component": "Crop component harvested",
-        "harvest_operat_component_fi": "Korjattu kasvinosa",
-        "harvest_operat_component_sv": "Skördad växtdel",
-        "harvest_residue_placement": "Harvest residue placement",
-        "harvest_residue_placement_fi": "Korjatun kasvinosan sijoituspaikka",
-        "canopy_height_harvest": "Canopy height (m)",
-        "canopy_height_harvest_fi": "Kasvuston korkeus (m)",
-        "canopy_height_harvest_sv": "Växtlighetens höjd (m)",
-        "grazing_species": "Grazing species",
-        "grazing_species_fi": "Laiduntava laji",
-        "grazing_species_sv": "Betande art",
-        "grazing_type": "Grazing type",
-        "grazing_type_fi": "Laidunnuksen tyyppi",
-        "grazing_type_sv": "Betstyp",
-        "harvest_yield_harvest_dw": "Yield, dry weight (kg/ha)",
-        "harvest_yield_harvest_dw_fi": "Sato, kuivapaino (kg/ha)",
-        "harvest_yield_harvest_dw_sv": "Skörd, torrvikt (kg/ha)",
-        "harvest_yield_harvest_dw_total": "Total yield, dry weight (kg/ha)",
-        "harvest_yield_harvest_dw_total_fi": "Kokonaissato, kuivapaino (kg/ha)",
-        "harvest_yield_harvest_dw_total_sv": "Totala skörden, torrvikt (kg/ha)",
-        "harv_yield_harv_f_wt": "Yield, fresh weight (t/ha)",
-        "harv_yield_harv_f_wt_fi": "Sato, tuorepaino (t/ha)",
-        "harv_yield_harv_f_wt_sv": "Skörd, färskvikt (t/ha)",
-        "harvest_method": "Harvest method",
-        "harvest_method_fi": "Korjuutapa",
-        "harvest_method_sv": "Skördemetod",
-        "harvest_cut_height": "Height of cut (cm)",
-        "harvest_cut_height_fi": "Leikkuukorkeus (cm)",
-        "harvest_cut_height_sv": "Klipphöjd (cm)",
-        "harvest_comments": "Comments",
-        "harvest_comments_fi": "Sadonkorjuukommentit",
-        "harvest_comments_sv": "Kommentarer",
-        "harv_operat_size_categor": "Harvest operations size category",
-        "harv_operat_size_categor_fi": "Sadonkorjuun laajuus",
-        "harv_operat_size_categor_sv": "Skördens storlekskategori",
-        "organic_material": "Organic material",
-        "organic_material_fi": "Eloperäinen aine",
-        "organic_material_sv": "Organisk material",
-        "org_material_applic_meth": "Application method",
-        "org_material_applic_meth_fi": "Eloperäisen aineen levitystapa",
-        "org_material_applic_meth_sv": "Organiska materialets appliceringsmetod",
-        "org_material_appl_depth": "Application depth (cm)",
-        "org_material_appl_depth_fi": "Eloperäisen aineen levityssyvyys (cm)",
-        "org_material_appl_depth_sv": "Organiska materialets appliceringsdjup (cm)",
-        "org_material_notes": "Notes",
-        "org_material_notes_fi": "Muistiinpanot",
-        "org_material_notes_sv": "Anteckningar",
-        "tillage_implement": "Tillage implement",
-        "tillage_implement_fi": "Muokkausväline",
-        "tillage_implement_sv": "Bearbetningsredskap",
-        "tillage_operations_depth": "Tillage depth (cm)",
-        "tillage_operations_depth_fi": "Muokkaussyvyys (cm)",
-        "tillage_operations_depth_sv": "Bearbetningsdjup (cm)",
-        "tillage_treatment_notes": "Tillage notes",
-        "tillage_treatment_notes_fi": "Muistiinpanot muokkauksesta",
-        "tillage_treatment_notes_sv": "Anteckningar på bearbetning",
-        "org_material_applic_amnt": "Application amount, dry weight (kg/ha)",
-        "org_material_applic_amnt_fi": "Levitetyn aineen kuivapaino (kg/ha)",
-        "org_material_applic_amnt_sv": "Torrvikten av det applicerade materialet (kg/ha)",
-        "org_matter_moisture_conc": "Moisture concentration (%)",
-        "org_matter_moisture_conc_fi": "Aineen kosteus (%)",
-        "org_matter_moisture_conc_sv": "Materialets fuktighet (%)",
-        "org_matter_carbon_conc": "Carbon (C) concentration (%)",
-        "org_matter_carbon_conc_fi": "Hiilen (C) määrä aineessa (%)",
-        "org_matter_carbon_conc_sv": "Mängden kol (C) (%)",
-        "organic_material_N_conc": "Nitrogen (N) concentration (%)",
-        "organic_material_N_conc_fi": "Typen (N) määrä aineessa (%)",
-        "organic_material_N_conc_sv": "Mängden kväve (N) (%)",
-        "org_material_c_to_n": "C:N ratio",
-        "org_material_c_to_n_fi": "C:N suhde",
-        "org_material_c_to_n_sv": "C:N förhållandet",
-        "yield_C_at_harvest": "Carbon (C) in yield (kg/ha)",
-        "yield_C_at_harvest_fi": "Hiilen (C) määrä sadossa (kg/ha)",
-        "yield_C_at_harvest_sv": "Mängden kol (C) i skörden (kg/ha)",
-        "yield_C_at_harvest_total": "Total carbon (C) in yield (kg/ha)",
-        "yield_C_at_harvest_total_fi": "Hiilen (C) kokonaismäärä sadossa (kg/ha)",
-        "yield_C_at_harvest_total_sv": "Totala mängden kol (C) i skörden (kg/ha)",
-        "carbon_soil_tot": "Average Carbon in 1 m soil column (kg/m²)",
-        "carbon_soil_tot_fi": "Hiiltä keskimäärin 1 m maakolonnissa (kg/m²)",
-        "carbon_soil_tot_sv": "Kol i medeltal i 1 m markpelare (kg/m²)",
-        "carbon_soil_tot_sd": "Standard deviation",
-        "carbon_soil_tot_sd_fi": "Keskihajonta",
-        "carbon_soil_tot_sd_sv": "Standardavvikelse",
-        "fertilizer_total_amount": "Total amount of fertilizer (kg/ ha)",
-        "fertilizer_total_amount_fi": "Lannoitteen kokonaismäärä (kg/ ha)",
-        "fertilizer_total_amount_sv": "Totala mändgen gödsel (kg/ ha)",
-        "N_in_applied_fertilizer": "Amount of nitrogen (N) in fertilizer (kg / ha)",
-        "N_in_applied_fertilizer_fi": "Typen (N) määrä lannoitteessa (kg / ha)",
-        "N_in_applied_fertilizer_sv": "Mängden lväve (N) i gödseln (kg / ha)",
-        "phosphorus_applied_fert": "Amount of phosphorus (P) in fertilizer (kg / ha)",
-        "phosphorus_applied_fert_fi": "Fosforin (P) määrä lannoitteessa (kg / ha)",
-        "phosphorus_applied_fert_sv": "Mängden fosfor (P) i gödseln (kg / ha)",
-        "fertilizer_K_applied": "Amount of potassium (K) in fertilizer (kg / ha)",
-        "fertilizer_K_applied_fi": "Kaliumin (K) määrä lannoitteessa (kg / ha)",
-        "fertilizer_K_applied_sv": "Mängden kalium (K) i gödseln (kg / ha)"
     },
-    mgmt_operations_value_plaintext: {
-        "harvest_residue_placement": {
-            "harvest_residue_placement_removed": "Removed from the field",
-            "harvest_residue_placement_removed_fi": "Viety pois pellolta"
-        },
-        "grazing_species": {
-            "grazing_species_cattle": "Cattle",
-            "grazing_species_cattle_fi": "Nautakarja",
-            "grazing_species_cattle_sv": "Nötkreatur"
-        },
-        "grazing_type": {
-            "grazing_type_rotation": "Rotational",
-            "grazing_type_rotation_fi": "Lohkosyöttö",
-            "grazing_type_rotation_sv": "Rotationsbetning"
-        },
-        "harv_operat_size_categor": {
-            "A": "All",
-            "A_fi": "Kaikki",
-            "A_sv": "Alla",
-            "S": "Small - less than 1/3 full size",
-            "S_fi": "Pieni - vähemmän kuin 1/3 kaikesta",
-            "S_sv": "Liten - mindre än 1/3 av hela storleken",
-            "M": "Medium - from 1/3 to 2/3 full size",
-            "M_fi": "Keskiverto - 1/3 - 2/3 kaikesta",
-            "M_sv": "Medium - 1/3 - 2/3 av hela storleken",
-            "L": "Large - greater than 2/3 full size",
-            "L": "Suuri - enemmän kuin 2/3 kaikesta",
-            "L": "Stor - större än 2/3 av hela storleken"
-        },
-        "harvest_operat_component": {
-            "canopy": "Canopy",
-            "canopy_fi": "Latvusto",
-            "canopy_sv": "Krontak",
-            "leaf": "Leaves",
-            "leaf_fi": "Lehdet",
-            "leaf_sv": "Blad",
-            "grain": "Grain, legume seeds",
-            "grain_fi": "Jyvä, palkokasvin siemen",
-            "grain_sv": "Korn, baljväxtens frö",
-            "silage": "Silage",
-            "silage_fi": "Säilörehu",
-            "silage_sv": "Ensilage",
-            "tuber": "Tuber, root, etc.",
-            "tuber_fi": "Mukula, juuri, yms.",
-            "tuber_sv": "Knöl, rot, etc.",
-            "fruit": "Fruit",
-            "fruit_fi": "Hedelmä",
-            "fruit_sv": "Frukt",
-            "fiber": "Fiber",
-            "fiber_fi": "Kuitu",
-            "fiber_sv": "Fiber",
-            "seed_cotton": "Cotton boil, including lint",
-            "stem": "Stem",
-            "stem_fi": "Varsi",
-            "stem_sv": "Stjälk"
-        },
-
-        "harvest_method": {
-            "HM001": "Combined",
-            "HM001_fi": "Leikkuupuimuri",
-            "HM001_sv": "Skördetröska",
-            "HM002": "Hand cut, machine threshed",
-            "HM003": "Hand cut, hand threshed",
-            "HM004": "Hand picked, no further processing",
-            "HM004_fi": "Poimittu käsin, ei muuta prosessointia",
-            "HM004_sv": "Handplockat, ingen övrig bearbetning",
-            "HM005": "Hand picked, machine processing",
-            "HM005_fi": "Poimittu käsin, prosessoitu koneella",
-            "HM005_sv": "Handplockat, maskin bearbetat",
-            "HM006": "Cotton stripper",
-            "HM999": "Unknown/not given",
-            "HM999_fi": "Tapa ei tiedossa",
-            "HM999_sv": "Okänd metod"
-        },
-
-        "organic_material": {
-            "RE001": "Generic crop residue",
-            "RE001_fi": "Yleinen kasvijäte",
-            "RE001_sv": "Allmänna växtrester",
-            "RE002": "Green manure",
-            "RE002_fi": "Viherlannoitus",
-            "RE002_sv": "Gröngödsel",
-            "RE003": "Barnyard manure",
-            "RE003_fi": "Kuivalanta",
-            "RE003_sv": "Gårdsgödsel",
-            "RE004": "Liquid manure",
-            "RE004_fi": "Lietelanta",
-            "RE004_sv": "Slamgödsel",
-            "RE005": "Compost",
-            "RE005_fi": "Komposti",
-            "RE005_sv": "Kompost",
-            "RE006": "Bark",
-            "RE006_fi": "Puun kuori",
-            "RE006_sv": "Bark",
-            "RE101": "Generic legume residue",
-            "RE101_fi": "Palkokasvijäte",
-            "RE101_sv": "Baljväxtrester",
-            "RE102": "Cowpea residue",
-            "RE103": "Mucuna residue",
-            "RE104": "Peanut residue",
-            "RE105": "Pigeon Pea residue",
-            "RE106": "Soybean residue",
-            "RE107": "Alfalfa residue",
-            "RE108": "Chickpea forage",
-            "RE109": "Faba bean",
-            "RE109_fi": "Härkäpapu",
-            "RE109_sv": "Bondböna",
-            "RE110": "Pea residue",
-            "RE110_fi": "Hernejäte",
-            "RE110_sv": "Ärtavfall",
-            "RE111": "Hairy vetch",
-            "RE111_fi": "Ruisvirna",
-            "RE111_sv": "Luddvicker",
-            "RE201": "Generic cereal crop residue",
-            "RE201_fi": "Viljakasvijäte",
-            "RE201_sv": "Spannmålsavfall",
-            "RE202": "Pearl millet residue",
-            "RE203": "Maize residue",
-            "RE204": "Sorghum residue",
-            "RE205": "Wheat residue",
-            "RE205_fi": "Vehnäjäte",
-            "RE205_sv": "Veteavfall",
-            "RE206": "Barley",
-            "RE206_fi": "Ohra",
-            "RE206_sv": "Korn",
-            "RE207": "Rice",
-            "RE208": "Rye",
-            "RE208_fi": "Ruis",
-            "RE208_sv": "Råg",
-            "RE301": "Generic grass",
-            "RE301_fi": "Ruohokasvi",
-            "RE301_sv": "Gräsväxti",
-            "RE302": "Bahiagrass",
-            "RE303": "Bermudagrass",
-            "RE303_fi": "Varvasheinä",
-            "RE303_sv": "Hundtandsgräs",
-            "RE304": "Switchgrass",
-            "RE304_fi": "Lännenhirssi",
-            "RE304_sv": "Jungfruhirs",
-            "RE305": "brachiaria",
-            "RE305_fi": "Viittaheinät",
-            "RE305_sv": "Brachiaria",
-            "RE306": "forage grasses",
-            "RE306_fi": "Nurmikasvit",
-            "RE306_sv": "Vallväxter",
-            "RE401": "Bush fallow residue",
-            "RE402": "Sugarcane",
-            "RE403": "Pineapple",
-            "RE999": "Decomposed crop residue",
-            "RE999_fi": "Maatunut kasvijäte",
-            "RE999_sv": "Nedbrutet växtavfall"
-        },
-
-        "tillage_implement": {
-            "TI001": "V-Ripper",
-            "TI002": "Subsoiler",
-            "TI002_fi": "Jankkuri",
-            "TI002_sv": "Djupluckrare",
-            "TI003": "Mould-board plow",
-            "TI003_fi": "Kyntöaura",
-            "TI003_sv": "Plöja",
-            "TI004": "Chisel plow, sweeps",
-            "TI005": "Chisel plow, straight point",
-            "TI006": "Chisel plow, twisted shovels",
-            "TI007": "Disk plow",
-            "TI008": "Disk, 1-way",
-            "TI009": "Disk, tandem",
-            "TI009_fi": "Lautasäes",
-            "TI009_sv": "Tallriksharv",
-            "TI010": "Disk, double disk",
-            "TI011": "Cultivator, field",
-            "TI011_fi": "Kultivaattori",
-            "TI011_sv": "Kultivator",
-            "TI012": "Cultivator, row",
-            "TI013": "Cultivator, ridge till",
-            "TI014": "Harrow, spike",
-            "TI015": "Harrow, tine",
-            "TI015_fi": "Joustopiikkiäes",
-            "TI015_sv": "S-pinne harv",
-            "TI016": "Lister",
-            "TI016_fi": "Multain",
-            //"TI016_sv": "Multain",
-            "TI017": "Bedder",
-            "TI018": "Blade cultivator",
-            "TI018_fi": "Rivivälihara",
-            "TI018_sv": "Radhacka",
-            "TI019": "Fertilizer applicator, anhydr",
-            "TI020": "Manure injector",
-            "TI020_fi": "Lietelannan sijoitusmultain",
-            "TI020_sv": "Flytgödsel injektor",
-            "TI022": "Mulch treader",
-            "TI023": "Plank",
-            "TI024": "Roller packer",
-            "TI024_fi": "Jyrä",
-            "TI024_sv": "Vält",
-            "TI025": "Drill, double-disk",
-            "TI025_fi": "Kylvökone, kaksoiskiekot",
-            "TI025_sv": "Såmaskin, dubbeldisk",
-            "TI026": "Drill, deep furrow",
-            "TI031": "Drill, no-till",
-            "TI031_fi": "Kylvökone, ei muokkausta",
-            "TI031_sv": "Såmaskin, ingen bearbetning ?",
-            "TI032": "Drill, no-till (into sod)",
-            "TI033": "Planter, row",
-            "TI033_fi": " Tarkkuuskylvökone",
-            //"TI033_sv": "?",
-            "TI034": "Planter, no-till",
-            "TI035": "Planting stick (hand)",
-            "TI036": "Matraca hand planter",
-            "TI037": "Rod weeder",
-            "TI038": "Rotary hoe",
-            "TI038_fi": "Rotary hoe (maajyrsin?)",
-            //"TI038_sv": "Åkervält?",
-            "TI039": "Roller harrow, cultipacker",
-            "TI041": "Moldboard plow 25 cm",
-            "TI042": "Moldboard plow 30 cm",
-            "TI043": "Strip tillage",
-            "TI044": "Tine weeder",
-            "TI044_fi": "Rikkaäes",
-            //"TI044_sv": "",
-            "TI999": "Other",
-            "TI999_fi": "Muu",
-            "TI999_sv": "Övrig"
-        },
-
-        "fertilizer": ap_plaintext,
-        "irrigation": ap_plaintext,
-        "tillage": ap_plaintext,
-        "chemicals": ap_plaintext,
-        "org_material_appl_depth": ap_plaintext,
-
-        "planted_crop": crop_codes,
-        "harvest_crop": crop_codes
-    }
 }
 
 // Get property of object in the current language.
@@ -653,9 +432,6 @@ var t = {
 // If fallback is undefined or not given, then the property name itself returned as the fallback value.
 function translate(object, property, fallback = property, language = foConfig.language) {
     if (property == null) {
-        console.log(object);
-        console.log(t.plaintext);
-        console.log(t.plaintext["unknown"]);
         return translate(t.plaintext, "unknown", "unknown", language);        
     }
     if (language !== 'en') {
@@ -672,7 +448,7 @@ function translate(object, property, fallback = property, language = foConfig.la
     }
 }
 
-function translationKey(object, property) {
+function getTranslationKey(object, property) {
     if (foConfig.language === 'en') {
         return property;
     } else {
@@ -1165,9 +941,9 @@ function prepCharts(v, siteJson, chartsJson) {
             });
         }
         if (chartDescription === "") {
-            chart[translationKey(chart, "description")] = undefined;
+            chart[getTranslationKey(chart, "description")] = undefined;
         } else {
-            chart[translationKey(chart, "description")] = chartDescription;
+            chart[getTranslationKey(chart, "description")] = chartDescription;
         }
     });
 
@@ -2180,6 +1956,14 @@ function managementEventKeyValueToHtml(html, key, value) {
     }
 }
 
+function managementEventPropertyToHtml(html, object, event, propertyId) {
+    if (event.properties[propertyId]["x-ui"] !== undefined && event.properties[propertyId]["x-ui"].unit !== undefined) {
+        html.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" font-weight="normal" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (html.rowIndex++) * 15}">${translate(event.properties[propertyId]["x-ui"], "unitless_title")}: ${object[propertyId]} ${translate(event.properties[propertyId]["x-ui"], "unit")}</text>`
+    } else {
+        //html.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" font-weight="normal" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (html.rowIndex++) * 15}">${translate(event.properties[propertyId], "title")}: ${translate(event.properties[propertyId], "value_title")}</text>`
+    }
+}
+
 function getDrawingHtmls(v, chartId, standalone = false) {
     let height;
     if (chartId === "satelliteImages") {
@@ -2651,10 +2435,6 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                             let dateObject = new Date(event.date);
                                             description0 = `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}`;
                                         }
-                                        let description = translate(t.mgmt_operations_event_choice_plaintext, event.mgmt_operations_event);
-                                        if (description === undefined) {
-                                            description = `mgmt_operations_event: ${event.mgmt_operations_event}`;
-                                        }
                                         if (source.block !== undefined) {
                                             description0 += `, ${translate(t.plaintext, "plot")} ${source.block}`
                                         }
@@ -2662,45 +2442,21 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                             description0 += `, ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}`
                                         }
                                         if (chartId === v.eventChartId) {
+                                            console.log(event);
                                             let textHtml = {
                                                 rowIndex: 0,
                                                 html: ""
                                             }
                                             textHtml.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" font-weight="bold" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (textHtml.rowIndex++) * 15}">${description0}</text>`;
-                                            textHtml.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" font-weight="bold" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (textHtml.rowIndex++) * 15}">${description}</text>`;
-                                            let textHtmls = undefined; // Parsed values could be arrays. HTML generated from those arrays are collected here.
-                                            if (chartId !== "satelliteImages") {
-                                                for (const [key, value] of Object.entries(event)) {
-                                                    if (Array.isArray(value)) {
-                                                        if (textHtmls === undefined) {
-                                                            textHtmls = [];
-                                                            value.forEach(function (value) {
-                                                                textHtmls.push({
-                                                                    rowIndex: 0,
-                                                                    html: ""
-                                                                });
-                                                            });
-                                                        }
-                                                        if (value.length !== textHtmls.length) {
-                                                            console.warn(`Cannot process mixed array lengths in ${json.url}`);
-                                                        } else {
-                                                            value.forEach(function (value, index) {
-                                                                managementEventKeyValueToHtml(textHtmls[index], key, value);
-                                                            });
-                                                        }
-                                                    } else {
-                                                        managementEventKeyValueToHtml(textHtml, key, value);
-                                                    }
-                                                }
+                                            let text = jsonToText(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"]);
+                                            let lines = text.split("\n");
+                                            if (lines[lines.length - 1].length == 0) {
+                                                lines.pop(); // Discard possibly empty last line
+                                            }
+                                            for (let line of lines) {
+                                                textHtml.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (textHtml.rowIndex++) * 15}">${line}</text>`;
                                             }
                                             let numRows = textHtml.rowIndex;
-                                            if (textHtmls !== undefined) {
-                                                textHtmls.forEach(function (html, index) {
-                                                    numRows += 1; // Vertical space
-                                                    textHtml.html += `<g transform="translate(0 ${numRows * 15})">${html.html}</g>`;
-                                                    numRows += html.rowIndex;
-                                                });
-                                            }
                                             drawingHtml += `<g transform="translate(10 ${10 + yOffset})">`;
                                             drawingHtml += `<rect onclick="setEventDate(${eventDate}, ${sourceIndex}, ${eventIndex}, '${chartId}', event)" onmousedown="preventDefault(event)" style="cursor:pointer;fill:#fff;stroke:${color};stroke-width:2;stroke-linejoin:round;fill-opacity:1;stroke-opacity:1" x="0" y="0" width="${v.dimensions.width - 15}" height="${numRows * 15 + 10}" rx="5" />`;
                                             drawingHtml += textHtml.html;

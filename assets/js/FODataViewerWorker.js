@@ -1,4 +1,5 @@
 ﻿var v; // State variables
+const isWorker = true;
 
 const minimumTimeStepInMinutes = 10;
 
@@ -190,67 +191,7 @@ async function loadData() {
                     }
                 }
             });
-        } /*else if (source.geoTiffList !== undefined) {
-            source.geoTiffList.forEach(function (geoTiff, geoTiffListIndex) {
-                if (geoTiff.loaded === undefined) {
-                    let geoTiffDate = new Date(geoTiff.time);
-                    if (geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && geoTiffDate.valueOf() == v.satelliteImageDate) {
-                        if (geoTiff.fetchAbortController === undefined) {
-                            let path = `${foConfig.storageUrl}/${v.site.id}/${geoTiff.url.replace(".tif", "_mapbox_source.json")}?date=${getCacheRefreshDate(new Date(foConfig.now))}`;
-                            //console.log(`Fetch geoTiff file ${path}`);
-                            geoTiff.fetchAbortController = new AbortController();
-                            let fetchPromise = fetch(`${path}`, { method: 'GET', signal: geoTiff.fetchAbortController.signal }).then(async function (result) {
-                                if (!result.ok) {
-                                    geoTiff.loaded = true; // We are finished and have processed the result
-                                    console.warn(`Failed to fetch NdviImage with path ${path} and type ${source.sourceType}: ${result.status}`);
-                                    postMessage({
-                                        command: "geoTiffSourceUpdate",
-                                        updates: [{
-                                            sourceId: source.id,
-                                            geoTiffListIndex: geoTiffListIndex,
-                                            update: {
-                                                loaded: true,
-                                                mapboxSource: undefined
-                                            }
-                                        }]
-                                    });
-                                } else {
-                                    geoTiff.mapboxSource = JSON.parse(await result.text()); // geoTiff 
-                                    // console.log("geoTiff.mapboxSource at worker:");
-                                    // console.log(geoTiff.mapboxSource);
-                                    //geoTiff.mapboxSource.source.url = geoTiff.mapboxSource.source.url.replace("/fmifieldobservatory/", "/fieldobservatory2/data/"); // *** dirty fix TODO do in trigger/function
-                                    geoTiff.loaded = true; // We are finished and have processed the result
-                                    postMessage({
-                                        command: "geoTiffSourceUpdate",
-                                        updates: [{
-                                            sourceId: source.id,
-                                            geoTiffListIndex: geoTiffListIndex,
-                                            update: {
-                                                loaded: true,
-                                                mapboxSource: geoTiff.mapboxSource
-                                            }
-                                        }]
-                                    });
-                                }
-                            }).catch(e => {
-                                if (e.name === "AbortError") {
-                                    // console.log(`Aborted fetch of ${path}`)
-                                } else {
-                                    console.error(e);
-                                }
-                            });
-                            newFetchPromises.push(fetchPromise);
-                            geoTiff.fetchPromise = fetchPromise;
-                        }
-                    } else {
-                        if (geoTiff.fetchAbortController !== undefined) {
-                            geoTiff.fetchAbortController.abort();
-                            delete geoTiff.fetchAbortController;
-                        }
-                    }
-                }
-            });
-        }*/ else if (source.jsonList !== undefined) {
+        } else if (source.jsonList !== undefined) {
             source.jsonList.forEach(function (json, jsonListIndex) {
                 if (json.loaded === undefined) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
@@ -276,7 +217,7 @@ async function loadData() {
                                 } else {
                                     json.data = JSON.parse(await result.text()); // json 
                                     if (json.data.management !== undefined && json.data.management.events !== undefined) {
-                                        json.data.management.events.forEach(function (event) {
+                                        json.data.management.events.forEach(function (event) {                                            
                                             if (event.date !== undefined) {
                                                 let dateInt = (new Date(event.date)).valueOf();
                                                 if (isNaN(dateInt)) {
@@ -304,6 +245,39 @@ async function loadData() {
                                                     event.end_date = dateInt;
                                                 }
                                             }
+                                            // Ensure compatibility of older JSON files with JSON Schema
+                                            for (const [propertyId, property] of Object.entries(event)) {
+                                                if (property === "-99.0") {
+                                                    delete event[propertyId];
+                                                }
+                                            }
+                                            for (let [propertyId, property] of Object.entries(event)) {
+                                                listId = `${event.mgmt_operations_event}_list`;
+                                                if (!Array.isArray(property) && ["planted_crop", "planting_material_weight", "planting_depth", "planting_material_source",
+                                                "harvest_crop", "harvest_yield_harvest_dw", "harv_yield_harv_f_wt", "yield_C_at_harvest", "harvest_moisture",  "harvest_method", "harvest_operat_component", "canopy_height_harvest", "harvest_cut_height", "plant_density_harvest", "harvest_residue_placement",
+                                                "soil_layer_top_depth", "soil_layer_base_depth", "soil_classification_by_layer"].includes(propertyId)) {
+                                                    event[propertyId] = [property];
+                                                    property = event[propertyId];
+                                                }
+                                                if (Array.isArray(property)) {
+                                                    if (event[listId] === undefined) {
+                                                        event[listId] = Array(property.length).fill({})
+                                                    } else {
+                                                        if (event[listId].length != property.length) {
+                                                            console.log("Old style management event JSON has mismatching array lengths:");
+                                                            console.log(event);
+                                                        }
+                                                    }
+                                                    for (const [index, value] of property.entries()) {
+                                                        if (value !== "-99.0") {
+                                                            event[listId][index][propertyId] = value;
+                                                        }
+                                                    }
+                                                    delete event[propertyId];
+                                                }
+                                            }
+                                            event.resolvedSchema = {}
+                                            resolveJsonSchema(event, event.resolvedSchema, v.managementEventSchemaJson);
                                         });
                                     }
                                     json.loaded = true; // We are finished and have processed the result

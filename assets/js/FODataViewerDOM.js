@@ -63,13 +63,14 @@ var siteTypeList = []; // All encountered site types
 
 // Json data needed for site selector view
 var sitesGeoJson;
-var blocksGeoJson;
 var mapbackgroundsJson;
 var demoSitesGeoJson;
-var demoBlocksGeoJson;
 var demoMapbackgroundsJson;
 // Json data needed for site view
+var blocksGeoJson;
+var demoBlocksGeoJson;
 var siteJson;
+var managementEventSchemaJson;
 
 var geolocateControl;
 
@@ -86,7 +87,13 @@ async function loadEssentials() {
     ];
     let siteViewPromises = [
         fetch(`${foConfig.storageUrl}/fieldobs_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { blocksGeoJson = json; }),
-        fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson`).then(getJson).then(json => { mapbackgroundsJson = json; })
+        fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson`).then(getJson).then(json => { mapbackgroundsJson = json; }),
+        fetch(foConfig.managementEventSchemaJsonUrl).then(getJson).then(json => {
+            managementEventSchemaJson = json;
+            compileJsonSchema(managementEventSchemaJson);
+            console.log("managementEventSchemaJson:");
+            console.log(managementEventSchemaJson);
+        })
     ];
     if (history.state.demo !== undefined) {
         siteSelectorViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
@@ -1375,6 +1382,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     //console.log(`Date: ${now.toUTCString()}`);  
 
     v = { // State variables and constants needed by web workers
+        managementEventSchemaJson: managementEventSchemaJson,
         charts: {}, // Dictionary: chart id => chart object. These will have sources with parameters merged from sourceType and source.
         chartIds: [], // List of ids of available charts in same order as in chartsJson.
         sources: {}, // Dictionary: source ID => source object. These will not have parameters merged from sourceTypes.
