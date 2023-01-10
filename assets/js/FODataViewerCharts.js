@@ -1439,6 +1439,19 @@ var chartsJson = {
                     "gapDetectTimeThreshold": 10800000
                 },
                 {
+                    "id": "datasense",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "AirTemperature"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    },
+                    "gapDetectTimeThreshold": 10800000
+                },
+                {
                     "id": "fmimeteo",
                     "sourceCategoryId": "observation",
                     "gapDetectTimeThreshold": 1800000,
@@ -1671,6 +1684,19 @@ var chartsJson = {
                 }
             ],
             "sourceTypes": [
+                {
+                    "id": "datasense",
+                    "sourceCategoryId": "observation",
+                    "lines": true,
+                    "gapDetectTimeThreshold": 10800000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "RelativeHumidity"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    }
+                },
                 {
                     "id": "fmimeteo",
                     "sourceCategoryId": "observation",
@@ -1993,7 +2019,15 @@ var chartsJson = {
                         "date": "PeriodStartUTC0",
                         "val": "WaterTableDepth"
                     }
-                }
+                },
+                {
+                    "id": "datasense",
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "WaterTableDepth"
+                    }
+                }        
             ]
         },
         {
