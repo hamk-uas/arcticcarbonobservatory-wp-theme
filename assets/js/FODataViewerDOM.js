@@ -19,6 +19,7 @@ var siteTypeColors = {
     'co-carbon': '#234832',
     'smear-agri': '#000000',
     'lantmannen': "#23A73F",
+    'ACA-UVIDI': "#417400",
     'default': '#000000'
 };
 
