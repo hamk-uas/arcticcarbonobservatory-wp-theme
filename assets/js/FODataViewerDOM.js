@@ -88,7 +88,7 @@ async function loadEssentials() {
     ];
     let siteViewPromises = [
         fetch(`${foConfig.storageUrl}/fieldobs_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { blocksGeoJson = json; }),
-        fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson`).then(getJson).then(json => { mapbackgroundsJson = json; }),
+        fetch(`${foConfig.storageUrl}/fieldobs_mapbackgrounds_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson)).catch(async (e) => ({features: []})).then(json => { mapbackgroundsJson = json; }),
         fetch(foConfig.managementEventSchemaJsonUrl).then(getJson).then(json => {
             managementEventSchemaJson = json;
             compileJsonSchema(managementEventSchemaJson);
@@ -99,7 +99,7 @@ async function loadEssentials() {
     if (history.state.demo !== undefined) {
         siteSelectorViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
         siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
-        siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
+        siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_mapbackgrounds_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson)).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
     }
     let promises = [
         Promise.all(siteSelectorViewPromises).then(async function () {
