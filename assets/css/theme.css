@@ -133,6 +133,90 @@ a {
     text-decoration: none;
 }
 
+.wp-block-columns .h1p {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 38px;
+    color: #5E5E5E;
+    line-height: 32px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+    font-weight: bold;
+}
+
+.introp {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 24px;
+    color: #5E5E5E;
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+}
+
+.h2p {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 34px;
+    color: #5E5E5E;
+    line-height: 28px;
+    letter-spacing: 0px;
+    padding-bottom: 40px;
+    display: block;
+    font-weight: bold;
+}
+
+.h2body {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 22px;
+    color: #5E5E5E;
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+}
+
+.h3p {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 28px;
+    color: #5E5E5E;
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+    font-weight: bold;
+}
+
+.h3body {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 22px;
+    color: #5E5E5E;
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+}
+
+.h4p {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 24px;
+    color: #5E5E5E;
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+    font-weight: bold;
+}
+
+.h4body {
+    font-family: 'proxima-nova', sans-serif;
+    font-size: 18px;
+    color: #5E5E5E;
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    padding-bottom: 34px;
+    display: block;
+}
+
 img {
     -ms-interpolation-mode: bicubic;
     border: 0;
@@ -150,6 +234,7 @@ img {
 header {
     width: 100%;
     /* position: fixed; */
+    position: sticky;
     top: 0;
     left: 0;
     background: #0E0C29;
@@ -352,13 +437,25 @@ header .navigation-container {
 
 /* Set margin to body after cover block */
 .wp-block-cover-full-width~* {
-    margin-left: 15%;
-    margin-right: 15%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+/* .wp-block-cover-full-width {
+    position: sticky;
+    top: 0;
+    z-index: -9999;
+} */
+
+.fo-cover-subpage {
+    position: sticky;
+    top: 0;
+    z-index: -9999;
 }
 
 /* Intro pattern block */
 .intro-box-with-link {
-    padding-top: 16px;
+    padding-top: 64px;
     /* padding-left: 32px;
     padding-right: 32px; */
     padding-left: 10%;
@@ -394,20 +491,47 @@ header .navigation-container {
     position: relative;
     bottom: 0;
     margin-bottom: 16px;
+    margin-left: 5%;
 }
 
 .fieldobservatory-case-column>h4 {
-    padding: 16px;
+    padding: 5%;
+}
+
+.fieldobservatory-case-column>h2 {
+    padding: 5%;
 }
 
 .fieldobservatory-case-column>p {
-    padding: 0 16px 0 16px;
+    padding: 0 5% 0 5%;
+}
+
+.wp-block-columns.cols-align-bottom .wp-block-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.wp-block-columns.cols-align-bottom .wp-block-column > * {
+	margin-top: 0;
+}
+
+.wp-block-columns.cols-align-bottom  .wp-block-column > :last-child {
+	margin-top: auto;
+}
+
+.fo-column-button {
+    /* padding-left: 5%; */
+}
+
+.title-p a {
+    padding: 16px 64px;
 }
 
 /* Style the svg in buttons */
 .wp-block-button__link {
     display: flex;
     align-items: center;
+    padding-left: 0;
 }
 
 .wp-block-button__link svg {
@@ -420,6 +544,34 @@ header .navigation-container {
 }
 
 /* #endregion Pattern settings */
+
+/* #region Styling for main page */
+.fo-cover {
+    min-height: 600px;
+}
+
+.fo-front-arrow-right-green > figure {
+    width: 20px;
+}
+
+.fo-columns-block {
+    /* min-height: 400px; */
+}
+
+/* .fo-case-padding {
+    padding: 5%;
+} */
+
+/* #endregion Styling for main page */
+
+
+.fo-page-overlay {
+    background-color: rgb(255 255 255 / 80%);
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-top: 2%
+}
+
 
 /* #region Styling for about page */
 
