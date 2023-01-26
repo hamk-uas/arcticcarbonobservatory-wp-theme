@@ -9,6 +9,7 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
+    font-family: 'proxima-nova', sans-serif;
 }
 
 @font-face {
@@ -50,7 +51,7 @@ nav {
 
 body,
 input {
-    font-family: Arial;
+    /* font-family: Arial; */
     font-size: 12px;
     color: rgba(0, 0, 0, 1);
 }
@@ -226,6 +227,13 @@ img {
     display: block;
 }
 
+p.link-no-style a {
+    font-weight: normal;
+}
+
+.link-no-style a {
+    color: inherit;
+}
 
 /* #endregion Base settings */
 
@@ -531,7 +539,7 @@ header .navigation-container {
 .wp-block-button__link {
     display: flex;
     align-items: center;
-    padding-left: 0;
+    /* padding-left: 0; */
 }
 
 .wp-block-button__link svg {
@@ -580,6 +588,10 @@ header .navigation-container {
     border: solid 1px;
     margin: 16px;
     padding: 16px;
+}
+
+.fo-center-youtube {
+    text-align: center;
 }
 
 /* #endregion Styling for about page */
