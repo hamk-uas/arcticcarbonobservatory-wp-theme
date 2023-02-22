@@ -773,8 +773,10 @@ header .navigation-container {
 }
 
 .fo-inline-content {
-    margin-inline-start: -5%;
-    margin-inline-end: -5%;
+    /* margin-inline-start: -5%;
+    margin-inline-end: -5%; */
+    padding-left: 2%;
+    padding-right: 2%;
 }
 
 /* #region Styling for about page */
