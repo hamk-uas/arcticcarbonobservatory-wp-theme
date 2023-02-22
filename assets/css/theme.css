@@ -279,6 +279,12 @@ p.link-no-style a {
     color: inherit;
 }
 
+.link-no-style-white a {
+    color: #FFFFFF;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 3px;
+}
+
 /* #endregion Base settings */
 
 /* #region Header settings */
