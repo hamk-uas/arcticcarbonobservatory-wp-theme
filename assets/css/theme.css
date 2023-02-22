@@ -567,6 +567,12 @@ header .navigation-container {
     z-index: -9999;
 } */
 
+.wp-block-cover-full-width:has(.fo-cover-subpage) {
+    position: sticky;
+    top: 81px;
+    z-index: -9999;
+}
+
 .fo-cover-subpage {
     position: sticky;
     top: 0;
@@ -714,10 +720,12 @@ header .navigation-container {
 
 
 .fo-page-overlay {
-    background-color: rgb(255 255 255 / 80%);
+    background-color: rgb(255 255 255 / 90%);
     padding-left: 10%;
     padding-right: 10%;
-    padding-top: 2%
+    padding-top: 2%;
+    top: -64px;
+    position: relative;
 }
 
 #fo-case-rows .fo-case-row {
