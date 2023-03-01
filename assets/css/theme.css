@@ -141,12 +141,19 @@ p {
     font-weight: bold;
 } */
 
+@import url(../fonts/Lato2OFLWeb/LatoLatin/latolatinfonts.css);
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
-    font-family: 'proxima-nova', sans-serif;
+    font-family: 'LatoLatinWeb', sans-serif;
+    line-height: 1.492;
+}
+
+:is(h1, h2, h3, h4, h5, h6), :is(h1, h2, h3, h4, h5, h6) * {
+    font-family: 'LatoLatinWebHeavy', sans-serif;
 }
 
 h1 {
@@ -157,7 +164,7 @@ h1 {
     letter-spacing: -0.4px;
     font-weight: bold;
     padding-bottom: 30px; */
-    font-size: 38px;
+    font-size: calc(38px*0.98);
     color: #71CDB6;
     padding-bottom: 34px;
     display: block;
@@ -174,7 +181,7 @@ h2 {
     letter-spacing: -0.4px;
     font-weight: bold;
     padding-bottom: 30px; */
-    font-size: 34px;
+    font-size: calc(34px*0.98);
     color: #71CDB6;
     display: block;
     font-weight: bold;
@@ -191,7 +198,7 @@ h3 {
     letter-spacing: -0.4px;
     font-weight: bold;
     padding-bottom: 20px; */
-    font-size: 28px;
+    font-size: calc(28px*0.98);
     color: #5E5E5E;
     display: block;
     font-weight: bold;
@@ -208,7 +215,7 @@ h4 {
     letter-spacing: -0.4px;
     font-weight: bold;
     padding-bottom: 20px; */
-    font-size: 24px;
+    font-size: calc(24px*0.98);
     color: #5E5E5E;
     display: block;
     font-weight: bold;
@@ -231,7 +238,7 @@ font-weight: 700;
 font-style: normal; */
 
 .h1pc {
-    font-size: 24px;
+    font-size: calc(24px*0.98);
     color: #5E5E5E;
     display: block;
     padding-bottom: 34px;
@@ -239,7 +246,7 @@ font-style: normal; */
 
 
 .h2pc {
-    font-size: 22px;
+    font-size: calc(22px*0.98);
     color: #5E5E5E;
     text-align: left;
     padding-bottom: 40px;
@@ -247,7 +254,7 @@ font-style: normal; */
 
 
 .h3pc {
-    font-size: 22px;
+    font-size: calc(22px*0.98);
     color: #5E5E5E;
     display: block;
     text-align: left;
@@ -255,7 +262,7 @@ font-style: normal; */
 }
 
 .h4pc {
-    font-size: 18px;
+    font-size: calc(18px*0.98);
     color: #5E5E5E;
     display: block;
     text-align: left;
@@ -368,9 +375,8 @@ header .navigation-container {
 
 .navigation li a {
     /* height: 100%; */
-    font-size: 13px;
+    font-size: calc(13px*0.98);
     color: #fff;
-    font-family: 'proxima-nova', sans-serif;
     text-decoration: none;
     letter-spacing: 0.6px;
     display: block;

@@ -58,9 +58,9 @@
     padding: 15px 25px;
 }
 .fieldInfoDiv h4 {
-    font-size: 18px;
+    font-size: calc(18px*0.98);
     color: #5E5E5E;
-    font-family: 'proxima-nova', sans-serif;
+    font-family: 'LatoLatinWeb', sans-serif;
     font-weight: 600;
     margin: 0px;
     margin-top: 10px;
@@ -78,7 +78,7 @@
 .chart_gridcontainer_item {
     background-color: #fff;
     border: 1px solid #ddd;
-    font-size: 15px;
+    font-size: calc(15px*0.98);
     text-align: center;
     display: block;
     padding-top: 10px;
@@ -120,7 +120,7 @@
 
 .chart_title_div h4 {
     color: #5E5E5E;
-    font-size: 24px;
+    font-size: calc(24px*0.98);
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -152,18 +152,26 @@
     margin-top: -10px;
 }
 
+.Site * {
+    line-height: 1;
+}
+
+.SiteSelector * {
+    line-height: 1;
+}
+
 p.h1p,
 p.h2p,
 p.h3p,
 p.h4p,
-.chart_gridcontainer_item p {
-    font-size: 18px;
+.chart_gridcontainer_item p,
+.chart_gridcontainer_item p * {
+    font-size: calc(18px*0.98);
     color: #5E5E5E;
-    font-family: 'proxima-nova', sans-serif;
+    font-family: 'LatoLatinWeb', sans-serif;
     font-weight: 400;
     margin: 0px;
     word-spacing: 2px;
-    line-height: 18px;
 }
 
 .chart_gridcontainer_item p {
@@ -171,7 +179,7 @@ p.h4p,
 }
 
 .chart_gridcontainer .fieldInfoDiv td {
-    font-size: 18px;
+    font-size: calc(18px*0.98);
     padding: 4px 16px 4px 0px;
     color: #5E5E5E;
 }
@@ -196,7 +204,7 @@ p.h4p,
 }
 
 .chart_axis_label {
-    font-size: 16px;
+    font-size: calc(16px*0.98);
 }
 
 .chart_tick_label {
@@ -274,7 +282,7 @@ p.h4p,
 }
 
 .mapboxgl-popup-content {
-    font: 200 15px/22px 'proxima-nova', sans-serif;
+    font: 200 15px/22px 'LatoLatinWeb', sans-serif;
     display: block;
     width: auto;
     background: #71CDB6;
@@ -290,7 +298,7 @@ p.h4p,
     all: initial;
     display: block;
     text-align: center;
-    font: 200 16px/22px 'proxima-nova', sans-serif;
+    font: 200 16px/22px 'LatoLatinWeb', sans-serif;
     color: #fff;
     font-size: 1rem;
 }
@@ -304,7 +312,7 @@ p.h4p,
     text-transform: uppercase;
     display: block;
     text-align: center;
-    font: 200 16px/32px 'proxima-nova', sans-serif;
+    font: 200 16px/32px 'LatoLatinWeb', sans-serif;
     color: #fff;
     font-size: 2rem;
 }
@@ -313,7 +321,7 @@ p.h4p,
     all: initial;
     display: block;
     text-align: center;
-    font: 200 16px/20px 'proxima-nova', sans-serif;
+    font: 200 16px/20px 'LatoLatinWeb', sans-serif;
     color: #fff;
     font-size: 1.2rem;
 }
@@ -361,7 +369,7 @@ p.h4p,
 /*filter div*/
 .map-overlay {
     position: absolute;
-    font: 16px/24px 'proxima-nova', sans-serif;
+    font: 16px/24px 'LatoLatinWeb', sans-serif;
     background-color: whitesmoke;
     opacity: 0.9;
     /* max-height: 100%; */
@@ -384,7 +392,7 @@ p.h4p,
     padding-left: 35px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 22px;
+    font-size: calc(22px*0.98);
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -527,7 +535,7 @@ p.h4p,
         left: 10px;
         padding: 5px 10px;
         margin: 0;
-        font-size: 11px;
+        font-size: calc(11px*0.98);
         line-height: 18px;
         border-radius: 3px;
         display: none;
@@ -552,8 +560,8 @@ p.h4p,
             padding: 10px;
             margin: 0;
             box-sizing: border-box;
-            font-family: 'proxima-nova', sans-serif;
-            font-size: 16px;
+            font-family: 'LatoLatinWeb', sans-serif;
+            font-size: calc(16px*0.98);
             color: #8c806e;
         }
 
@@ -622,22 +630,22 @@ p.h4p,
     .chart_gridcontainer_item {
         background-color: #fff;
         border: 1px solid #ddd;
-        font-size: 15px;
+        font-size: calc(15px*0.98);
         text-align: center;
     }
 
     .chart_gridcontainer_item h4 {
         color: #5E5E5E;
-        font-size: 24px;
+        font-size: calc(24px*0.98);
         font-weight: bold;
         text-transform: uppercase;
     }
 
     .chart_gridcontainer_item p {
         padding: 5px 0px 5px 0px;
-        font-size: 18px;
+        font-size: calc(18px*0.98);
         color: #5E5E5E;
-        font-family: 'proxima-nova', sans-serif;
+        font-family: 'LatoLatinWeb', sans-serif;
         font-weight: 400;
         margin: 0px;
         word-spacing: 2px;
@@ -655,9 +663,9 @@ p.h4p,
     }
 
         .view h3 {
-            font-size: 36px;
+            font-size: calc(36px*0.98);
             color: #71CDB6;
-            font-family: 'proxima-nova', sans-serif;
+            font-family: 'LatoLatinWeb', sans-serif;
             font-weight: bold;
             text-transform: uppercase;
             line-height: 38px;
@@ -707,9 +715,9 @@ p.h4p,
         margin-bottom: 30px;
     }
         .view h3 {
-            font-size: 29px;
+            font-size: calc(29px*0.98);
             color: #71CDB6;
-            font-family: 'proxima-nova', sans-serif;
+            font-family: 'LatoLatinWeb', sans-serif;
             font-weight: bold;
             text-transform: uppercase;
             line-height: 34px;
@@ -752,7 +760,7 @@ p.h4p,
             width: 270px;
             background-color: red;
             color: #fff;
-            font-size: 25px;
+            font-size: calc(25px*0.98);
             text-align: center;
             border-radius: 6px;
             padding: 8px 0;
@@ -787,9 +795,9 @@ p.h4p,
             margin-bottom: 30px;
         }
             .view h3 {
-                font-size: 24px;
+                font-size: calc(24px*0.98);
                 color: #71CDB6;
-                font-family: 'proxima-nova', sans-serif;
+                font-family: 'LatoLatinWeb', sans-serif;
                 font-weight: bold;
                 text-transform: uppercase;
                 line-height: 24px;
@@ -804,9 +812,9 @@ p.h4p,
         }
             .mapMainHeader p {
                 padding: 0px 50px 0px 0px;
-                font-size: 18px;
+                font-size: calc(18px*0.98);
                 color: #5E5E5E;
-                font-family: 'proxima-nova', sans-serif;
+                font-family: 'LatoLatinWeb', sans-serif;
                 font-weight: 400;
                 margin: 0px;
                 word-spacing: 2px;
@@ -821,7 +829,7 @@ p.h4p,
         .mapboxgl-ctrl-geocoder {
             font-size: 18px;
             line-height: 24px;
-            font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+            font-family: 'LatoLatinWeb', sans-serif;
             position: relative;
             background-color: #fff;
             width: 100%;
@@ -848,7 +856,7 @@ p.h4p,
                 width: 270px;
                 background-color: red;
                 color: #fff;
-                font-size: 18px;
+                font-size: calc(18px*0.98);
                 text-align: center;
                 border-radius: 6px;
                 padding: 8px 0;
@@ -888,12 +896,12 @@ p.h4p,
             margin: 58px 0px 30px 0px; 
         }
             .view h3 {
-                font-size: 16px;
+                font-size: calc(16px*0.98);
                 line-height: 16px;
                 margin-bottom: 0;
             }
             .view h4 {
-                font-size: 14px;
+                font-size: calc(14px*0.98);
                 color: #5E5E5E;
                 margin: 0px;
                 line-height: 20px;
@@ -906,9 +914,9 @@ p.h4p,
         }
         .mapMainHeader p {
             padding: 0px 0px 0px 0px;
-            font-size: 14px;
+            font-size: calc(14px*0.98);
             color: #5E5E5E;
-            font-family: 'proxima-nova', sans-serif;
+            font-family: 'LatoLatinWeb', sans-serif;
             font-weight: 400;
             margin: 0px;
             word-spacing: 2px;
@@ -927,7 +935,7 @@ p.h4p,
 
         }
             .fieldInfoDiv p {
-                font-size: 17px;
+                font-size: calc(17px*0.98);
                 line-height: 24px;
             }
             
@@ -949,7 +957,7 @@ p.h4p,
             /* width: 270px; */
             background-color: red;
             color: #fff;
-            font-size: 23px;
+            font-size: calc(23px*0.98);
             text-align: center;
             border-radius: 6px;
             padding: 8px 0;
@@ -985,9 +993,9 @@ p.h4p,
 
         .mapMainHeader p {
             padding: 15px 0px 0px 0px;
-            font-size: 12px;
+            font-size: calc(12px*0.98);
             color: #5E5E5E;
-            font-family: 'proxima-nova', sans-serif;
+            font-family: 'LatoLatinWeb', sans-serif;
             font-weight: 400;
             margin: 0px;
             word-spacing: 2px;
@@ -1003,7 +1011,7 @@ p.h4p,
     }
 
         .view h3 {
-            font-size: 16px;
+            font-size: calc(16px*0.98);
             line-height: 16px;
             margin-bottom:0;
         }
@@ -1027,7 +1035,7 @@ p.h4p,
 
     .mapboxgl-ctrl-geocoder--input {
         font: inherit;
-        font-size: 12px;
+        font-size: calc(12px*0.98);
         padding: 0px 34px;
     }
 
@@ -1037,7 +1045,7 @@ p.h4p,
         
     }
     .map-overlay h2 {
-        font-size:13px;
+        font-size: calc(13px*0.98);
         line-height: 20px;
         margin-top: 5px;
     }
@@ -1050,10 +1058,10 @@ p.h4p,
         .map-overlay input
         {
             padding:7px;
-            font-size:12px;
+            font-size:calc(12px*0.98);
         }
         .map-overlay input input {
-            font-size: 10px;
+            font-size: calc(10px*0.98);
         }
 
         .map-overlay .listing {
@@ -1063,7 +1071,7 @@ p.h4p,
             /* max-height: 90%; */
         }
     .filterCheckBox {
-        font-size:10px;
+        font-size:calc(10px*0.98);
         padding-left: 22px;
     	margin-bottom: 4px;
     }
@@ -1106,7 +1114,7 @@ p.h4p,
         padding: 0;
     }
         .fieldInfoDiv p {
-            font-size: 17px;
+            font-size: calc(17px*0.98);
             line-height: 24px;
         }
        
@@ -1119,7 +1127,7 @@ p.h4p,
     }
 
     .view h4 {
-        font-size: 14px;
+        font-size: calc(14px*0.98);
         color: #5E5E5E;
         margin: 0px;
         line-height: 20px;
@@ -1127,7 +1135,7 @@ p.h4p,
         margin-bottom:5px;
     }
     .view p {
-        font-size: 16px;
+        font-size: calc(16px*0.98);
         line-height: 24px;
     }
     
@@ -1145,7 +1153,7 @@ p.h4p,
             /* width: 270px; */
             background-color: red;
             color: #fff;
-            font-size: 7px;
+            font-size: calc(7px*0.98);
             text-align: center;
             border-radius: 6px;
             padding: 8px 0;
@@ -1169,7 +1177,7 @@ p.h4p,
 
     .mapboxgl-ctrl-geocoder {
         width: 33.3333%;
-        font-size: 15px;
+        font-size: calc(15px*0.98);
         line-height: 20px;
         max-width: 360px;
     }
