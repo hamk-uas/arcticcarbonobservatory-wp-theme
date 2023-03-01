@@ -156,6 +156,10 @@ p {
     font-family: 'LatoLatinWebHeavy', sans-serif;
 }
 
+:is(h1, h2, h3, h4, h5, h6) .SiteSelector {
+    font-family: 'LatoLatinWebHeavy', sans-serif;
+}
+
 h1 {
     /* font-size: 36px;
     color: #71CDB6;
