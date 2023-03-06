@@ -39,8 +39,8 @@
 <div>
 <div class="Dataviewer">
     <div id="chart_container" class="chart_gridcontainer">
-        <div>
-            <div class="mapMainHeader" id="mapMainHeaderDiv">
+        <div class="map_container">
+            <div id="mapInfoDiv">
                 <h1><?php echo get_post_meta($post->ID, $maintitle, true)?></h1>
                 <p>
                     <?php echo get_post_meta($post->ID, $maincontent, true);?>
@@ -54,16 +54,15 @@
                 <div id="attribution" class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-ctrl-top-left" style="position: absolute; bottom: 0; height: 50px;"></div>
             </div>
         </div>
-        <div id="afterMap">
-            <div id="mapRightDiv">
-                <div class="fieldInfoDiv">
-                    <h2 id="siteName"></h2>
-                    <div id="siteDescription"></div>
-                </div>
-                <div id="satelliteImageDiv" class="chart_title_div">
+        <div id="afterMapDiv">
+            <div class="fieldInfoDiv" id="fieldInfoDiv">
+                <h2 id="siteName"></h2>
+                <div id="siteDescription"></div>
+                <div class="chart_title_div">
                     <h3 id="Satellite_images"></h3>
                 </div>
-            </div>            
+            </div>
+            <div id="satelliteImageDiv"></div>
             <div id="tooltip" role="tooltip" class="tooltip_hidden"></div>
         </div>
     </div>

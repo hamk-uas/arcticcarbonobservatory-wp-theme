@@ -1,5 +1,24 @@
 ﻿window.onresize = onWindowResize;
 
+function adjustLayoutOnSize() {
+    if (window.innerWidth <= 1024) {        
+        let mapElement = document.getElementById("map")
+        let fieldInfoDivElement = document.getElementById("fieldInfoDiv")
+        if (mapElement && fieldInfoDivElement) {
+            mapElement.before(fieldInfoDivElement);
+        }
+    } else {
+        let satelliteImageDivElement = document.getElementById("satelliteImageDiv")
+        let fieldInfoDivElement = document.getElementById("fieldInfoDiv")
+        if (satelliteImageDivElement && fieldInfoDivElement) {
+            satelliteImageDivElement.before(fieldInfoDivElement);
+        }
+    }
+}
+
+setMapLoading();
+adjustLayoutOnSize();
+
 var layerVisibilityBackup = {}
 var filterSiteTypeEnabled = {}
 
@@ -58,7 +77,6 @@ var siteMapView = {
 
 var map;
 var mapLoaded; // Did the map already load?
-var othersThanMapLoaded; // Did other things already load?
 var popup;
 var siteTypes = {}; // All encountered site types
 var siteTypeList = []; // All encountered site types
@@ -237,7 +255,6 @@ function initMap(initMapView) {
         }*/
     };
     map = new mapboxgl.Map(mapParams);
-    setOthersThanMapLoaded(false);
 /*    map.once('load', function () {
         if (foConfig.language !== 'en') {
             console.log("set map language");
@@ -248,8 +265,7 @@ function initMap(initMapView) {
         }    
     });*/
     map.once('load', function () {
-        mapLoaded = true;
-        setOthersThanMapLoaded();
+        setMapLoaded();
     }); // Note: this cannot be done using map.loaded()
     map.dragRotate.disable(); // disable map rotation using right click + drag
     map.touchZoomRotate.disableRotation(); // disable map rotation using touch rotation gesture
@@ -283,26 +299,16 @@ function initMap(initMapView) {
     );*/
 }
 
-function setLoader() {
-    document.body.classList.remove('loaded');
-    document.body.classList.add('loader');
+function setMapLoading() {
+    mapLoaded = false;
+    document.body.classList.remove('mapLoaded');
+    document.body.classList.add('mapLoading');
 }
 
-function setLoaded() {
-    document.body.classList.remove('loader');
-    document.body.classList.add('loaded');
-}
-
-// Set loading status. Do not worry about map loading status. It is handled automatically.
-function setOthersThanMapLoaded(loaded = othersThanMapLoaded) {
-    othersThanMapLoaded = loaded;
-    if (loaded) {
-        if (mapLoaded) {
-            setLoaded();
-        }
-    } else {
-        setLoader();
-    }
+function setMapLoaded() {
+    mapLoaded = true;
+    document.body.classList.remove('mapLoading');
+    document.body.classList.add('mapLoaded');
 }
 
 function onWindowResize() {
@@ -314,12 +320,7 @@ function onWindowResize() {
         }
         resizeCharts();
         if (foConfig.mapEnabled) {
-            if (window.innerWidth <= 1024) {
-                // One column
-                document.getElementById("Satellite_images").after(document.getElementById("map"));
-            } else {
-                document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
-            }
+            adjustLayoutOnSize();
         }
     }
 }
@@ -500,7 +501,6 @@ function viewSiteSelectorAfterLoadingEssentials() {
         </label>`;
     });
     filterContainer.innerHTML = filterContainerInnerHTML;
-    filterContainer.style.display = "block";
     whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("visible") });
 
     map.resize();
@@ -508,7 +508,6 @@ function viewSiteSelectorAfterLoadingEssentials() {
     map.setMaxZoom(siteSelectorMapView.maxZoom);
     zoomToSiteSelectorInitialZoom();
     //map.flyTo({...defaultMapView, duration:1000 });
-    setOthersThanMapLoaded(true);
 
     if (mapEventsAndHandlers.length == 0) {
 
@@ -735,11 +734,9 @@ function checkCheckBoxes() {
 async function unviewSiteSelectorAndViewSite(site) {
     //Hide filters
     var filterContainer = document.getElementById("mapFilterContainer");
-    filterContainer.style.display = "none";
     window.onpopstate = defaultPopstateHandler;
     handleEsc = undefined;    
     updateState({ site: site });
-    setOthersThanMapLoaded(false);
     removeMapEventHandlers();
     popup.remove();
     map.getCanvas().style.cursor = '';
@@ -1348,11 +1345,6 @@ async function viewSite(zoomDuration) {
 
 function viewSiteBeforeLoadEssentials() {
     document.body.classList.add('Site');
-    //Hide filter when Site
-    if (foConfig.mapEnabled) {
-        var filterContainer = document.getElementById("mapFilterContainer");
-        filterContainer.style.display = "none";
-    }
 }
 
 function updateColorbar() {
@@ -1498,12 +1490,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         }
     });
     if (v.mapElementId !== undefined) {
-        if (window.innerWidth <= 1024) {
-            // One column
-            document.getElementById("Satellite_images").after(document.getElementById("map"));         // ***
-        } else {
-            document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
-        }
+        adjustLayoutOnSize();
     }
 
     if (siteJson === undefined) {
@@ -1568,7 +1555,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 }
             }
             if (!chart.hidden) {
-                document.getElementById("afterMap").insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
+                document.getElementById("afterMapDiv").insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
             }
         } else {
             if (!chart.hidden) {                
@@ -1730,7 +1717,6 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             map.once('moveend', function () {
                 setSiteSelectorMapLayerVisibility("none");
                 map.setLayoutProperty("blockNames", 'visibility', "visible");
-                setOthersThanMapLoaded(true);
                 handleEsc = function () {
                     pushState();
                     unviewSiteAndViewSiteSelector();
@@ -2090,8 +2076,7 @@ function unviewSiteAndViewSiteSelector() {
     document.getElementById("dataCredits").remove();
     updateState({ site: undefined });
     document.body.classList.remove('Site');
-    document.body.classList.remove('Obfuscated');
-    document.getElementById("mapMainHeaderDiv").after(document.getElementById("map"));
+    document.body.classList.remove('Obfuscated');    
     // ***
     if (mapbackgrounds.length > 0) {
         for (let layer of map.getStyle().layers) {
