@@ -14,12 +14,13 @@ function getSiteId() {
 var siteTypeColors = {
     'Advanced CarbonAction Site': '#349a80',
     'Intensive Site': '#129bc7',
-    'Valio': '#114a9c',
+    'Valio': '#005EA4',
     'Svensk Kolinlagring Site': '#292929',
     'co-carbon': '#234832',
     'smear-agri': '#000000',
     'lantmannen': "#23A73F",
     'ACA-UVIDI': "#417400",
+    'fmi-icos': "#303193",
     'default': '#000000'
 };
 
