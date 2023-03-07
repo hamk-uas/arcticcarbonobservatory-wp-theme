@@ -509,12 +509,6 @@ header .navigation-container {
 
 /* #region Pattern settings */
 
-/* Set margin to body after cover block */
-.wp-block-cover-full-width~* {
-    margin-left: 20%;
-    margin-right: 20%;
-}
-
 /* @media screen and ( max-width: 1920px) {
 
     .wp-block-cover-full-width~* {
@@ -537,6 +531,9 @@ header .navigation-container {
         margin-left: 5%;
         margin-right: 5%;
     }
+    .casepage.chart_gridcontainer {
+        margin-inline: -12.5%;
+    }
 }
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
@@ -544,6 +541,9 @@ header .navigation-container {
     .wp-block-cover-full-width~* {
         margin-left: 5%;
         margin-right: 5%;
+    }
+    .casepage.chart_gridcontainer {
+        margin-inline: -12.5%;
     }
 }
 
@@ -553,6 +553,9 @@ header .navigation-container {
         margin-left: 5%;
         margin-right: 5%;
     }
+    .casepage.chart_gridcontainer {
+        margin-inline: -12.5%;
+    }
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
@@ -561,7 +564,9 @@ header .navigation-container {
         margin-left: 10%;
         margin-right: 10%;
     }
-    
+    .casepage.chart_gridcontainer {
+        margin-inline: -15%;
+    }    
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
@@ -570,7 +575,9 @@ header .navigation-container {
         margin-left: 20%;
         margin-right: 20%;
     }
-
+    .casepage.chart_gridcontainer {
+        margin-inline: -20%;
+    }
     .qvidja-image {
         width: 800px!important;
         height: 500px!important;

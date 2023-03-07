@@ -147,6 +147,7 @@
     position: absolute;
 }
 
+.chart_title2_div h3, 
 .chart_title_div h3 {
     padding-top: 15px;
     margin-bottom: 10px;
@@ -154,6 +155,7 @@
     font-size: calc(24px*0.98);
     font-weight: bold;
     text-transform: uppercase;
+    text-align: center;
 }
 
 .casepage .chart_title_div {
@@ -177,7 +179,6 @@
     height: auto;
     display: flex;
     justify-content: center;
-    align-items: center;
     flex-direction: column;
     margin-top: -10px;
 }
@@ -332,13 +333,9 @@
     text-align: left;
 }
 
-/*.casepage .chart_description {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    margin-top: 10px;
-    margin-bottom: 20px;
-}*/
+.casepage .chart_description {
+    margin-bottom: 0px;
+}
 
 /*MAPVIEW CHART HANDLERS*/
 .ChartPanArea {
@@ -583,8 +580,8 @@
     grid-gap: 10px;
     margin-bottom: 40px;
     /*margin-inline: max(20px,50% - 767px/2)*/
-    margin-inline: -25%;
-    padding-inline: 20px;    
+    /*margin-inline: 0px;
+    padding-inline: 0px;*/
 }
 
 .casepage .chart_gridcontainer_item {
@@ -594,12 +591,9 @@
 
 .casepage .chart_gridcontainer_item h3 {
     margin-bottom: 0px;
+    padding-bottom: 0px;
+    padding-top: 10px;
 }    
-
-.casepage_chart_title_and_description_div {
-    padding-top: 20px;
-    padding-bottom: 50px;    
-}
 
 .casepage .chart_title_div {
     display: none;
@@ -616,12 +610,12 @@
 }
 
 @media only screen and (max-width: 1024px) {
-    .chart_gridcontainer {
+    .Dataviewer .chart_gridcontainer {
         grid-template-columns: repeat(1,1fr);
         grid-gap: 0px;
     }
 
-    .chart_gridcontainer_item {
+    .Dataviewer .chart_gridcontainer_item {
         margin: 0px;
         border: none;
         border-bottom: 1px solid #ddd;
@@ -667,6 +661,18 @@
     .fieldInfoDiv {
         padding-left: 5px;
         padding-right: 5px;
+    }
+
+    .casepage .chart_title_div {
+        display: block;
+    }
+
+    .casepage .chart_title2_div {
+        display: none;
+    }
+
+    .casepage .chart_gridcontainer_item {
+        grid-template-columns: repeat(1,1fr);
     }
 }
 
