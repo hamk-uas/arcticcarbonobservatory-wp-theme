@@ -17,6 +17,7 @@ function adjustLayoutOnSize() {
 }
 
 setMapLoading();
+setLayoutNotReady();
 adjustLayoutOnSize();
 
 var layerVisibilityBackup = {}
@@ -309,6 +310,16 @@ function setMapLoaded() {
     mapLoaded = true;
     document.body.classList.remove('mapLoading');
     document.body.classList.add('mapLoaded');
+}
+
+function setLayoutNotReady() {
+    document.body.classList.remove('layoutReady');
+    document.body.classList.add('layoutNotReady');
+}
+
+function setLayoutReady() {
+    document.body.classList.remove('layoutNotReady');
+    document.body.classList.add('layoutReady');
 }
 
 function onWindowResize() {
@@ -687,6 +698,8 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
     window.onpopstate = function () { unviewSiteSelectorAndViewSite(getSiteId()); };
     handleEsc = zoomToSiteSelectorInitialZoom;
+
+    setLayoutReady();
 }
 
 //Filter mapbox layer data
@@ -741,6 +754,7 @@ async function unviewSiteSelectorAndViewSite(site) {
     popup.remove();
     map.getCanvas().style.cursor = '';
     document.body.classList.remove('SiteSelector');
+    setLayoutNotReady();
     await viewSite(1000);
 }
 
@@ -2048,6 +2062,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
 
     prepXGrid(v);
     refreshAllCharts();
+    setLayoutReady();
 
     // Add pointer event listeners to drawings
     //addPermanentDrawingListeners();
