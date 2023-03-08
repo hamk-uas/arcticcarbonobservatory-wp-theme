@@ -16,8 +16,7 @@ function adjustLayoutOnSize() {
     }
 }
 
-setMapLoading();
-setLayoutNotReady();
+mapLoaded = false;
 adjustLayoutOnSize();
 
 var layerVisibilityBackup = {}
