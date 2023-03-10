@@ -579,9 +579,8 @@
     grid-template-columns: repeat(1,1fr);
     grid-gap: 10px;
     margin-bottom: 40px;
-    /*margin-inline: max(20px,50% - 767px/2)*/
-    /*margin-inline: 0px;
-    padding-inline: 0px;*/
+    margin-left: min(max(calc(-100% + 640px), -25%), -12.5%);
+    margin-right: min(max(calc(-100% + 640px), -25%), -12.5%);
 }
 
 .casepage .chart_gridcontainer_item {
@@ -646,6 +645,17 @@
 }
 
 @media only screen and (max-width: 767px) {
+    .casepage .chart_title_div {
+        display: block;
+    }
+
+    .casepage .chart_title2_div {
+        display: none;
+    }
+
+    .casepage .chart_gridcontainer_item {
+        grid-template-columns: repeat(1,1fr);
+    }
 }
 
 @media only screen and (max-width: 640px) {
@@ -661,18 +671,6 @@
     .fieldInfoDiv {
         padding-left: 5px;
         padding-right: 5px;
-    }
-
-    .casepage .chart_title_div {
-        display: block;
-    }
-
-    .casepage .chart_title2_div {
-        display: none;
-    }
-
-    .casepage .chart_gridcontainer_item {
-        grid-template-columns: repeat(1,1fr);
     }
 }
 

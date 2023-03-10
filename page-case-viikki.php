@@ -4,7 +4,7 @@
     foConfig = {
         ...foConfig,
         siteId: "viikki",
-        startDate: new Date("2018-05-03T13:00:00.000000Z").valueOf()
+        startDate: new Date("2020-01-01T0:00:00.000000Z").valueOf()
     };
 </script>
 <?php include 'casepage.php'?>
