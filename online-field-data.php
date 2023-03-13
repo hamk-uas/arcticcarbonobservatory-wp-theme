@@ -56,6 +56,7 @@
         </div>
         <div id="afterMapDiv">
             <div class="fieldInfoDiv" id="fieldInfoDiv">
+                <svg width="150" height="200" id="countryMap"></svg>
                 <h2 id="siteName"></h2>
                 <div id="siteDescription"></div>
                 <div class="chart_title_div">

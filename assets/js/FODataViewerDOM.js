@@ -43,7 +43,6 @@ var siteTypeColors = {
     'default': '#000000'
 };
 
-
 //Get color by siteType
 function getSiteTypeColor(siteType) {
     let color = siteTypeColors[siteType];
@@ -53,6 +52,19 @@ function getSiteTypeColor(siteType) {
     return color;
 }
 
+var siteTypeCountries = {
+    'Svensk Kolinlagring Site': 'SE',
+    'default': 'FI'
+}
+
+//Get country by siteType
+function getSiteTypeCountry(siteType) {
+    let color = siteTypeCountries[siteType];
+    if (color === undefined) {
+        color = siteTypeCountries["default"];
+    }
+    return color;
+}
 // Prepare map
 initStateFromLocationUrl(); // Parse browser URL parameters
 
@@ -113,6 +125,17 @@ async function loadEssentials() {
             compileJsonSchema(managementEventSchemaJson);
             console.log("managementEventSchemaJson:");
             console.log(managementEventSchemaJson);
+        }),
+        fetch(`${foConfig.rootDir}/assets/json/country-borders.geojson`).then(getJson).then(json => {
+            countryBordersGeojson = json;
+            console.log("countryBordersGeojson:");
+            console.log(countryBordersGeojson);
+            countryBorders = {};
+            for (let country of countryBordersGeojson.features) {
+                countryBorders[country.properties.country_code] = country;
+            }
+            console.log("countryBorders:");
+            console.log(countryBorders);
         })
     ];
     if (history.state.demo !== undefined) {
@@ -357,6 +380,14 @@ function getCacheRefreshDate(date) {
 // Get bounding box as [[minLng, maxLng], [minLat, maxLat]] of a feature or features, with or without a starting point boundingBox to be extended by modifying it.
 function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], [-Infinity, -Infinity]]) {
     function accumulate(feature) {
+        if (feature.geometry.type === "MultiPolygon") {
+            for (let polygon of feature.geometry.coordinates) {
+                boundingBox[0][0] = polygon[0].reduce((minLng, LngLat) => Math.min(minLng, parseFloat(LngLat[0])), boundingBox[0][0]);
+                boundingBox[1][0] = polygon[0].reduce((maxLng, LngLat) => Math.max(maxLng, parseFloat(LngLat[0])), boundingBox[1][0]);
+                boundingBox[0][1] = polygon[0].reduce((minLat, LngLat) => Math.min(minLat, parseFloat(LngLat[1])), boundingBox[0][1]);
+                boundingBox[1][1] = polygon[0].reduce((maxLat, LngLat) => Math.max(maxLat, parseFloat(LngLat[1])), boundingBox[1][1]);    
+            }
+        }
         if (feature.geometry.type === "Polygon") {
             // coordinates[0] is the exterior ring. We use that as holes in the field will always be inside it.
             boundingBox[0][0] = feature.geometry.coordinates[0].reduce((minLng, LngLat) => Math.min(minLng, parseFloat(LngLat[0])), boundingBox[0][0]);
@@ -377,7 +408,7 @@ function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], 
         }
         featureOrFeatures.forEach(accumulate);
     } else {
-        accumulate(feature);
+        accumulate(featureOrFeatures);
     }
     return boundingBox;
 }
@@ -1368,6 +1399,39 @@ function updateColorbar() {
     document.getElementById("chart_colorbar_lai_title_satelliteImages").style.visibility = v.satelliteImageLegendId === "laiImage"? "visible" : "hidden";    
 }
 
+function getCountryMapSVG(countryBorders, siteCoordinates, siteStyle, svgWidth, svgHeight) {
+    const toPseudoMercator = proj4('EPSG:3857'); // WGS 84 --> WGS 84 / Pseudo-Mercator
+    let projBoundingBox = getBoundingBox(countryBorders).map(coords => toPseudoMercator.forward({x: coords[0], y: coords[1]})); // WGS 84 bounding box can be transformed to a Pseudo-Mercator bounding box    
+    let margin = 3;
+    let d = '';
+    let scale = Math.min((svgWidth-2*margin)/(projBoundingBox[1].x - projBoundingBox[0].x), (svgHeight-2*margin)/(projBoundingBox[1].y - projBoundingBox[0].y));
+    function toImgCoords(point) {
+        let projPoint = toPseudoMercator.forward({x: point[0], y: point[1]})
+        projPoint.x = projPoint.x - 0.5*(projBoundingBox[0].x + projBoundingBox[1].x);
+        projPoint.y = projPoint.y - 0.5*(projBoundingBox[0].y + projBoundingBox[1].y);
+        projPoint.x = projPoint.x*scale + svgWidth*0.5;
+        projPoint.y = projPoint.y*-scale + svgHeight*0.5;
+        return [projPoint.x, projPoint.y];
+    }
+    let projSiteCoords = toImgCoords(siteCoordinates);
+    for (polygon of countryBorders.geometry.coordinates) {
+        let polygonStr = undefined;        
+        for (point of polygon[0]) {            
+            let imgPoint = toImgCoords(point);
+            if (polygonStr === undefined) {
+                polygonStr = `M ${imgPoint[0]} ${imgPoint[1]}`;
+            } else {
+                polygonStr += ` L ${imgPoint[0]} ${imgPoint[1]}`;
+            }
+        }
+        polygonStr += ' Z'
+        d += polygonStr;
+    }
+    let svgHTML = `<path class="countryMapBorder" d="${d}"/>`;
+    svgHTML += `<circle style="${siteStyle}"class="countryMapSite" cx="${projSiteCoords[0]}" cy="${projSiteCoords[1]}" r="6" />`
+    return svgHTML;
+}
+
 async function viewSiteAfterLoadingEssentials(zoomDuration) {
     // Get all blocks of this site and find and zoom to the minimal bounding box
     let siteBlocks = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
@@ -1491,6 +1555,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             let satelliteImagesTitleElement = document.getElementById('Satellite_images');
             if (satelliteImagesTitleElement) {
                 satelliteImagesTitleElement.innerHTML = translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title");
+            }
+            let countryMapElement = document.getElementById('countryMap');
+            if (countryMapElement !== null) {
+                countryMapElement.innerHTML = getCountryMapSVG(countryBorders[getSiteTypeCountry(feature.properties.site_type)], feature.geometry.coordinates, foConfig.countryMapSiteStyle !== undefined ? foConfig.countryMapSiteStyle : `fill: ${getSiteTypeColor(feature.properties.site_type)}`, countryMapElement.getAttribute("width"), countryMapElement.getAttribute("height"));
             }
             if (foConfig.mapEnabled) {
                 if (feature.properties.demo) {

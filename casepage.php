@@ -19,9 +19,12 @@
         <div class="casepage_chart_title_and_description_div">
             <div id="chart_title2_div_chartId" class="chart_title2_div"></div>
             <div id="chart_description_div_chartId" class="chart_description"></div>
-        </div>`
-    }
+        </div>`,
+        countryMapSiteStyle: "fill: #fff;"
+    }    
     foConfig.language = "fi"; // Override language.
+    document.body.classList.add('casepage');
+    document.querySelector("#page > div.wp-block-cover-full-width > div").insertAdjacentHTML("afterbegin", '<svg width="200" height="300" id="countryMap"></svg>');
 </script>
 
 <div id="loader-wrapper">
@@ -29,6 +32,7 @@
         <div id="loader"></div>
 </div>
 <div id="tooltip" role="tooltip" class="tooltip_hidden"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.min.js" integrity="sha512-Nwp3XMQKRvqr376bCa50Hs4X4z5zbsefo63QLa62poTx5o/GhYgjnToCoBZk7bxjeP2y84oEgKNUrpK2+2Czyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- https://github.com/proj4js/proj4js -->
 <script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCharts.js?ver=<?php echo wp_get_theme()->version ?>"></script>
 <script type="text/js-worker" id="fieldobservatory-FODataViewerWorkerJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerWorker.js?ver=<?php echo wp_get_theme()->version ?>"></script>
 <script type="text/javascript" id="fieldobservatory-FODataViewerCoreJs-js" src="<?php echo get_template_directory_uri(); ?>/assets/js/FODataViewerCore.js?ver=<?php echo wp_get_theme()->version ?>"></script>

@@ -602,6 +602,32 @@
     display: block;
 }
 
+#countryMap {
+    float: right;
+}
+
+.casepage #countryMap {
+    float: unset;
+    z-index: 2;
+    position: absolute;
+    right: 0px;
+    top: 30px;
+}
+
+.countryMapBorder {
+    stroke: #cdcec8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    fill: none;
+}
+
+.casepage .countryMapBorder {
+    stroke: #fff;
+    stroke-opacity: 0.4;
+    stroke-width: 2.5;
+}
+
 @media only screen and (max-width: 1920px) {
 }
 

@@ -1,5 +1,6 @@
 <script type="text/javascript">    
     var foConfig = {
+        rootDir: '<?php echo get_template_directory_uri(); ?>',
         mapboxgl: {
             accessToken: "pk.eyJ1IjoiaGFta3NtYXJ0IiwiYSI6ImNreG9sN3p0cDAweTkycG8yZ3B3NHV5cjUifQ.YfKxbZoIH0pR7x2ZU6bDIA"
         },
