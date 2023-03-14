@@ -78,7 +78,7 @@ var siteSelectorMapView = {
     fitBoundsOptions: {
         padding: 40,
     },    
-    minZoom: 4,
+    minZoom: 3,
     maxZoom: 10
 };
 
@@ -531,16 +531,16 @@ function viewSiteSelectorAfterLoadingEssentials() {
     // Make essential layers visible
     var filterContainer = document.getElementById("mapFilterContainer");
     
-    filterContainerInnerHTML = '';
+    filterContainerInnerHTML = `<span class="collapse-button" style="width: 40px; height: 40px; display: flex; align-items: center;"><span style="width: 100%; text-align: center; font-family: 'FontAwesome'; font-size: 30px; color: #757575; line-height: 1;">&#xF0B0;</span></span><div class="filterScrollArea">`;
     siteTypeList.forEach(function (siteTypeId) {
         siteType = siteTypes[siteTypeId];
-        filterContainerInnerHTML += `
-        <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilter")}">
-            ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
+        filterContainerInnerHTML += `        
+        <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilter")}" style="--color:${getSiteTypeColor(siteTypeId)};">
             <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" ${filterSiteTypeEnabled[siteTypeId]? "checked" : ""}>
-            <span class="checkmark" style="background-color:${getSiteTypeColor(siteTypeId)}"></span>
+            ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
         </label>`;
     });
+    filterContainerInnerHTML += `</div>`;
     filterContainer.innerHTML = filterContainerInnerHTML;
     whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("visible") });
 
@@ -657,7 +657,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
 
         function zoomSite(clickedIndex, smallestDistanceSquared) {
             // Calculate zoom needed to make smallestDistance = targetDistance
-            let zoom = map.getZoom() + 1.5;
+            let zoom = map.getZoom() + 2.5;
             if (smallestDistanceSquared !== undefined) {
                 let smallestDistance = Math.sqrt(smallestDistanceSquared);
                 const targetDistance = 50;

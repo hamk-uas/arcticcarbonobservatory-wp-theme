@@ -58,10 +58,6 @@
     display: none;
 }
 
-.SiteSelector #mapFilterContainer {
-    display: block;
-}
-
 .SiteSelector .fieldInfoDiv {
     display: none; /* Hide field info div for SiteSelector */
 }
@@ -443,82 +439,54 @@
 .map-overlay {
     position: absolute;
     font: 16px/24px 'LatoLatinWeb', sans-serif;
-    background-color: whitesmoke;
-    opacity: 0.9;
-    /* max-height: 100%; */
-    /* height: 50%; */
+    background-color: #fff;
     overflow: hidden;
-    /* width: 25%; */
     width: auto;
     height: auto;
     margin: 10px;
-    padding: 15px;
-    animation: fadein 1.5s;
+    padding: 5px 5px;
     border-radius:4px;
     z-index:8;
+    display: grid;
+    row-gap: 5px;
+    box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);    
+}
+
+.filterScrollArea {
+    display: grid;
+    row-gap: 5px;
+    overflow: auto;
+    max-height: calc(61vh - 75px);
 }
 
 /*Filter places container on map*/
 .filterCheckBox {
-    display: block;
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
     position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
     cursor: pointer;
     font-size: calc(22px*0.98);
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     line-height: 1;
 }
-    /* Hide the browser's default checkbox */
-    .filterCheckBox input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-    }
-    /* On mouse-over, add a grey background color */
-    .filterCheckBox :hover input ~ .checkmark {
-        background-color: #ccc;
-    }
-    /* When the checkbox is checked, add a blue background */
-    .filterCheckBox input:checked ~ .checkmark {
-        background-color: #2196F3;
-    }
-        /* Show the checkmark when checked */
-        .filterCheckBox input:checked ~ .checkmark:after {
-            display: block;
-        }
-    /* Style the checkmark/indicator */
-    .filterCheckBox .checkmark:after {
-        left: 9px;
-        top: 5px;
-        width: 5px;
-        height: 10px;
-        border: solid white;
-        border-width: 0 3px 3px 0;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
-    }
-    /* Create a custom checkbox */
-    .checkmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 25px;
-        width: 25px;
-        background-color: #eee;
-    }
-/* Create the checkmark/indicator (hidden when not checked) */
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+
+/* Hide the browser's default checkbox */
+.filterCheckBox input[type=checkbox] {
+    width: 40px;
+    height: 40px;
+    padding:0px;    
+    margin:0px;
+    display: block;
+    font-family: 'FontAwesome'; font-size: 30px;
+    accent-color: var(--color);
+    color: #fff;
 }
+
+input[type=checkbox]:checked::before {
+    background-color: var(--color);
+}
+
+/* Show the checkmark when checked */
 
 .SiteSelector .chart_gridcontainer {
     grid-template-columns: repeat(1,1fr);
