@@ -234,9 +234,12 @@ function jsonToText(json, resolvedSchema, bannedProperties = []) {
 var t = {
     tooltip: {
         /* Map controls */
-        "mapFilter": "Show/hide a farm type",
-        "mapFilter_fi": "Näytä/piilota maatilatyyppi",
-        "mapFilter_sv": "Visa/dölj gårdstypen",
+        "mapFilter": "Show/hide filter",
+        "mapFilter_fi": "Näytä/piilota suodatin",
+        "mapFilter_sv": "Visa/dölj filtret",
+        "mapFilterSiteType": "Show/hide a farm type",
+        "mapFilterSiteType_fi": "Näytä/piilota maatilatyyppi",
+        "mapFilterSiteType_sv": "Visa/dölj gårdstypen",
         "findMyLocation": "Find my location",
         "findMyLocation_fi": "Etsi sijaintini",
         "findMyLocation_sv": "Ange min plats",

@@ -528,20 +528,30 @@ function removeMapEventHandlers() {
 
 // Open site selector view
 function viewSiteSelectorAfterLoadingEssentials() {
-    // Make essential layers visible
-    var filterContainer = document.getElementById("mapFilterContainer");
-    
-    filterContainerInnerHTML = `<span class="collapse-button" style="width: 40px; height: 40px; display: flex; align-items: center;"><span style="width: 100%; text-align: center; font-family: 'FontAwesome'; font-size: 30px; color: #757575; line-height: 1;">&#xF0B0;</span></span><div class="filterScrollArea">`;
-    siteTypeList.forEach(function (siteTypeId) {
-        siteType = siteTypes[siteTypeId];
-        filterContainerInnerHTML += `        
-        <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilter")}" style="--color:${getSiteTypeColor(siteTypeId)};">
-            <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" ${filterSiteTypeEnabled[siteTypeId]? "checked" : ""}>
-            ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
-        </label>`;
-    });
-    filterContainerInnerHTML += `</div>`;
-    filterContainer.innerHTML = filterContainerInnerHTML;
+    if (document.getElementById("filterCheckBoxCollapseButton") === null) {
+        var filterContainer = document.getElementById("mapFilterContainer");    
+        filterContainerInnerHTML = `<span class="collapse-button" id="filterCheckBoxCollapseButton" tabindex="0" title="${translate(t.tooltip, "mapFilter")}">&#xF0B0;</span><div class="filterScrollArea">`; 
+        siteTypeList.forEach(function (siteTypeId) {
+            siteType = siteTypes[siteTypeId];
+            filterContainerInnerHTML += `        
+            <label class="filterCheckBox" title="${translate(t.tooltip, "mapFilterSiteType")}" style="--color:${getSiteTypeColor(siteTypeId)};">
+                <input type="checkbox" id="checkBox${siteTypeId.replaceAll(' ', '')}" name="${siteTypeId}" value="${siteTypeId}" onclick="checkCheckBoxes()" ${filterSiteTypeEnabled[siteTypeId]? "checked" : ""}>
+                ${translate(siteType.properties, "site_type_Name", siteTypeId)}${siteType.properties.demo ? " (demo)" : ""}
+            </label>`;
+        });
+        filterContainerInnerHTML += `</div>`;
+        filterContainer.innerHTML = filterContainerInnerHTML;
+        let collapseButton = document.getElementById("filterCheckBoxCollapseButton");
+        collapseButton.addEventListener("click", function(event) {
+            event.target.classList.toggle('active');
+        });
+        collapseButton.addEventListener("keypress", function(event) {
+            if (["Enter", " "].includes(event.key)) {
+                event.preventDefault();
+                collapseButton.click();
+            }
+        });
+    }
     whenMapLoadedDo(function () { setSiteSelectorMapLayerVisibility("visible") });
 
     map.resize();

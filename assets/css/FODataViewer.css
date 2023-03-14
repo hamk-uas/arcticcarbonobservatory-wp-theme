@@ -19,6 +19,7 @@
     height: 100%;
     background-color: #d3cfca;
     visibility: hidden;
+    user-select: none;
 }
 
 .layoutNotReady #map {
@@ -444,12 +445,27 @@
     width: auto;
     height: auto;
     margin: 10px;
-    padding: 5px 5px;
+    padding: 0px 0px;
     border-radius:4px;
     z-index:8;
     display: grid;
     row-gap: 5px;
-    box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);    
+    box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);
+    user-select: none;
+}
+
+.collapse-button {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'FontAwesome';
+    font-size: 24px;
+    color: #757575;
+    line-height: 1;
+    margin: 1px;
 }
 
 .filterScrollArea {
@@ -457,6 +473,11 @@
     row-gap: 5px;
     overflow: auto;
     max-height: calc(61vh - 75px);
+    padding: 5px;
+}
+
+.collapse-button:not(.active) + .filterScrollArea {
+    display: none;
 }
 
 /*Filter places container on map*/
@@ -464,22 +485,19 @@
     display: flex;
     align-items: center;
     column-gap: 10px;
-    position: relative;
     cursor: pointer;
     font-size: calc(22px*0.98);
     line-height: 1;
+    padding-right: 5px;
 }
 
 /* Hide the browser's default checkbox */
 .filterCheckBox input[type=checkbox] {
     width: 40px;
     height: 40px;
-    padding:0px;    
-    margin:0px;
-    display: block;
-    font-family: 'FontAwesome'; font-size: 30px;
     accent-color: var(--color);
     color: #fff;
+    cursor: pointer;
 }
 
 input[type=checkbox]:checked::before {
