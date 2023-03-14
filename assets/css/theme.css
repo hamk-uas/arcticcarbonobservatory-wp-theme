@@ -15,14 +15,6 @@
     line-height: 1.492;
 }
 
-:is(h1, h2, h3, h4, h5, h6), :is(h1, h2, h3, h4, h5, h6) * {
-    font-family: 'LatoLatinWebHeavy', sans-serif;
-}
-
-:is(h1, h2, h3, h4, h5, h6) .SiteSelector {
-    font-family: 'LatoLatinWebHeavy', sans-serif;
-}
-
 h1 {
     font-size: calc(38px*0.98);
     color: #71CDB6;
@@ -67,6 +59,16 @@ a {
     color: #71CDB6;
     font-weight: bold;
     text-decoration: none;
+}
+
+:is(h1, h2, h3, h4, h5, h6), :is(h1, h2, h3, h4, h5, h6) * {
+    font-family: 'LatoLatinWebHeavy', sans-serif;
+    font-weight: normal;
+}
+
+:is(h1, h2, h3, h4, h5, h6) .SiteSelector {
+    font-family: 'LatoLatinWebHeavy', sans-serif;
+    font-weight: normal;
 }
 
 .h1pc {
