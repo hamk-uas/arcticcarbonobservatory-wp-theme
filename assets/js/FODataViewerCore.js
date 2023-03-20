@@ -2444,27 +2444,6 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         if (source.blockGroup !== undefined) {
                                             description0 += `, ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}`
                                         }
-                                        if (chartId === v.eventChartId) {
-                                            console.log(event);
-                                            let textHtml = {
-                                                rowIndex: 0,
-                                                html: ""
-                                            }
-                                            textHtml.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" font-weight="bold" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (textHtml.rowIndex++) * 15}">${description0}</text>`;
-                                            let text = jsonToText(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"]);
-                                            let lines = text.split("\n");
-                                            if (lines[lines.length - 1].length == 0) {
-                                                lines.pop(); // Discard possibly empty last line
-                                            }
-                                            for (let line of lines) {
-                                                textHtml.html += `<text pointer-events="none" font-family="sans-serif" font-size="14px" fill="${"#000000"}" text-anchor="start" dominant-baseline="hanging" x="${5}" y="${5 + (textHtml.rowIndex++) * 15}">${line}</text>`;
-                                            }
-                                            let numRows = textHtml.rowIndex;
-                                            drawingHtml += `<g transform="translate(10 ${10 + yOffset})">`;
-                                            drawingHtml += `<rect onclick="setEventDate(${eventDate}, ${sourceIndex}, ${eventIndex}, '${chartId}', event)" onmousedown="preventDefault(event)" style="cursor:pointer;fill:#fff;stroke:${color};stroke-width:2;stroke-linejoin:round;fill-opacity:1;stroke-opacity:1" x="0" y="0" width="${v.dimensions.width - 15}" height="${numRows * 15 + 10}" rx="5" />`;
-                                            drawingHtml += textHtml.html;
-                                            drawingHtml += "</g>";
-                                        }
                                     }
                                 }
                             });

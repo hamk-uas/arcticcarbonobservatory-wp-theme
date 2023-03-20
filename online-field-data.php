@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div id="satelliteImageDiv"></div>
-            <div id="tooltip" role="tooltip" class="tooltip_hidden"></div>
+            <div id="Details" class="hidden"></div>
         </div>
     </div>
 </div>

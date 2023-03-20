@@ -413,88 +413,29 @@ function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], 
     return boundingBox;
 }
 
-var tooltipOnceIds = {};
-var tooltipInitiatorToOnceId = {};
-var tooltipInitiatorId;
 var pageX, pageY; // Current mouse position
-let tooltip = document.getElementById("tooltip");
-var tooltipTransitionStart = function() {};
-var tooltipTransitionEnd = function() {};
-var preventTooltipReappearElementId;
-
-tooltip.addEventListener("transitionstart", function(e) {
-    tooltipTransitionStart();
-}, { once: false });
-tooltip.addEventListener("transitionend", function(e) {
-    tooltipTransitionEnd();
-}, { once: false });
 
 document.addEventListener('mousemove', trackMouse, false);
 document.addEventListener('mouseenter', trackMouse, false);
-document.addEventListener('click', (e) => {
-    immediateHideTooltip(tooltipInitiatorId);    
-}, false);
     
 function trackMouse(e) {
     pageX = e.pageX;
     pageY = e.pageY;
 }
 
-function immediateHideTooltip(elementId) {
-    let tooltip = document.getElementById("tooltip");
-    tooltip.className = "tooltip_hidden";
-    preventTooltipReappearElementId = elementId;
+function showDetails(innerHTML) {
+    let detailsElement = document.getElementById("Details");
+    detailsElement.innerHTML = innerHTML;
+    detailsElement.style.left = pageX + 10 + 'px';
+    detailsElement.style.top = pageY + 10 + 'px';
+    detailsElement.classList.add('visible');
+    detailsElement.classList.remove('hidden');
 }
 
-function showTooltip(e, initiatorId, text) {
-    // console.log(`showTooltip ${initiatorId}`);
-    if (initiatorId !== preventTooltipReappearElementId) {
-        preventTooltipReappearElementId = undefined;
-        function refreshTextAndPosition() {
-            tooltip.innerHTML = text;
-            tooltip.style.left = pageX + 10 + 'px';
-            tooltip.style.top = pageY + 10 + 'px';
-        }
-
-        function reveal() {
-            refreshTextAndPosition();
-            tooltip.className = "tooltip_reveal";
-        }
-
-        function restartDelay() {
-            tooltip.className = "tooltip_delay";
-            tooltipTransitionStart = function() {
-                tooltipTransitionStart = function() {};
-                reveal();
-            }
-        }
-
-        tooltipInitiatorId = initiatorId;
-        if (tooltip.className === "tooltip_hidden") {
-            window.requestAnimationFrame(restartDelay);
-        } else if (tooltip.className === "tooltip_delay") {
-            window.requestAnimationFrame(restartDelay);
-        } else if (tooltip.className === "tooltip_reveal") {
-            refreshTextAndPosition();
-        } else if (tooltip.className === "tooltip_hide") {
-            tooltipTransitionEnd = function() {};
-            reveal();
-        }
-    }
-}
-
-function hideTooltip(e, initiatorId) {
-    preventTooltipReappearElementId = undefined;
-    if (tooltip.className === "tooltip_delay") {
-        tooltipTransitionStart = function () {};
-        tooltip.className = "tooltip_hidden";
-    } else if (tooltip.className === "tooltip_reveal") {
-        tooltipTransitionEnd = function () {        
-            tooltipTransitionEnd = function() {};
-            tooltip.className = "tooltip_hidden";
-        }
-        tooltip.className = "tooltip_hide";
-    }
+function hideDetails() {
+    let detailsElement = document.getElementById("Details");
+    detailsElement.classList.add('hidden');
+    detailsElement.classList.remove('visible');
 }
 
 var mapEventsAndHandlers = [];
@@ -1748,7 +1689,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                         {
                             type: "image",
                             url: `${v.site.storageUrl}/${feature.properties.imagePath}`,
-                            coordinates: feature.geometry.coordinates[0] // Order of coordinates: [small~20, big~60], [big~20, big~60], [big~20, small~60], [small~20, small~60]
+                            coordinates: feature.geometry.coordinates[0].slice(0, 4) // Order of coordinates: [small~20, big~60], [big~20, big~60], [big~20, small~60], [small~20, small~60]
                         }
                     );
                     map.addLayer({
@@ -2226,6 +2167,47 @@ function setSatelliteImageDate(date, event = null, refreshRelatedChart = true) {
     }
 }
 
+function showEventDetails() {
+    if (v.charts["global"] !== undefined) {
+        let source = v.charts["global"].sources[v.eventSourceIndex];
+        if (source.sourceType === "mgmt_event") {
+            let json = source.jsonList[0];            
+            if (json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
+                let event = json.data.management.events[v.eventIndex]
+                let description0 = "";
+                let eventDate = 0;
+                if (event.start_date !== undefined && event.end_date !== undefined) {
+                    eventDate = event.start_date;
+                    let startDateObject = new Date(event.start_date);
+                    let endDateObject = new Date(event.end_date);
+                    endDateObject.setDate(endDateObject.getDate() - 1) // Show not the date of midnight, but the date of previous day
+                    description0 = `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} – ${endDateObject.getUTCDate()}.${endDateObject.getUTCMonth() + 1}.${endDateObject.getUTCFullYear()}`;
+                } else if (event.date !== undefined) {
+                    eventDate = event.date;
+                    let dateObject = new Date(event.date);
+                    description0 = `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}`;
+                }
+                if (source.block !== undefined) {
+                    description0 += `, ${translate(t.plaintext, "plot")} ${source.block}`
+                }
+                if (source.blockGroup !== undefined) {
+                    description0 += `, ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}`
+                }
+                let textHTML = `<h3>${description0}</h3>`;
+                let text = jsonToText(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"]);
+                let lines = text.split("\n");
+                if (lines[lines.length - 1].length == 0) {
+                    lines.pop(); // Discard possibly empty last line
+                }
+                for (let line of lines) {
+                    textHTML += `<p>${line}</p>`;
+                }
+                showDetails(textHTML);
+            }
+        }
+    }    
+}
+
 function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refreshRelatedChart = true) {
     if (event) {
         event.stopPropagation();
@@ -2238,7 +2220,7 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
         // Click on an event. Either a) show it or b) if it is already shown then hide it
         if (v.eventDate == date && v.eventSourceIndex == sourceIndex && v.eventIndex == eventIndex && v.eventChartId == chartId) {
             v.eventChartId = undefined;
-            v.eventDate = undefined;
+            v.eventDate = undefined;       
         } else {
             v.eventChartId = chartId;
             v.eventDate = date;
@@ -2256,6 +2238,11 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
             eventChartId: v.eventChartId
         }
     });
+    if (v.eventDate !== undefined) {
+        showEventDetails();
+    } else {
+        hideDetails();
+    }
     // Refresh charts
     chartRefreshIndex++;
     refreshChart(chartId, chartRefreshIndex);

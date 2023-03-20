@@ -493,15 +493,13 @@
 
 /* Hide the browser's default checkbox */
 .filterCheckBox input[type=checkbox] {
+    min-height: 40px;
+    min-width: 40px;
     width: 40px;
     height: 40px;
     accent-color: var(--color);
     color: #fff;
     cursor: pointer;
-}
-
-input[type=checkbox]:checked::before {
-    background-color: var(--color);
 }
 
 /* Show the checkmark when checked */
@@ -510,35 +508,30 @@ input[type=checkbox]:checked::before {
     grid-template-columns: repeat(1,1fr);
 }
 
-#tooltip {
+#Details {
     position: absolute;
-    pointer-events: none;
+    /*pointer-events: none;*/
     background: rgb(255, 249, 227);
     border: 1px solid black;
     border-radius: 5px;
     padding: 5px;
+    z-index: 1;
 }
 
-.tooltip_hidden {
-    visibility: hidden;
+#Details.hidden {
+    display: none;
 }
 
-.tooltip_delay {
-    transition: visibility 0ms linear 500ms;
-    opacity: 0;
-    visibility: visible;
+#Details > h3 {
+    font-size: calc(18px*0.98);
+    text-transform: none;
+    text-align: left;
+    padding: 0px;
 }
 
-.tooltip_reveal {
-    transition: opacity 250ms linear;
-    opacity: 1;
-    visibility: visible;
-}
-
-.tooltip_hide {
-    transition: opacity 250ms linear;
-    opacity: 0;
-    visibility: visible;
+#Details > p {
+    font-size: calc(18px*0.98);
+    margin: 0px;
 }
 
 @media (hover: hover) and (pointer: fine) {
