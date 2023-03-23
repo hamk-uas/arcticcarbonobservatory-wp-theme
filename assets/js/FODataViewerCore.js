@@ -180,7 +180,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
     // console.log(`Resolved ${schema.path}: ${JSON.stringify(resolvedSchema)}`);
 }
 
-function jsonToText(json, resolvedSchema, bannedProperties = []) {
+function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
     if (json === undefined) return "";
     let text = "";
     let title = null;
@@ -197,34 +197,37 @@ function jsonToText(json, resolvedSchema, bannedProperties = []) {
         title = translate(resolvedSchema, "title", null);
     }
     if (title !== null) {
-        text += `${title}`;
+        text += `<p><span class="VariableTitle">${title}`;
         let valuetitle = translate(resolvedSchema, "valuetitle", null);
         if (valuetitle !== null) {
-            text += `: ${valuetitle}\n`;
+            text += `:</span> ${valuetitle}</p>`;
         } else if (resolvedSchema.type === "number") {
             if (titleIsUnitless) {
-                text += `: ${json} ${resolvedSchema["x-ui"].unit}\n`;
+                text += `:</span> ${json} ${resolvedSchema["x-ui"].unit}</p>`;
             } else {
-                text += `: ${json}\n`;
+                text += `:</span> ${json}</p>`;
             }
         } else {                
-            text += "\n"
+            text += "</p>";
         }
     }
     if (resolvedSchema.type === "object") {
         for (const [propertyId, propertySchema] of Object.entries(resolvedSchema.properties)) {
             if (!bannedProperties.includes(propertyId) && json[propertyId] !== undefined) {
                 //console.log(`property ${propertyId} jsonToText`);
-                text += jsonToText(json[propertyId], propertySchema, bannedProperties);
+                text += jsonToHTML(json[propertyId], propertySchema, bannedProperties);
             }
         }
     }
     if (resolvedSchema.type === "array") {
+        text += "<ul>";
         for (let [index, itemResolvedSchema] of resolvedSchema.items.entries()) {
             //console.log(`array[${index}] jsonToText`);
-            text += `•&nbsp;`
-            text += jsonToText(json[index], itemResolvedSchema, bannedProperties).split("\n").filter(str => str.length).join(`\n&nbsp;&nbsp;`) + "\n";
+            text += "<li>";
+            text += jsonToHTML(json[index], itemResolvedSchema, bannedProperties);
+            text += "</li>";
         }
+        text += "</ul>";
     }
     //console.log(text);
     return text;
@@ -949,33 +952,35 @@ function prepCharts(v, siteJson, chartsJson) {
             chart[getTranslationKey(chart, "description")] = chartDescription;
         }
     });
-
 }
 
-function getGrazingSymbolHtml(x, y, color) {
-    return `<g pointer-events="none" transform="translate(${x}, ${y}) scale(4.1) translate(-3.3, -3.2) translate(-60.390349,-18.16825)">
-    <path
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 64.074901,21.348715 c -0.309468,0.143148 -0.171998,0.476388 0.129452,0.485089 0.103357,-0.311785 -0.129452,-0.485089 -0.129452,-0.485089 z"/>
-    <path
-       style="fill:${color};fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 61.329224,21.57643 v 0 c 0.122158,0.353603 0.142785,0.251365 0.197061,0.708983 0.01958,0.104781 0.10281,0.344004 0.105032,0.815942 l 0.431543,0.0018 c 0,0 -0.05419,-0.454138 -0.03961,-0.68108 0.02135,-0.332152 0.2365,-0.864736 0.2365,-0.864736 0,0 0.408959,0.04743 0.586301,0.217385 0.03547,0.03399 0.04957,0.138791 0.04957,0.138791 v 0 c 0,0 0.07852,0.266504 0.158618,0.37672 0.11295,0.15541 0.308308,0.233355 0.436202,0.376719 0.11715,0.131321 0.29741,0.436202 0.29741,0.436202 l 0.605499,-0.113373 -7.93e-4,-0.699549 c 0,0 0.124989,-0.533607 0.0694,-0.793093 -0.02051,-0.0957 0.03221,-0.279732 0.03221,-0.279732 0.245671,-0.333625 0.391869,-0.87269 -0.133895,-0.284165 0.02648,-1.295105 -0.322133,-0.112382 -0.322133,-0.112382 -0.56126,-0.612447 -0.880157,-1.962075 -1.571746,-2.152612 -0.475464,0.274533 -0.861849,0.502611 -1.256623,1.192628 -0.394375,0.689317 -0.352589,1.25268 -0.247351,1.884104 z"/>
-    <path
-       style="fill:${color};fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 62.325893,21.673067 0.241603,0.06874 c 0.01169,0.327405 0.04622,0.42347 0.05755,0.67934 0.02175,0.490932 0.12097,0.504897 0.12097,0.680293 l -0.453448,-0.0158 c -0.01169,-0.280633 -0.107183,-0.711944 -0.0838,-1.1212 z"/>
-    <path
-       style="fill:${color};fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 65.10374,23.102575 c -0.180554,-0.592513 -0.607028,-0.865709 -0.607028,-0.865709 0,0 0.326927,-0.31739 0.627216,0.289043 -0.16801,-0.723341 -0.140081,-1.207822 -0.140081,-1.207822 0,0 0.415526,0.352825 0.447318,0.947893 0.220522,-0.687686 0.887211,-0.60709 0.887211,-0.60709 0,0 -0.810638,0.610627 -0.79384,1.433999 z"/>
-    <path
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 64.083134,21.328995 c -0.309467,0.143149 -0.171998,0.476389 0.129453,0.48509 0.103357,-0.311786 -0.129453,-0.48509 -0.129453,-0.48509 z"/>
+function getManagementEventSymbolHtml(mgmt_operations_event, x, y, color, scale = 1) {
+    switch (mgmt_operations_event) {
+        case "observation":
+        case "measurement":
+            return getPipetteSymbolHtml(x, y, color, scale);
+        case "harvest":
+            return getScytheSymbolHtml(x, y, color, scale);
+        case "grazing":
+            return getGrazingSymbolHtml(x, y, color, scale);
+        case "other":
+        default:
+            return getTractorSymbolHtml(x, y, color, scale);
+    }
+}
+
+function getGrazingSymbolHtml(x, y, color, scale) {
+    return `<g pointer-events="none" transform="translate(${x}, ${y}) scale(${4.1*scale}) translate(-3.3, -3.2) translate(-60.390349,-18.16825)" style="fill-rule:evenodd;fill:${color};stroke:none;">
+    <path d="m 61.329224,21.57643 v 0 c 0.122158,0.353603 0.142785,0.251365 0.197061,0.708983 0.01958,0.104781 0.10281,0.344004 0.105032,0.815942 l 0.431543,0.0018 c 0,0 -0.05419,-0.454138 -0.03961,-0.68108 0.02135,-0.332152 0.2365,-0.864736 0.2365,-0.864736 0,0 0.408959,0.04743 0.586301,0.217385 0.03547,0.03399 0.04957,0.138791 0.04957,0.138791 v 0 c 0,0 0.07852,0.266504 0.158618,0.37672 0.11295,0.15541 0.308308,0.233355 0.436202,0.376719 0.11715,0.131321 0.29741,0.436202 0.29741,0.436202 l 0.605499,-0.113373 -7.93e-4,-0.699549 c 0,0 0.124989,-0.533607 0.0694,-0.793093 -0.02051,-0.0957 0.03221,-0.279732 0.03221,-0.279732 0.245671,-0.333625 0.391869,-0.87269 -0.133895,-0.284165 0.02648,-1.295105 -0.322133,-0.112382 -0.322133,-0.112382 -0.56126,-0.612447 -0.880157,-1.962075 -1.571746,-2.152612 -0.475464,0.274533 -0.861849,0.502611 -1.256623,1.192628 -0.394375,0.689317 -0.352589,1.25268 -0.247351,1.884104 z M 64.083134,21.328995 c -0.309467,0.143149 -0.171998,0.476389 0.129453,0.48509 0.103357,-0.311786 -0.129453,-0.48509 -0.129453,-0.48509 z"/>
+    <path d="m 62.325893,21.673067 0.241603,0.06874 c 0.01169,0.327405 0.04622,0.42347 0.05755,0.67934 0.02175,0.490932 0.12097,0.504897 0.12097,0.680293 l -0.453448,-0.0158 c -0.01169,-0.280633 -0.107183,-0.711944 -0.0838,-1.1212 z"/>
+    <path d="m 65.10374,23.102575 c -0.180554,-0.592513 -0.607028,-0.865709 -0.607028,-0.865709 0,0 0.326927,-0.31739 0.627216,0.289043 -0.16801,-0.723341 -0.140081,-1.207822 -0.140081,-1.207822 0,0 0.415526,0.352825 0.447318,0.947893 0.220522,-0.687686 0.887211,-0.60709 0.887211,-0.60709 0,0 -0.810638,0.610627 -0.79384,1.433999 z"/>    
   </g>`;
 }
 
-function getPipetteSymbolHtml(x, y, color) {
+function getPipetteSymbolHtml(x, y, color, scale) {
     // <path style="fill:none;stroke:${color};stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" d="m 509.77061,27.960504 2.17625,0.04742"/>
     // <path style="fill:none;stroke:${color};stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" d="m 509.77723,29.780408 2.17625,0.04742"/>
-    return `<g pointer-events="none" transform="translate(${x}, ${y}) scale(3.5) translate(-1.9, -2.9) translate(-68.637254, -149.61243)">
+    return `<g pointer-events="none" transform="translate(${x}, ${y}) scale(${3.5*scale}) translate(-1.9, -2.9) translate(-68.637254, -149.61243)">
         <g transform="matrix(0.02783964,0.2631146,-0.2631146,0.02783964,64.373332,17.813085)">
             <g transform="matrix(0.65963685,-0.89183205,0.89183205,0.65963685,145.00179,467.55796)">
                 <path style="fill:${color};fill-opacity:1;stroke:none;stroke-width:0.901492;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 509.70874,32.72005 4.28238,-2.562994 0.0277,3.53846 -0.72506,1.278848 -2.03361,0.561997 -1.48304,-1.46001 z"/>
@@ -988,17 +993,17 @@ function getPipetteSymbolHtml(x, y, color) {
     </g>`;
 }
 
-function getScytheSymbolHtml(x, y, color) {
+function getScytheSymbolHtml(x, y, color, scale) {
     return `
-    <g pointer-events="none" transform="translate(${x}, ${y}) translate(${-1.5}, ${0.5}) scale(-0.175, 0.175)">
+    <g pointer-events="none" transform="translate(${x}, ${y}) scale(${scale}) translate(${-1.5}, ${0.5}) scale(-0.175, 0.175)">
         <path style="fill:${color};fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m -36.768029,-38.195914 c 9.587396,-11.62938 45.3823448,-22.119947 75.677885,4.997597 l -74.606972,79.961537 -8.567307,-9.28125 62.112979,-67.110578 c -9.9952002,-10.709133 -29.78326,-12.345601 -54.616585,-8.567306 z"/>
     </g>`;
 }
 
-function getTractorSymbolHtml(x, y, color) {
+function getTractorSymbolHtml(x, y, color, scale) {
     return `
-    <g pointer-events="none" transform="translate(${x}, ${y}) translate(${11.5}, ${11.5}) scale(-0.04, 0.04)">
+    <g pointer-events="none" transform="translate(${x}, ${y}) scale(${scale}) translate(${11.5}, ${11.5}) scale(-0.04, 0.04)">
     <path
         d="m 343.80294,-464.05417 c -15.27689,2.60844 -22.93441,10.06106 -29,18.53125 l -17.78125,107.6875 H 85.959197 c -22.633974,3.4177 -18.15625,13.70231 -18.15625,21.96875 l 17.15625,105.0625 H 100.0842 c 11.92375,-39.65325 92.73915,-38.21796 105.31249,0 h 90.6875 c -4.37792,-69.28605 95.27097,-166.91193 195.96875,-71.75 v -56.90625 h 0.25 v -124.59375 z m -6,27.59375 h 110.375 l 0.3125,97.375 -129.84375,1.0625 15.9375,-92.9375 c 0.55544,-1.89677 0.83604,-3.80624 3.21875,-5.5 z"
         style="fill:${color};fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"/>
@@ -2407,22 +2412,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 }
                                 if (onView) {
                                     if (iconX !== undefined) {
-                                        switch (event.mgmt_operations_event) {
-                                            case "observation":
-                                            case "measurement":
-                                                drawingHtml += getPipetteSymbolHtml(iconX.toFixed(1), -14 + yOffset, color);
-                                                break;
-                                            case "other":
-                                                break;
-                                            case "harvest":
-                                                drawingHtml += getScytheSymbolHtml(iconX.toFixed(1), -14 + yOffset, color);
-                                                break;
-                                            case "grazing":
-                                                drawingHtml += getGrazingSymbolHtml(iconX.toFixed(1), -14 + yOffset, color);
-                                                break;
-                                            default:
-                                                drawingHtml += getTractorSymbolHtml(iconX.toFixed(1), -14 + yOffset, color);
-                                        }
+                                        drawingHtml += getManagementEventSymbolHtml(event.mgmt_operations_event, iconX.toFixed(1), -14 + yOffset, color);
                                     }
                                     if (selected) {
                                         let description0 = "";

@@ -421,21 +421,68 @@ document.addEventListener('mouseenter', trackMouse, false);
 function trackMouse(e) {
     pageX = e.pageX;
     pageY = e.pageY;
+    clientX = e.clientX;
+    clientY = e.clientY;
 }
 
 function showDetails(innerHTML) {
     let detailsElement = document.getElementById("Details");
     detailsElement.innerHTML = innerHTML;
-    detailsElement.style.left = pageX + 10 + 'px';
-    detailsElement.style.top = pageY + 10 + 'px';
+    if (!detailsElement.classList.contains("moved")) {
+        detailsElement.style.left = clientX + 10 + 'px';
+        detailsElement.style.top = clientY + 10 + 'px';
+    }
     detailsElement.classList.add('visible');
     detailsElement.classList.remove('hidden');
+    let overflow = (parseInt(detailsElement.style.left) + detailsElement.offsetWidth) - document.body.clientWidth;
+    if (overflow > 0) {
+        detailsElement.style.left = parseInt(detailsElement.style.left) - overflow + 'px';
+    }
+    makeElementDraggableByHeading("Details");
+    document.querySelector("#Details > .Close").onclick = function() {
+        detailsElement.classList.remove('moved');
+        hideDetails();
+    };
 }
 
-function hideDetails() {
+function hideDetails() {    
     let detailsElement = document.getElementById("Details");
     detailsElement.classList.add('hidden');
     detailsElement.classList.remove('visible');
+}
+
+function makeElementDraggableByHeading(elementId) {
+    var cursorOriginX;
+    var cursorOriginY;
+    var elementOriginX;
+    var elementOriginY;
+    let element = document.getElementById(elementId);
+    let headingElement = document.querySelector(`#${elementId} > h3`);
+    if (headingElement) {
+        headingElement.onmousedown = startDrag;
+    }
+
+    function startDrag(e) {
+        e.preventDefault();        
+        cursorOriginX = e.clientX;
+        cursorOriginY = e.clientY;
+        elementOriginX = parseInt(element.style.left);
+        elementOriginY = parseInt(element.style.top);
+        document.addEventListener('mousemove', drag, false);    
+        document.addEventListener('mouseup', finishDrag, false);
+    }
+
+    function drag(e) {
+        e.preventDefault();
+        element.style.left = elementOriginX + (e.clientX - cursorOriginX) + "px";
+        element.style.top = elementOriginY + (e.clientY - cursorOriginY) + "px";
+    }
+
+    function finishDrag() {
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', finishDrag);
+        element.classList.add('moved');
+    }
 }
 
 var mapEventsAndHandlers = [];
@@ -2092,6 +2139,9 @@ function unviewSiteAndViewSiteSelector() {
     //document.getElementById("liMapView").onclick = null;
     handleEsc = undefined;
     window.onpopstate = defaultPopstateHandler;
+    let detailsElement = document.getElementById("Details");
+    detailsElement.classList.remove('moved');
+    hideDetails();
     worker.terminate();
     map.removeLayer("blocks");
     map.removeLayer("blockLines");
@@ -2174,34 +2224,27 @@ function showEventDetails() {
             let json = source.jsonList[0];            
             if (json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
                 let event = json.data.management.events[v.eventIndex]
-                let description0 = "";
+                let title = `${translate(event.resolvedSchema, "valuetitle", "")}`;
                 let eventDate = 0;
                 if (event.start_date !== undefined && event.end_date !== undefined) {
                     eventDate = event.start_date;
                     let startDateObject = new Date(event.start_date);
                     let endDateObject = new Date(event.end_date);
                     endDateObject.setDate(endDateObject.getDate() - 1) // Show not the date of midnight, but the date of previous day
-                    description0 = `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} – ${endDateObject.getUTCDate()}.${endDateObject.getUTCMonth() + 1}.${endDateObject.getUTCFullYear()}`;
+                    title += ` ${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()}–${endDateObject.getUTCDate()}.${endDateObject.getUTCMonth() + 1}.${endDateObject.getUTCFullYear()}`;
                 } else if (event.date !== undefined) {
                     eventDate = event.date;
                     let dateObject = new Date(event.date);
-                    description0 = `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}`;
+                    title += ` ${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}`;
                 }
                 if (source.block !== undefined) {
-                    description0 += `, ${translate(t.plaintext, "plot")} ${source.block}`
-                }
+                    title += ` ${translate(v.site.blockIdToBlock[source.block], "Name")}` // ${translate(t.plaintext, "plot")} 
+                } 
                 if (source.blockGroup !== undefined) {
-                    description0 += `, ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}`
+                    title += ` ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}` // No support at this point.
                 }
-                let textHTML = `<h3>${description0}</h3>`;
-                let text = jsonToText(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"]);
-                let lines = text.split("\n");
-                if (lines[lines.length - 1].length == 0) {
-                    lines.pop(); // Discard possibly empty last line
-                }
-                for (let line of lines) {
-                    textHTML += `<p>${line}</p>`;
-                }
+                let textHTML = `<div class="Close">🗙</div><svg class="large_management_event_symbol" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
+                textHTML += jsonToHTML(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"]);
                 showDetails(textHTML);
             }
         }
@@ -2213,20 +2256,13 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
         event.stopPropagation();
         event.preventDefault();
     }
-    if (v.eventDate == date && v.eventSourceIndex == sourceIndex && v.eventIndex == eventIndex && v.eventChartId !== chartId) {
-        // Click on the same event in different chart, simply change the chart
-        v.eventChartId = chartId;
+    // Click on an event. Either a) show it or b) if it is already shown then hide it
+    if (v.eventDate == date && v.eventSourceIndex == sourceIndex && v.eventIndex == eventIndex) {
+        v.eventDate = undefined;       
     } else {
-        // Click on an event. Either a) show it or b) if it is already shown then hide it
-        if (v.eventDate == date && v.eventSourceIndex == sourceIndex && v.eventIndex == eventIndex && v.eventChartId == chartId) {
-            v.eventChartId = undefined;
-            v.eventDate = undefined;       
-        } else {
-            v.eventChartId = chartId;
-            v.eventDate = date;
-            v.eventSourceIndex = sourceIndex;
-            v.eventIndex = eventIndex;
-        }
+        v.eventDate = date;
+        v.eventSourceIndex = sourceIndex;
+        v.eventIndex = eventIndex;
     }
     // Send update to worker
     worker.postMessage({
@@ -2234,8 +2270,7 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
         vUpdate: {
             eventDate: v.eventDate,
             eventSourceIndex: v.eventSourceIndex,
-            eventIndex: v.eventIndex,
-            eventChartId: v.eventChartId
+            eventIndex: v.eventIndex
         }
     });
     if (v.eventDate !== undefined) {

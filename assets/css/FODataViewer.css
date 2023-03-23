@@ -509,29 +509,119 @@
 }
 
 #Details {
-    position: absolute;
+    /*position: absolute;*/
     /*pointer-events: none;*/
-    background: rgb(255, 249, 227);
-    border: 1px solid black;
-    border-radius: 5px;
+    position: fixed;
+    background: #fff;
+    border: 1px solid #7CAD39;
+    border-radius: 4px;
     padding: 5px;
-    z-index: 1;
+    z-index: 1000;
+    box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);
+    min-width: min(200px, calc(100vw - 20px));
+}
+
+#Details * {
+    font-size: calc(18px*0.98);
+    margin: 0px;
+    padding-left:5px;
+    padding-right:5px;
+    line-height: 1;
+}
+
+#Details span {
+    padding-left:0px;
+    padding-right:0px;
+}
+
+#Details > .Close {
+    margin-left: -5px;
+    margin-top: -5px;
+    font-size: 18pt;
+    color: #fff;
+    background: none;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    right: 0px;
+    cursor: pointer;
+    padding-left:0px;
+    padding-right:0px;
+}
+
+#Details > .large_management_event_symbol {
+    margin-right: -5px;
+    margin-top: -5px;
+    color: #fff;
+    background: none;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    left: 0px;
+    pointer-events: none;
+    padding-left:0px;
+    padding-right:0px;
 }
 
 #Details.hidden {
-    display: none;
+    visibility: hidden;
 }
 
 #Details > h3 {
+    display: flex;
+    vertical-align: middle;
+    align-items: center;
     font-size: calc(18px*0.98);
     text-transform: none;
-    text-align: left;
     padding: 0px;
+    margin-left: -5px;
+    margin-top: -5px;
+    margin-right: -5px;
+    background: #7CAD39;
+    color: #fff;
+    background-clip: padding-box;
+    min-height:40px;
+    padding-left:45px;
+    padding-right:45px;
+    text-align: left;
+    cursor: move;
 }
 
-#Details > p {
-    font-size: calc(18px*0.98);
-    margin: 0px;
+#Details > h3 + * {
+    padding-top: 5px;
+}
+
+#Details ul {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    row-gap: 0px;
+}
+
+#Details :is(p, ul) + ul::before,
+#Details ul + :is(p, ul)::before,
+#Details li + li::before {
+    content: '\A';
+    white-space: pre;
+}
+
+#Details li {
+    list-style-type: none;
+    padding-left: 0px;
+    padding-right: 0px;    
+}
+
+#Details .VariableTitle {
+    font-family: 'LatoLatinWebHeavy', sans-serif;
+    font-weight: normal;
 }
 
 @media (hover: hover) and (pointer: fine) {
