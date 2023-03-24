@@ -591,32 +591,52 @@
     padding-right:45px;
     text-align: left;
     cursor: move;
+    touch-action: none;
 }
 
 #Details > h3 + * {
     padding-top: 5px;
 }
 
-#Details ul {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+#Details ul,
+#Details ol {
     padding-left: 0px;
     padding-right: 0px;
-    row-gap: 0px;
+    list-style-type: none;
 }
 
-#Details :is(p, ul) + ul::before,
-#Details ul + :is(p, ul)::before,
-#Details li + li::before {
+#Details ol > li::before,
+#Details ol > ul::before,
+#Details ol > ol::before,
+#Details ol + li::before,
+#Details ol + ul::before,
+#Details ol + ol::before {
     content: '\A';
     white-space: pre;
 }
 
+#Details ol {
+    counter-reset: item;
+}
+
 #Details li {
-    list-style-type: none;
     padding-left: 0px;
     padding-right: 0px;    
+}
+
+#Details ol > li,
+#Details ol > ul,
+#Details ol > ol {
+    margin-left: 20px;
+}
+
+#Details ol > ul > li:first-child {
+    counter-increment: item;
+    list-style-type: auto;
+}
+
+#Details ol > ul > li:first-child::marker {
+    content: counter(item) ". ";
 }
 
 #Details .VariableTitle {

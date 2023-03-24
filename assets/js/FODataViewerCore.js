@@ -182,7 +182,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
 
 function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
     if (json === undefined) return "";
-    let text = "";
+    let html = "";
     let title = null;
     let titleIsUnitless = false;
     if (resolvedSchema["x-ui"] !== undefined) {
@@ -197,40 +197,40 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
         title = translate(resolvedSchema, "title", null);
     }
     if (title !== null) {
-        text += `<p><span class="VariableTitle">${title}`;
+        html += `<li><span class="VariableTitle">${title}`;
         let valuetitle = translate(resolvedSchema, "valuetitle", null);
         if (valuetitle !== null) {
-            text += `:</span> ${valuetitle}</p>`;
+            html += `:</span> ${valuetitle}`;
         } else if (resolvedSchema.type === "number") {
             if (titleIsUnitless) {
-                text += `:</span> ${json} ${resolvedSchema["x-ui"].unit}</p>`;
+                html += `:</span> ${json} ${resolvedSchema["x-ui"].unit}`;
             } else {
-                text += `:</span> ${json}</p>`;
+                html += `:</span> ${json}`;
             }
         } else {                
-            text += "</p>";
         }
+        html += "</li>";
     }
     if (resolvedSchema.type === "object") {
+        html += "<ul>";
         for (const [propertyId, propertySchema] of Object.entries(resolvedSchema.properties)) {
             if (!bannedProperties.includes(propertyId) && json[propertyId] !== undefined) {
-                //console.log(`property ${propertyId} jsonToText`);
-                text += jsonToHTML(json[propertyId], propertySchema, bannedProperties);
+                //console.log(`property ${propertyId} jsonToHTML`);
+                html += jsonToHTML(json[propertyId], propertySchema, bannedProperties);
             }
         }
+        html += "</ul>";
     }
     if (resolvedSchema.type === "array") {
-        text += "<ul>";
+        html += "<ol type='1'>";
         for (let [index, itemResolvedSchema] of resolvedSchema.items.entries()) {
-            //console.log(`array[${index}] jsonToText`);
-            text += "<li>";
-            text += jsonToHTML(json[index], itemResolvedSchema, bannedProperties);
-            text += "</li>";
+            //console.log(`array[${index}] jsonToHTML`);
+            html += jsonToHTML(json[index], itemResolvedSchema, bannedProperties);
         }
-        text += "</ul>";
+        html += "</ol>";
     }
-    //console.log(text);
-    return text;
+    //console.log(html);
+    return html;
 }
 
 // Translations

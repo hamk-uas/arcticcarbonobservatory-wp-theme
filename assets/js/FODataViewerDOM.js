@@ -459,28 +459,34 @@ function makeElementDraggableByHeading(elementId) {
     let element = document.getElementById(elementId);
     let headingElement = document.querySelector(`#${elementId} > h3`);
     if (headingElement) {
-        headingElement.onmousedown = startDrag;
+        headingElement.onpointerdown = startDrag;
     }
 
     function startDrag(e) {
-        e.preventDefault();        
+        e.preventDefault();
+        e.stopPropagation();
+        headingElement.setPointerCapture(e.pointerId);
         cursorOriginX = e.clientX;
         cursorOriginY = e.clientY;
         elementOriginX = parseInt(element.style.left);
         elementOriginY = parseInt(element.style.top);
-        document.addEventListener('mousemove', drag, false);    
-        document.addEventListener('mouseup', finishDrag, false);
+        document.addEventListener('pointermove', drag, false);    
+        document.addEventListener('pointerup', finishDrag, false);
     }
 
     function drag(e) {
         e.preventDefault();
+        e.stopPropagation();
         element.style.left = elementOriginX + (e.clientX - cursorOriginX) + "px";
         element.style.top = elementOriginY + (e.clientY - cursorOriginY) + "px";
     }
 
-    function finishDrag() {
-        document.removeEventListener('mousemove', drag);
-        document.removeEventListener('mouseup', finishDrag);
+    function finishDrag(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        headingElement.releasePointerCapture(e.pointerId);
+        document.removeEventListener('pointermove', drag);
+        document.removeEventListener('pointerup', finishDrag);
         element.classList.add('moved');
     }
 }
@@ -2244,7 +2250,7 @@ function showEventDetails() {
                     title += ` ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}` // No support at this point.
                 }
                 let textHTML = `<div class="Close">🗙</div><svg class="large_management_event_symbol" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
-                textHTML += jsonToHTML(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"]);
+                textHTML += `<ul>${jsonToHTML(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}</ul>`;
                 showDetails(textHTML);
             }
         }
@@ -2276,6 +2282,8 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
     if (v.eventDate !== undefined) {
         showEventDetails();
     } else {
+        let detailsElement = document.getElementById("Details");
+        detailsElement.classList.remove('moved');
         hideDetails();
     }
     // Refresh charts
