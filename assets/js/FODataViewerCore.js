@@ -200,12 +200,12 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
         html += `<li><span class="VariableTitle">${title}`;
         let valuetitle = translate(resolvedSchema, "valuetitle", null);
         if (valuetitle !== null) {
-            html += `:</span> ${valuetitle}`;
+            html += `:</span> <span class="ValueTitle">${valuetitle}</span>`;
         } else if (resolvedSchema.type === "number") {
             if (titleIsUnitless) {
-                html += `:</span> ${json} ${resolvedSchema["x-ui"].unit}`;
+                html += `:</span> <span class="ValueTitle">${json} ${resolvedSchema["x-ui"].unit}</span>`;
             } else {
-                html += `:</span> ${json}`;
+                html += `:</span> <span class="ValueTitle">${json}</span>`;
             }
         } else {                
         }
@@ -222,7 +222,7 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
         html += "</ul>";
     }
     if (resolvedSchema.type === "array") {
-        html += "<ol type='1'>";
+        html += "<ol>";
         for (let [index, itemResolvedSchema] of resolvedSchema.items.entries()) {
             //console.log(`array[${index}] jsonToHTML`);
             html += jsonToHTML(json[index], itemResolvedSchema, bannedProperties);

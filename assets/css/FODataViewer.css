@@ -594,23 +594,16 @@
     touch-action: none;
 }
 
-#Details > h3 + * {
-    padding-top: 5px;
-}
-
 #Details ul,
 #Details ol {
     padding-left: 0px;
     padding-right: 0px;
-    list-style-type: none;
+    display: grid;
 }
 
-#Details ol > li::before,
+#Details ol + li ::before,
 #Details ol > ul::before,
-#Details ol > ol::before,
-#Details ol + li::before,
-#Details ol + ul::before,
-#Details ol + ol::before {
+#Details ol > ol::before {
     content: '\A';
     white-space: pre;
 }
@@ -621,27 +614,39 @@
 
 #Details li {
     padding-left: 0px;
-    padding-right: 0px;    
-}
-
-#Details ol > li,
-#Details ol > ul,
-#Details ol > ol {
-    margin-left: 20px;
+    padding-right: 0px;
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
 }
 
 #Details ol > ul > li:first-child {
     counter-increment: item;
-    list-style-type: auto;
 }
 
-#Details ol > ul > li:first-child::marker {
-    content: counter(item) ". ";
+#Details ol > ul:not(:only-child) > li::before {
+    font-family: 'LatoLatinWebHeavy', sans-serif;
+    font-weight: normal;
+    content: counter(item) ".\00a0";  
 }
+
+#Details ol > ul > li:not(:first-child)::before {
+    visibility: hidden;
+}
+
+/*#Details ol > ul > li:first-child::before {
+    content: counter(item) ". ";
+}*/
 
 #Details .VariableTitle {
     font-family: 'LatoLatinWebHeavy', sans-serif;
     font-weight: normal;
+    width: 100%;
+}
+
+#Details .ValueTitle {
+    padding-left: 5px;
+    width: 100%;
 }
 
 @media (hover: hover) and (pointer: fine) {
