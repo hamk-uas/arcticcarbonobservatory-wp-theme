@@ -1116,7 +1116,7 @@ function refreshChart(chartId, refreshIndex, xAxisHtml, drawingHtmls) {
     }
     document.getElementById(`chart_drawing_defs_${chartId}`).innerHTML = drawingHtmls.drawingDefsHtml;
     document.getElementById(`chart_drawing_background_${chartId}`).innerHTML = drawingHtmls.drawingBackgroundHtml;
-    document.getElementById(`chart_drawing_${chartId}`).innerHTML = drawingHtmls.drawingHtml;
+    document.getElementById(`chart_drawing_${chartId}`).innerHTML = drawingHtmls.drawingHtml;    
     addTransientDrawingListeners(chartId);
     v.charts[chartId].refreshIndex = refreshIndex;
 }
@@ -2250,7 +2250,8 @@ function showEventDetails() {
                     title += ` ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}` // No support at this point.
                 }
                 let textHTML = `<div class="Close">✕</div><svg class="large_management_event_symbol" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
-                textHTML += `<ul>${jsonToHTML(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}</ul>`;
+                console.log(event);
+                textHTML += `${jsonToHTML(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}`;
                 showDetails(textHTML);
             }
         }

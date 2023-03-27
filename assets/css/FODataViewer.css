@@ -519,6 +519,7 @@
     z-index: 1000;
     box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);
     min-width: min(200px, calc(100vw - 20px));
+    max-width: 640px;
 }
 
 #Details * {
@@ -594,18 +595,40 @@
     touch-action: none;
 }
 
-#Details ul,
-#Details ol {
-    padding-left: 0px;
-    padding-right: 0px;
-    display: grid;
+#Details > ul {
+    padding-top: 5px;
 }
 
-#Details ol + li ::before,
-#Details ol > ul::before,
-#Details ol > ol::before {
-    content: '\A';
-    white-space: pre;
+#Details ol,
+#Details ul {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    padding-left: 0px;
+    padding-right: 0px;
+    align-items:center;
+    grid-row-gap: 5px;
+}
+
+#Details ol {
+    grid-row-gap: 10px;
+    padding-top: 10px;
+}
+
+#Details ul ol,
+#Details ul ul {
+    grid-column-start: 1;
+    grid-column-end: 3;    
+    grid-template-columns: 20px auto 1fr;
+}
+
+#Details ol + ul::before,
+#Details ol + ol::before,
+#Details ol + li::before {
+    content: '';
+    grid-column-start: 1;
+    grid-column-end: 3;    
+    padding-top: 3px;
+    border-top: 1px solid black;
 }
 
 #Details ol {
@@ -613,41 +636,59 @@
 }
 
 #Details li {
-    padding-left: 0px;
-    padding-right: 0px;
-    display: flex;
     align-items: center;
-    padding-top: 5px;
+    display: contents;
 }
 
-#Details ol > ul > li:first-child {
+#Details ol > ul {
     counter-increment: item;
 }
 
-#Details ol > ul:not(:only-child) > li::before {
+#Details ol > ul/*:not(:only-child)*/ > li:first-child::before {
     font-family: 'LatoLatinWebHeavy', sans-serif;
     font-weight: normal;
-    content: counter(item) ".\00a0";  
+    content: counter(item) ".\00a0";
+    white-space: pre;
+    margin-bottom: auto;
 }
 
-#Details ol > ul > li:not(:first-child)::before {
+#Details ol > ul > li:not(:first-child):not(:only-child)::before {
     visibility: hidden;
 }
-
-/*#Details ol > ul > li:first-child::before {
-    content: counter(item) ". ";
-}*/
 
 #Details .VariableTitle {
     font-family: 'LatoLatinWebHeavy', sans-serif;
     font-weight: normal;
-    width: 100%;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    display: grid;
+    margin-bottom: auto;
 }
 
 #Details .ValueTitle {
     padding-left: 5px;
-    width: 100%;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    display: grid;    
 }
+
+#Details .ValueString {
+    padding-left: 10px;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    display: grid;    
+}
+
+#Details ol > ul > li > .VariableTitle {
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+
+#Details ol > ul > li > .ValueTitle {
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
 
 @media (hover: hover) and (pointer: fine) {
     .ChartPanArea:hover {

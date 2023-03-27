@@ -17,6 +17,7 @@ async function loadData() {
         }
         if (source.csvList !== undefined) {
             source.csvList.forEach(function (csv, csvListIndex) {
+                // Load CSV file
                 if (csv.loaded === undefined) {
                     let csvStartDate = new Date(csv.startTime);
                     let csvEndDate = new Date(csv.endTime);
@@ -41,7 +42,6 @@ async function loadData() {
                                         }]
                                     });
                                 } else {
-                                    // The CSV file contains past data
                                     let text = await result.text(); // CSV file contents
                                     csv.loaded = true; // We are finished and have processed the result
                                     csv.data = {}; // Dictionary from CSV field name to all the values
@@ -52,18 +52,12 @@ async function loadData() {
                                     //console.log(`Parse CSV file ${v.site.id}/${csv.url}: Fields: ${fields}`);
                                     let fieldData = []; // Array of all the values 
                                     // Loop through all the CSV columns a.k.a. fields
-                                    let dateFields = [];
-                                    let dates = [];
                                     for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
                                         fieldIsDate[fieldIndex] = (source.csvFieldType[fields[fieldIndex]] === "date");
                                         if (fieldIsDate[fieldIndex] !== undefined) {
                                             // This field is used in some chart
                                             csv.data[fields[fieldIndex]] = []; // Prepare an array for its values
                                             fieldData.push(csv.data[fields[fieldIndex]]); // Store a reference to the value array, for quick access based on column number
-                                            if (fieldIsDate[fieldIndex]) {
-                                                dateFields.push(fieldIndex);
-                                                dates.push(0);
-                                            }
                                         } else {
                                             fieldData.push(null); // This field is not used for anything, store a null reference for the values
                                         }
@@ -78,7 +72,7 @@ async function loadData() {
                                                         fieldData[fieldIndex].push('');
                                                     } else {
                                                         if (fieldIsDate[fieldIndex]) {
-                                                            fieldData[fieldIndex].push((new Date(values[fieldIndex])).valueOf());
+                                                            fieldData[fieldIndex].push(new Date(values[fieldIndex]));
                                                             //dateFieldIndex++;
                                                         } else {
                                                             fieldData[fieldIndex].push(parseFloat(values[fieldIndex]));
@@ -87,7 +81,7 @@ async function loadData() {
                                                 }
                                             }
                                         }
-                                    }
+                                        }
                                     if (skipped > 0) {
                                         console.warn(`Skipped ${skipped} of ${lines.length} lines (${lines.length - skipped} remaining) with identical or differing by at most ${useTimeStepInMinutes} minute dates in CSV file ${path}`);
                                     }
@@ -135,7 +129,8 @@ async function loadData() {
                 }
             });
         } else if (source.geoTiffList !== undefined) {
-            source.geoTiffList.forEach(function (geoTiff, geoTiffListIndex) {
+                // Load GeoTIFF file
+                source.geoTiffList.forEach(function (geoTiff, geoTiffListIndex) {
                 if (geoTiff.loaded === undefined) {
                     let geoTiffDate = new Date(geoTiff.time);                    
                     if (geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && geoTiffDate.valueOf() == v.satelliteImageDate) {
@@ -193,6 +188,7 @@ async function loadData() {
             });
         } else if (source.jsonList !== undefined) {
             source.jsonList.forEach(function (json, jsonListIndex) {
+                // Load JSON file
                 if (json.loaded === undefined) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
                         if (json.fetchAbortController === undefined) {
@@ -218,31 +214,23 @@ async function loadData() {
                                     json.data = JSON.parse(await result.text()); // json 
                                     if (json.data.management !== undefined && json.data.management.events !== undefined) {
                                         json.data.management.events.forEach(function (event) {                                            
+                                            // Test parsing of dates
                                             if (event.date !== undefined) {
                                                 let dateInt = (new Date(event.date)).valueOf();
                                                 if (isNaN(dateInt)) {
                                                     console.warn(`Failed parsing date "${event.date}" in ${json.url}`)
-                                                    event.date = 0;
-                                                } else {
-                                                    event.date = dateInt;
                                                 }
                                             }
                                             if (event.start_date !== undefined) {
                                                 let dateInt = (new Date(event.start_date)).valueOf();
                                                 if (isNaN(dateInt)) {
                                                     console.warn(`Failed parsing start_date "${event.start_date}" in ${json.url}`)
-                                                    event.start_date = 0;
-                                                } else {
-                                                    event.start_date = dateInt;
                                                 }
                                             }
                                             if (event.end_date !== undefined) {
                                                 let dateInt = (new Date(event.end_date)).valueOf();
                                                 if (isNaN(dateInt)) {
                                                     console.warn(`Failed parsing end_date "${event.end_date}" in ${json.url}`)
-                                                    event.end_date = 0;
-                                                } else {
-                                                    event.end_date = dateInt;
                                                 }
                                             }
                                             // Ensure compatibility of older JSON files with JSON Schema
@@ -276,7 +264,33 @@ async function loadData() {
                                                     delete event[propertyId];
                                                 }
                                             }
-                                            event.resolvedSchema = {}
+                                            for (let [propertyId, property] of Object.entries(event)) {
+                                                if (propertyId === "harvest_list") {
+                                                    let recalculate = {};
+                                                    const toTotal = {
+                                                        "harvest_yield_harvest_dw": "harvest_yield_harvest_dw_total",
+                                                        "harv_yield_harv_f_wt": "harv_yield_harv_f_wt_total",
+                                                        "yield_C_at_harvest": "yield_C_at_harvest_total"
+                                                    };
+                                                    for (let subEvent of property) {
+                                                        for (let [subPropertyId, subProperty] of Object.entries(subEvent)) {
+                                                            console.log(subPropertyId);
+                                                            let totalId = toTotal[subPropertyId];
+                                                            if (totalId !== undefined) {
+                                                                if (event[totalId] === undefined) {
+                                                                    event[totalId] = parseFloat(subProperty);
+                                                                    recalculate[totalId] = true;
+                                                                } else {
+                                                                    if (recalculate[totalId]) {
+                                                                        event[totalId] += parseFloat(subProperty);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            event.resolvedSchema = {};
                                             resolveJsonSchema(event, event.resolvedSchema, v.managementEventSchemaJson);
                                         });
                                     }

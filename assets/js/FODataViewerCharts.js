@@ -1568,36 +1568,6 @@ var chartsJson = {
             ],
             "sourceTypes": [
                 {
-                    "id": "datasense",
-                    "sourceCategoryId": "observation",
-                    "bars": true,
-                    "integrationTime": -1800000,
-                    "seriesCSVFields": {
-                        "date": "Date",
-                        "val": "Precipitation"
-                    }
-                },
-                {
-                    "id": "meteo",
-                    "sourceCategoryId": "observation",
-                    "bars": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "Precipitation"
-                    }
-                },
-                {
-                    "id": "pluvio",
-                    "sourceCategoryId": "observation",
-                    "bars": true,
-                    "integrationTime": 1800000,
-                    "seriesCSVFields": {
-                        "date": "PeriodStartUTC0",
-                        "val": "Precipitation"
-                    }
-                },
-                {
                     "id": "fmimeteo",
                     "sourceCategoryId": "observation",
                     "bars": true,
@@ -1625,6 +1595,36 @@ var chartsJson = {
                     "seriesCSVFields": {
                         "date": "date",
                         "val": "PrecipPast24hAt06"
+                    }
+                },
+                {
+                    "id": "datasense",
+                    "sourceCategoryId": "observation",
+                    "bars": true,
+                    "integrationTime": -1800000,
+                    "seriesCSVFields": {
+                        "date": "Date",
+                        "val": "Precipitation"
+                    }
+                },
+                {
+                    "id": "meteo",
+                    "sourceCategoryId": "observation",
+                    "bars": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "Precipitation"
+                    }
+                },
+                {
+                    "id": "pluvio",
+                    "sourceCategoryId": "observation",
+                    "bars": true,
+                    "integrationTime": 1800000,
+                    "seriesCSVFields": {
+                        "date": "PeriodStartUTC0",
+                        "val": "Precipitation"
                     }
                 },
                 {
@@ -2572,8 +2572,7 @@ var chartsJson = {
                     },
                     "seriesEventFields": {
                         "date": "date",
-                        "val": "harvest_yield_harvest_dw_total",
-                        "altVal": "harvest_yield_harvest_dw"
+                        "val": "harvest_yield_harvest_dw_total"
                     }
                 },
                 {

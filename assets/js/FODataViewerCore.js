@@ -196,6 +196,9 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
     if (title === null) {
         title = translate(resolvedSchema, "title", null);
     }
+    if (resolvedSchema.type === "object") {
+        html += "<ul>";
+    }
     if (title !== null) {
         html += `<li><span class="VariableTitle">${title}`;
         let valuetitle = translate(resolvedSchema, "valuetitle", null);
@@ -207,12 +210,12 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
             } else {
                 html += `:</span> <span class="ValueTitle">${json}</span>`;
             }
-        } else {                
+        } else if (resolvedSchema.type === "string") {
+            html += `:</span> <span class="ValueString">"${json}"</span>`;
         }
         html += "</li>";
     }
     if (resolvedSchema.type === "object") {
-        html += "<ul>";
         for (const [propertyId, propertySchema] of Object.entries(resolvedSchema.properties)) {
             if (!bannedProperties.includes(propertyId) && json[propertyId] !== undefined) {
                 //console.log(`property ${propertyId} jsonToHTML`);
@@ -229,6 +232,7 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
         }
         html += "</ol>";
     }
+
     //console.log(html);
     return html;
 }
@@ -1570,7 +1574,6 @@ function prepYGrid(v, chartId) {
 }
 
 function getXAxisHtml(v) {
-    var pixelsPerMillisecond = v.dimensions.width / (v.endDate - v.startDate);
     var retVal = '<g stroke="#DDDDDD" fill="none" stroke-width="2">' // Chart axis line
     var tickLabels = "";
     v.xGrid.forEach(function (tick) {
@@ -1614,7 +1617,7 @@ function getTemperatureGradientHtml(id, x1, y1, x2, y2, minTemp, maxTemp) {
 
 function getChartCsv(v, chartId) {
     let chart = v.charts[chartId];
-    let { seriesLists, loading } = getSeriesLists(v, chartId, date => (new Date(date)).toISOString());    
+    let { seriesLists, loading } = getSeriesLists(v, chartId, date => date.toISOString());    
     let exportSources = []; // These are indexes to seriesLists
     let hasFlags = false;
     for (let sourceIndex = 0; sourceIndex < chart.sources.length; sourceIndex++) {
@@ -1706,8 +1709,9 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                             series = [];
                         }
                     } else {
+                        console.log(json.data.management.events);
                         json.data.management.events.filter(function (event) {
-                            if (source.acceptFilter !== undefined && event[source.acceptFilter.key] !== source.acceptFilter.val) {
+                            if (source.acceptFilter !== undefined && event[source.acceptFilter.key] !== source.acceptFilter.val) {                                
                                 return false;
                             }
                             if (event[source.seriesEventFields.date] === undefined) {
@@ -1721,18 +1725,19 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                             }
                             return false;
                         }).forEach(function (event) {
+                            console.log(event);
                             let val = event[source.seriesEventFields.val];
                             if (val === undefined || val === "-99.0") {
                                 val = event[source.seriesEventFields.altVal];
                             }
                             if (val !== undefined && val !== "-99.0" && !Array.isArray(val)) {                                
                                 let sample = {
-                                    date: processDate(event[source.seriesEventFields.date]),
+                                    date: processDate((new Date(event[source.seriesEventFields.date])).valueOf()),
                                     val: processVal(val),
                                 };
                                 series.push(sample);
                                 // Update minimum and maximum
-                                if (event[source.seriesEventFields.date] >= v.startDate && event[source.seriesEventFields.date] <= v.endDate) {
+                                if ((new Date(event[source.seriesEventFields.date])).valueOf() >= v.startDate && (new Date(event[source.seriesEventFields.date])).valueOf() <= v.endDate) {
                                     maxVal = Math.max(maxVal, val);
                                     minVal = Math.min(minVal, val);
                                 }
@@ -1784,7 +1789,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                     if (vals[i] === "" || isNaN(vals[i])) {
                                         // NaN
                                     } else {
-                                        if (dates[i] > acceptedDate + gapDetectTimeThreshold) {
+                                        if (dates[i].valueOf() > acceptedDate + gapDetectTimeThreshold) {
                                             // Gap detected.
                                             if (series.length > 0) {
                                                 // Push current series and start a new one empty
@@ -1794,7 +1799,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                             // Indicate that time has not yet been aggregated
                                             timeAggregationPeriodStart = 0;
                                         }
-                                        acceptedDate = dates[i];                                        
+                                        acceptedDate = dates[i].valueOf();                                        
                                         if (source.integrationTime !== undefined) {
                                             acceptedIntegrationTime = source.integrationTime;
                                         }
@@ -1807,7 +1812,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                                 // We have not aggregated any time yet
                                                 if (acceptedIntegrationTime < 0) {
                                                     let yearStart = Date.UTC(new Date(dates[i] + acceptedIntegrationTime).getUTCFullYear(), 0);
-                                                    let remainder = (dates[i] + acceptedIntegrationTime - yearStart) % timeAggregation.period;
+                                                    let remainder = (dates[i].valueOf() + acceptedIntegrationTime - yearStart) % timeAggregation.period;
                                                     if (remainder == 0) {
                                                         // Time aggregation starts with the current integration period
                                                         timeAggregationPeriodStart = dates[i] + acceptedIntegrationTime;
@@ -1816,10 +1821,10 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                                     }
                                                 } else {
                                                     let yearStart = Date.UTC(new Date(dates[i]).getUTCFullYear(), 0);
-                                                    let remainder = (dates[i] - yearStart) % timeAggregation.period;
+                                                    let remainder = (dates[i].valueOf() - yearStart) % timeAggregation.period;
                                                     if (remainder == 0) {
                                                         // Time aggregation starts with the current integration period
-                                                        timeAggregationPeriodStart = dates[i];
+                                                        timeAggregationPeriodStart = dates[i].valueOf();
                                                         // Zero time aggregation accumulator
                                                         timeAggregationAccumulator = 0;
                                                     }
@@ -1831,7 +1836,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                                 timeAggregationAccumulator += vals[i];
                                                 if (acceptedIntegrationTime < 0) {
                                                     // Negative integrationTime
-                                                    if (dates[i] - timeAggregationPeriodStart == timeAggregation.period) {
+                                                    if (dates[i].valueOf() - timeAggregationPeriodStart == timeAggregation.period) {
                                                         // We have accumulated a time aggregation period
                                                         if (timeAggregation.statistic === "mean") {
                                                             // Calculate mean instead of sum
@@ -1856,7 +1861,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                                     }
                                                 } else {
                                                     // Positive integrationTime
-                                                    if (dates[i] + acceptedIntegrationTime - timeAggregationPeriodStart == timeAggregation.period) {
+                                                    if (dates[i].valueOf() + acceptedIntegrationTime - timeAggregationPeriodStart == timeAggregation.period) {
                                                         // We have accumulated a time aggregation period
                                                         if (timeAggregation.statistic === "mean") {
                                                             // Calculate mean instead of sum
@@ -1883,20 +1888,20 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                             }
                                         } else {
                                             let sample = {
-                                                date: processDate(dates[i]),
+                                                date: processDate(dates[i].valueOf()),
                                                 val: processVal(vals[i])
                                             };
                                             if (acceptedIntegrationTime !== 0) {
                                                 sample.integrationTime = processIntegrationTime(Math.abs(acceptedIntegrationTime));
                                                 if (acceptedIntegrationTime < 0) {
-                                                    sample.date = processDate(dates[i] + acceptedIntegrationTime); // shift sample date to make integration time positive
+                                                    sample.date = processDate(dates[i].valueOf() + acceptedIntegrationTime); // shift sample date to make integration time positive
                                                 }
                                             }
                                             if (fractiles) {
                                                 sample.fractiles = [];
                                                 fractiles.forEach(function (fractile) {
                                                     sample.fractiles.push([processVal(fractile[0][i]), processVal(fractile[1][i])]);
-                                                    if (dates[i] >= v.startDate && dates[i] <= v.endDate) {
+                                                    if (dates[i].valueOf() >= v.startDate && dates[i].valueOf() <= v.endDate) {
                                                         // Do not trust fractile ordering
                                                         minVal = Math.min(minVal, fractile[0][i]);
                                                         minVal = Math.min(minVal, fractile[1][i]);
@@ -1907,7 +1912,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                             }
                                             if (stdErrs !== undefined && stdErrs.length == dates.length) {
                                                 sample.stdErr = processStdErr(stdErrs[i]);
-                                                if (dates[i] >= v.startDate && dates[i] <= v.endDate) {
+                                                if (dates[i].valueOf() >= v.startDate && dates[i].valueOf() <= v.endDate) {
                                                     // Do not trust stdErr sign
                                                     minVal = Math.min(minVal, (vals[i] - sample.stdErr));
                                                     minVal = Math.min(minVal, (vals[i] + sample.stdErr));
@@ -1915,7 +1920,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                                     maxVal = Math.max(maxVal, (vals[i] + sample.stdErr));
                                                 }
                                             } else {
-                                                if (dates[i] >= v.startDate && dates[i] <= v.endDate) {
+                                                if (dates[i].valueOf() >= v.startDate && dates[i].valueOf() <= v.endDate) {
                                                     minVal = Math.min(minVal, vals[i]);
                                                     maxVal = Math.max(maxVal, vals[i]);
                                                 }
@@ -2171,6 +2176,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6"><title>${tooltipString}</title></circle>`;
                             } else {
                                 linesHtml += `<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6" />`;
+                                if (isNaN(useDate)) {
+                                    console.log(source);
+                                    console.log(`<circle ${clickStr} stroke="none" fill="${source.color}" cx="${useDate}" cy="${series[i].val}" r="6" />`);
+                                }
                             }
                         }
                         linesHtml += "</g>";
@@ -2369,16 +2378,17 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 let color = selected ? v.chartColors[2] : v.disabledColor;
                                 let iconX = undefined;
                                 if (event.start_date !== undefined && event.end_date !== undefined) {
-                                    selected = (event.start_date == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
+                                    let startDateObject = new Date(event.start_date);
+                                    selected = (startDateObject.valueOf() == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
                                     color = selected ? v.chartColors[2] : v.disabledColor;
-                                    let sx = (event.start_date - v.startDate) * pixelsPerMillisecond;
+                                    let sx = (startDateObject.valueOf() - v.startDate) * pixelsPerMillisecond;
                                     if (sx == previousX) {
                                         yOffset += 10;
                                     } else {
                                         yOffset = 0;
                                     }
                                     previousX = sx;
-                                    let ex = (event.end_date - v.startDate) * pixelsPerMillisecond;
+                                    let ex = ((new Date(event.end_date)).valueOf() - v.startDate) * pixelsPerMillisecond;
                                     if (ex + 21 > 0 && sx - 21 < v.dimensions.width) {
                                         onView = true
                                         drawingBackgroundHtml += `<rect pointer-events="none" style="cursor:pointer" stroke="none" fill="${color}" fill-opacity="0.1" x="${sx.toFixed(1)}" y="${-2}" width="${(ex - sx).toFixed(1)}" height="${height}"/>`
@@ -2386,15 +2396,14 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${ex.toFixed(1)}" y1="0" x2="${ex.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         drawingBackgroundHtml += `<path d="M ${sx.toFixed(1)} ${-14 + yOffset} C ${(sx + (ex - sx) * 0.5).toFixed(1)} ${-14 + yOffset + 19}, ${ex.toFixed(1)} ${-7}, ${ex.toFixed(1)} ${0}" fill="none" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         let r = 13 - 1 - ((selected) ? 0.5 : 0);
-                                        let startDateObject = new Date(event.start_date);
                                         let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`});
                                         drawingHtml += `<circle id="chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = sx;
                                     }
                                 } else if (event.date !== undefined) {
-                                    selected = (event.date == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
+                                    selected = ((new Date(event.date)).valueOf() == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
                                     color = selected ? v.chartColors[2] : v.disabledColor;
-                                    let x = (event.date - v.startDate) * pixelsPerMillisecond;
+                                    let x = ((new Date(event.date)).valueOf() - v.startDate) * pixelsPerMillisecond;
                                     if (x == previousX) {
                                         yOffset += 10;
                                     } else {
@@ -2404,7 +2413,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                     if (x + 21 > 0 && x - 21 < v.dimensions.width) {
                                         onView = true
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="-2" x2="${x.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
-                                        let dateObject = new Date(event.date);
+                                        let dateObject = new Date(event.date)
                                         let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
                                         drawingHtml += `<circle id="chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = x;
@@ -2416,15 +2425,12 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                     }
                                     if (selected) {
                                         let description0 = "";
-                                        let eventDate = 0;
                                         if (event.start_date !== undefined && event.end_date !== undefined) {
-                                            eventDate = event.start_date;
                                             let startDateObject = new Date(event.start_date);
                                             let endDateObject = new Date(event.end_date);
                                             endDateObject.setDate(endDateObject.getDate() - 1) // Show not the date of midnight, but the date of previous day
                                             description0 = `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} – ${endDateObject.getUTCDate()}.${endDateObject.getUTCMonth() + 1}.${endDateObject.getUTCFullYear()}`;
                                         } else if (event.date !== undefined) {
-                                            eventDate = event.date;
                                             let dateObject = new Date(event.date);
                                             description0 = `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}`;
                                         }
