@@ -183,6 +183,7 @@
                 }
             },
             "required": [
+                "date",
                 "planting_list"
             ]
         },
@@ -435,6 +436,7 @@
                 }
             },
             "required": [
+                "date",
                 "fertilizer_type",
                 "fertilizer_total_amount"
             ]
@@ -587,6 +589,7 @@
                 }
             },
             "required": [
+                "date",
                 "tillage_practice"
             ]
         },
@@ -914,6 +917,7 @@
                 }
             },
             "required": [
+                "date",
                 "harvest_list"
             ]
         },
@@ -1154,6 +1158,7 @@
                 }
             },
             "required": [
+                "date",
                 "chemical_type",
                 "chemical_product_name",
                 "chemical_applic_target"
@@ -1409,7 +1414,10 @@
                         "form-placeholder_fi": "mitä tahansa tapahtumaan liittyviä muistiinpanoja tai havintoja, esim. \"rikkakasvien juuret olivat syvällä\""
                     }
                 }
-            }
+            },
+            "required": [
+                "date"
+            ]
         },
         {
             "$id": "#irrigation",
@@ -1502,6 +1510,7 @@
                 }
             },
             "required": [
+                "date",
                 "irrig_amount_depth"
             ]
         },
@@ -1576,6 +1585,7 @@
                 }
             },
             "required": [
+                "date",
                 "mowed_crop"
             ]
         },
@@ -1603,6 +1613,7 @@
                 }
             },
             "required": [
+                "date",
                 "observation_type"
             ],
             "oneOf": [
@@ -1886,7 +1897,10 @@
                         "form-placeholder_fi": "mitä tahansa tapahtumaan liittyviä muistiinpanoja tai havintoja, esim. \"käytettiin samoja kasvatuslaatikoita kuin edellisenä vuonna\""
                     }
                 }
-            }
+            },
+            "required": [
+                "date"
+            ]
         },
         {
             "$id": "#inorg_mulch",
@@ -1986,6 +2000,7 @@
                 }
             },
             "required": [
+                "date",
                 "mulch_type"
             ]
         },
@@ -2027,6 +2042,7 @@
                 }
             },
             "required": [
+                "date",
                 "mulch_type_remove"
             ]
         },
@@ -2053,6 +2069,7 @@
                 }
             },
             "required": [
+                "date",
                 "other_notes"
             ]
         }
@@ -2350,7 +2367,6 @@
         }
     },
     "required": [
-        "mgmt_operations_event",
-        "date"
+        "mgmt_operations_event"
     ]
 }

@@ -118,6 +118,14 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
                 }
                 resolvedSchema.properties[propertyId] = resolvedPropertySchema;
             }
+            // Check required properties for presence
+            if (schema.required !== undefined) {
+                for (requiredPropertyId of schema.required) {
+                    if (json[requiredPropertyId] === undefined) {
+                        console.warn(`Failed JSON Schema resolve at ${schema.path}. Missing required property '${requiredPropertyId}' in:\n${JSON.stringify(json, null, 4)}`);
+                    }
+                }
+            }
         }
         // Handle oneOf
         if (schema.oneOf !== undefined) {
@@ -134,16 +142,16 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
             });
             if (subSchema !== undefined) {
                 // console.log("oneOf match");
-                resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);
+                resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);                
             } else {
-                console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for: ${JSON.stringify(json)}`)
+                console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for:\n${JSON.stringify(json, null, 4)}`)
             }
         }
     }
     if (resolvedSchema.type === "array") {        
         // Fail validation if the object is an array, a string, a number, or a boolean.
         if (["boolean", "number", "string"].includes(typeof json) || !Array.isArray(json)) {            
-            console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected array, got: ${JSON.stringify(json)}`)
+            console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected array, got:\n${JSON.stringify(json, null, 4)}`)
             return;
         }
         resolvedSchema.items = []
@@ -157,7 +165,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
     if (resolvedSchema.type === "string") {
         // Fail validation if the object is a boolean, a number, an array, or an object
         if (["boolean", "number", "object"].includes(typeof json)) { // typeof Array is also "object"
-            console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected string, got: ${JSON.stringify(json)}`)
+            console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected string, got:\n${JSON.stringify(json, null, 4)}`)
             return;
         }
         // Handle string oneOf
@@ -173,7 +181,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
                 // console.log("string oneOf match");
                 resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);
             } else {
-                console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for: ${JSON.stringify(json)}`)
+                console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for:\n${JSON.stringify(json, null, 4)}`)
             }
         }
     }
@@ -1709,7 +1717,6 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                             series = [];
                         }
                     } else {
-                        console.log(json.data.management.events);
                         json.data.management.events.filter(function (event) {
                             if (source.acceptFilter !== undefined && event[source.acceptFilter.key] !== source.acceptFilter.val) {                                
                                 return false;
@@ -1725,7 +1732,6 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                             }
                             return false;
                         }).forEach(function (event) {
-                            console.log(event);
                             let val = event[source.seriesEventFields.val];
                             if (val === undefined || val === "-99.0") {
                                 val = event[source.seriesEventFields.altVal];

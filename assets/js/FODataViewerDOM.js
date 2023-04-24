@@ -2230,7 +2230,11 @@ function showEventDetails() {
             let json = source.jsonList[0];            
             if (json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
                 let event = json.data.management.events[v.eventIndex]
-                let title = `${translate(event.resolvedSchema, "valuetitle", "")}`;
+                console.log("event:");
+                console.log(event);
+                let resolvedSchema = {};
+                resolveJsonSchema(event, resolvedSchema, v.managementEventSchemaJson);
+                let title = `${translate(resolvedSchema, "valuetitle", "")}`;
                 let eventDate = 0;
                 if (event.start_date !== undefined && event.end_date !== undefined) {
                     eventDate = event.start_date;
@@ -2250,8 +2254,7 @@ function showEventDetails() {
                     title += ` ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}` // No support at this point.
                 }
                 let textHTML = `<div class="Close">✕</div><svg class="large_management_event_symbol" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
-                console.log(event);
-                textHTML += `${jsonToHTML(event, event.resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}`;
+                textHTML += `${jsonToHTML(event, resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}`;
                 showDetails(textHTML);
             }
         }

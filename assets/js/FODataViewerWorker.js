@@ -274,7 +274,6 @@ async function loadData() {
                                                     };
                                                     for (let subEvent of property) {
                                                         for (let [subPropertyId, subProperty] of Object.entries(subEvent)) {
-                                                            console.log(subPropertyId);
                                                             let totalId = toTotal[subPropertyId];
                                                             if (totalId !== undefined) {
                                                                 if (event[totalId] === undefined) {
@@ -290,8 +289,6 @@ async function loadData() {
                                                     }
                                                 }
                                             }
-                                            event.resolvedSchema = {};
-                                            resolveJsonSchema(event, event.resolvedSchema, v.managementEventSchemaJson);
                                         });
                                     }
                                     json.loaded = true; // We are finished and have processed the result

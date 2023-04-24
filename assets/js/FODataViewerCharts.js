@@ -2725,7 +2725,7 @@ var chartsJson = {
                     "integrationTime": -1800000,
                     "seriesCSVFields": {
                         "date": "PeriodEndUTC0",
-                        "val": "CO2cumsum"
+                        "val": "Ccumsum"
                     }
                 },
                 {
