@@ -255,6 +255,7 @@
     font-size: calc(18px*0.98);
     padding: 4px 16px 4px 0px;
     color: #5E5E5E;
+    display: inline-block;
 }
 
 .chart_grid {

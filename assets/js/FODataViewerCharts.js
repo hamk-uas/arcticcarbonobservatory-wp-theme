@@ -444,6 +444,44 @@ var chartsJson = {
             ]
         },
         {
+            "id": "CH4concentration",
+            "title": "Methane concentration",
+            "title_fi": "Metaanipitoisuus",
+            "title_sv": "Metankoncentration",
+            "yLabel": "CH₄ concentration (ppm)",
+            "yLabel_fi": "CH₄-pitoisuus (ppm)",
+            "yLabel_sv": "CH₄ koncentration (ppm)",
+            "timeAggregationSettings": [
+                {
+                    "enabled": false
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 86400000
+                }
+            ],
+            "defaults": {
+                "yMin": 0,
+                "yMax": 0.6,
+                "timeAggregationSettingIndex": 0
+            },
+            "sourceTypes": [
+                {
+                    "id": "concentrations",
+                    "integrationTime": 1800000,
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "PeriodEndUTC0",
+                        "val": "CH4concentration"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    }
+                },
+            ]
+        },
+        {
             "id": "CO2flux",
             "title": "CO₂ flux",
             "title_fi": "CO₂-vuo",

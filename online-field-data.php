@@ -4,7 +4,7 @@
     $maintitle = "mainTitle-" . get_locale();
     $mapinfotext = "mapInfoText-" . get_locale();
     ?>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
 <style type="text/css">
 
     /* MAP BOX STYLE*/
