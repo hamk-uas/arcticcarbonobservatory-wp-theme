@@ -1758,10 +1758,6 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
             let acceptedIntegrationTime = 0;
             let timeAggregationPeriodStart = 0;
             let timeAggregationAccumulator = 0;
-            let dolog = false; // !!!
-            if (chartId === "CO2flux" && source.id === "flux" && source.sourceCategoryId === "observation_gapfilled") {
-                dolog = true;
-            }
             source.csvList.forEach(function (csv) {
                 let csvStartDate = new Date(csv.startTime);
                 let csvEndDate = new Date(csv.endTime);
