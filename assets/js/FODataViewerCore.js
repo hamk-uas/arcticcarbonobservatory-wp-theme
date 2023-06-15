@@ -1757,7 +1757,11 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
             let acceptedDate = 0;
             let acceptedIntegrationTime = 0;
             let timeAggregationPeriodStart = 0;
-            let timeAggregationAccumulator = 0;            
+            let timeAggregationAccumulator = 0;
+            let dolog = false; // !!!
+            if (chartId === "CO2flux" && source.id === "flux" && source.sourceCategoryId === "observation_gapfilled") {
+                dolog = true;
+            }
             source.csvList.forEach(function (csv) {
                 let csvStartDate = new Date(csv.startTime);
                 let csvEndDate = new Date(csv.endTime);
@@ -1796,7 +1800,7 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                         // NaN
                                     } else {
                                         if (dates[i].valueOf() > acceptedDate + gapDetectTimeThreshold) {
-                                            // Gap detected.
+                                            // Gap detected.                                            
                                             if (series.length > 0) {
                                                 // Push current series and start a new one empty
                                                 seriesList.push(series);
@@ -1813,20 +1817,20 @@ function getSeriesLists(v, chartId, processDate = date => date, processVal = val
                                             acceptedIntegrationTime = integrationTimes[i];
                                         }
                                         if (timeAggregation.enabled && acceptedIntegrationTime !== 0 && timeAggregation.period != Math.abs(acceptedIntegrationTime)) {
-                                            // Time aggregation is enabled
+                                            // Time aggregation is enabled                                            
                                             if (series.length == 0 && timeAggregationPeriodStart == 0) {
                                                 // We have not aggregated any time yet
-                                                if (acceptedIntegrationTime < 0) {
-                                                    let yearStart = Date.UTC(new Date(dates[i] + acceptedIntegrationTime).getUTCFullYear(), 0);
+                                                if (acceptedIntegrationTime < 0) {                                         
+                                                    let yearStart = Date.UTC(new Date(dates[i].valueOf() + acceptedIntegrationTime).getUTCFullYear(), 0);
                                                     let remainder = (dates[i].valueOf() + acceptedIntegrationTime - yearStart) % timeAggregation.period;
                                                     if (remainder == 0) {
                                                         // Time aggregation starts with the current integration period
-                                                        timeAggregationPeriodStart = dates[i] + acceptedIntegrationTime;
+                                                        timeAggregationPeriodStart = dates[i].valueOf() + acceptedIntegrationTime;
                                                         // Zero time aggregation accumulator
                                                         timeAggregationAccumulator = 0;
                                                     }
                                                 } else {
-                                                    let yearStart = Date.UTC(new Date(dates[i]).getUTCFullYear(), 0);
+                                                    let yearStart = Date.UTC(dates[i].getUTCFullYear(), 0);
                                                     let remainder = (dates[i].valueOf() - yearStart) % timeAggregation.period;
                                                     if (remainder == 0) {
                                                         // Time aggregation starts with the current integration period

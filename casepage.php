@@ -22,7 +22,7 @@
         </div>`,
         countryMapSiteStyle: "fill: #fff;"
     }    
-    foConfig.language = "fi"; // Override language.
+    //foConfig.language = "fi"; // Override language.
     document.body.classList.add('casepage');
     document.querySelector("#page > div.wp-block-cover-full-width > div").insertAdjacentHTML("afterbegin", '<svg width="200" height="300" id="countryMap"></svg>');
 </script>
