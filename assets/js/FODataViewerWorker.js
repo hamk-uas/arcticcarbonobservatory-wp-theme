@@ -249,7 +249,7 @@ async function loadData() {
                                                 }
                                                 if (Array.isArray(property)) {
                                                     if (event[listId] === undefined) {
-                                                        event[listId] = Array(property.length).fill({})
+                                                        event[listId] = Array.from({length:property.length}, Object);                                                        
                                                     } else {
                                                         if (event[listId].length != property.length) {
                                                             console.log("Old style management event JSON has mismatching array lengths:");

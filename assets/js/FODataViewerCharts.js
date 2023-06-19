@@ -2559,7 +2559,7 @@ var chartsJson = {
             "yLabel_sv": "torrsubstansens skördepotential (kg / ha)", // Alt: "torrsubstansskörd (kg / ha)",
             "defaults": {
                 "yMin": 0,
-                "yMax": 5000
+                "yMax": 10000
             },
             "sourceCategoryList": [
                 {
