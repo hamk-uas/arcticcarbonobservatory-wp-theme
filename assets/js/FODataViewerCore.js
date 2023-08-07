@@ -1625,7 +1625,7 @@ function getTemperatureGradientHtml(id, x1, y1, x2, y2, minTemp, maxTemp) {
 
 function getChartCsv(v, chartId) {
     let chart = v.charts[chartId];
-    let { seriesLists, loading } = getSeriesLists(v, chartId, date => date.toISOString());    
+    let { seriesLists, loading } = getSeriesLists(v, chartId, date => new Date(date).toISOString());    
     let exportSources = []; // These are indexes to seriesLists
     let hasFlags = false;
     for (let sourceIndex = 0; sourceIndex < chart.sources.length; sourceIndex++) {
