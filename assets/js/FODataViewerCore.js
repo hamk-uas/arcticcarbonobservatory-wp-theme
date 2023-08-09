@@ -1718,7 +1718,6 @@ function getChartCsvAndTxt(v, chartId) {
             let chartCredit = {...credit};
             chartCredit.charts = {};
             chartCredit.charts[chartId] = chart;
-            console.log(chartCredit);
             txt += `\n${getCreditStr(chartCredit, false)}`;
         }
     }
@@ -1734,7 +1733,6 @@ function getChartCsvAndTxt(v, chartId) {
         for (let exportSourceIndex = 0; exportSourceIndex < exportSources.length; exportSourceIndex++) {
             let sourceIndex = exportSources[exportSourceIndex];
             let source = chart.sources[sourceIndex];
-            console.log(source);
             let stdErr = (source.seriesCSVFields.stdErr !== undefined);
             let flags = (source.seriesCSVFields.flags !== undefined);
             let filler = `,${(stdErr ? "," : "")}${(flags ? "," : "")}`;
