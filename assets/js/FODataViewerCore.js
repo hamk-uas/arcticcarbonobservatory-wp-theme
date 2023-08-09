@@ -664,18 +664,23 @@ function prepCharts(v, siteJson, chartsJson) {
                 });
             }
             if (source.credits !== undefined) {
+                // For each credit of the source...
                 source.credits.forEach(function (creditId) {
+                    // Add the credit to site credits
                     if (v.credits[creditId] === undefined) {
                         v.credits[creditId] = {
+                            id: creditId,
                             charts: {},
-                            years: {}
+                            years: {},
                         };
                     }
+                    // Collect credit into a credits that concern this chart
                     if (chart.credits === undefined) {
                         chart.credits = {};
                     }
                     chart.credits[creditId] = true;
                     let credit = v.credits[creditId];
+                    // Add years to the credit
                     if (source.geoTiffList !== undefined) {
                         source.geoTiffList.forEach(function (geoTiff) {
                             credit.years[new Date(geoTiff.time).getUTCFullYear()] = true;
@@ -964,6 +969,19 @@ function prepCharts(v, siteJson, chartsJson) {
             chart[getTranslationKey(chart, "description")] = chartDescription;
         }
     });
+
+    // Get principal investigator from site id
+    switch (v.site.id) {
+        case "qvidja":
+            v.site.principalInvestigator = "Laura Heimsch (laura.heimsch [at] fmi.fi)";
+            break;
+        case "ruukki":    
+            v.site.principalInvestigator = "Henriikka Vekuri (henriikka.vekuri [at] fmi.fi)";
+            break;
+        case "haltiala":
+            v.site.principalInvestigator = "Annalea Lohila (Annalea.Lohila [at] helsinki.fi)";
+            break;
+    }
 }
 
 function getManagementEventSymbolHtml(mgmt_operations_event, x, y, color, scale = 1) {
@@ -1623,7 +1641,57 @@ function getTemperatureGradientHtml(id, x1, y1, x2, y2, minTemp, maxTemp) {
     </linearGradient>`; //         <stop offset="0.5" style="stop-color:#c0c0ff" />
 }
 
-function getChartCsv(v, chartId) {
+function linkify(url, text, isHtml) {
+    if (isHtml) {
+        return `<a href="${url}" target="_blank">${text}</a>`;
+    } else {
+        return `${text} (${url})`;
+    }
+}
+
+function getCreditStr(credit, isHtml) {
+    let creditStr = "";
+    if (isHtml) {
+        creditStr += '<p>';
+    }
+    console.log(credit.charts);
+    let chartTitles = Object.keys(credit.charts).map(chartId => translate(v.charts[chartId], "title", chartId, "en"));
+    let chartsStr = chartTitles.slice(0, -1).join(', ') + ((chartTitles.length > 1) ? " and " : "") + chartTitles.slice(-1);
+    let years = Object.keys(credit.years).sort((a, b) => a - b);
+    let yearsStr = years.join(', ');
+    switch (credit.id) {
+        case "sentinelDerivative":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} modified ${linkify("https://scihub.copernicus.eu/dhus", "Copernicus Sentinel", isHtml)} data (${yearsStr}). ${linkify("https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice/", "License", isHtml)}.`;
+            break;
+        case "camsModified":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} modified ${linkify("https://atmosphere.copernicus.eu/", "Copernicus Atmosphere Monitoring Service", isHtml)} information (${yearsStr}). ${linkify("https://confluence.ecmwf.int/display/CKB/How+to+reference+or+acknowledge+data+from+CAMS+%28Copernicus+Atmosphere+Monitoring+Service%29+in+a+publication", "Reference and license", isHtml)}. Neither the European Commission nor ${linkify("https://www.ecmwf.int/", "ECMWF", isHtml)} is responsible for any use that may be made of the information it contains.`;
+            break;
+        case "fmiOpenData":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} open weather data from the ${linkify("https://en.ilmatieteenlaitos.fi/", "Finnish Meteorological Institute", isHtml)} (FMI). ${linkify("https://en.ilmatieteenlaitos.fi/open-data-licence", "License", isHtml)}.`;
+            break;
+        case "smhiOpenData":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} open weather data from the ${linkify("https://www.smhi.se/en", "Swedish Meteorological and Hydrological Institute", isHtml)} (SMHI). ${linkify("https://www.smhi.se/en/services/open-data/conditions-of-use-1.33347", "License", isHtml)}.`;
+            break;
+        case "ecmwf_ensemble_forecast":
+            creditStr += `The probability forecast in ${chartsStr} is produced by the ${linkify("https://www.ecmwf.int/", "European Centre for Medium-Range Weather Forecasts", isHtml)} (ECMWF) and disseminated by the ${linkify("https://en.ilmatieteenlaitos.fi/", "Finnish Meteorological Institute", isHtml)}.`;
+            break;
+        case "fmiIntensiveSite":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data produced by the ${linkify("https://en.ilmatieteenlaitos.fi/", "Finnish Meteorological Institute", isHtml)} under the ${linkify("https://creativecommons.org/licenses/by/4.0/", "Creative Commons Attribution 4.0 International license (CC BY 4.0)", isHtml)} and provided without warranty of any kind. Please note that the data are provisional and will be subject to further quality control.`;
+            break;
+        case "hy":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data produced by the ${linkify("https://www2.helsinki.fi/en/inar-institute-for-atmospheric-and-earth-system-research", "INAR Institute of University of Helsinki", isHtml)} under the ${linkify("https://creativecommons.org/licenses/by/4.0/", "Creative Commons Attribution 4.0 International license (CC BY 4.0)", isHtml)} and provided without warranty of any kind. Please note that the data are provisional and will be subject to further quality control.`;
+            break;
+        case "datasense":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data from ${linkify("https://www.datasense.fi/", "Datasense", isHtml)}) sensors.`;
+            break;
+    }
+    if (isHtml) {
+        creditStr += "</p>";
+    }
+    return creditStr;
+}
+
+function getChartCsvAndTxt(v, chartId) {
     let chart = v.charts[chartId];
     let { seriesLists, loading } = getSeriesLists(v, chartId, date => new Date(date).toISOString());    
     let exportSources = []; // These are indexes to seriesLists
@@ -1641,14 +1709,24 @@ function getChartCsv(v, chartId) {
             }
         }
     }
-    let csv = `The format of this UTF-8 CSV file is not final.`;
-    csv += `\n${(hasFlags) ? `Flags: 1: prediction 2: final scientific QC. 4: stable. 8: unstable. 16: online filtering v1. 32: online gapfilling v1. ` : ""}`;  
-    csv += `\n${(chart.credits["fmiIntensiveSite"]) ? `CC BY 4.0 FMI. No warranty. The data is provisional. Info for research use:${v.principalInvestigator}.` : ""}`;
-    csv += `\n${(loading ? "WARNING: CSV exported in the middle of data load" : "")}`;
-    csv += `\n${v.site.id}`;
-    csv += `\n${chartId}`;
-    //csv += `\n${v.charts[chartId].yLabel}`;
-    csv += `\n\n`;
+    let txt = `The CSV file is encoded in UTF-8.\n`;
+    if (hasFlags) {
+        txt += `\nFlags, combined using binary OR: 1: prediction 2: final scientific QC. 4: stable. 8: unstable. 16: online filtering v1. 32: online gapfilling v1.`;
+    }
+    if (v.credits !== undefined) {
+        for (const credit of Object.values(v.credits).filter(credit => credit.charts[chartId] !== undefined)) {
+            let chartCredit = {...credit};
+            chartCredit.charts = {};
+            chartCredit.charts[chartId] = chart;
+            console.log(chartCredit);
+            txt += `\n${getCreditStr(chartCredit, false)}`;
+        }
+    }
+    //txt += `\n${(chart.credits["fmiIntensiveSite"]) ? `CC BY 4.0 FMI. No warranty. The data is provisional. Info for research use: ${v.site.principalInvestigator}.` : ""}`;
+    txt += `\n${(loading ? "WARNING: CSV exported in the middle of data load" : "")}`;
+    txt += `\ntitle=${v.charts[chartId].title}`;
+    txt += `\nyLabel=${v.charts[chartId].yLabel}`;
+    let csv = '';
     if (exportSources.length != 0) {
         let exportSeriesList = [];
         let fillers = [];
@@ -1656,6 +1734,7 @@ function getChartCsv(v, chartId) {
         for (let exportSourceIndex = 0; exportSourceIndex < exportSources.length; exportSourceIndex++) {
             let sourceIndex = exportSources[exportSourceIndex];
             let source = chart.sources[sourceIndex];
+            console.log(source);
             let stdErr = (source.seriesCSVFields.stdErr !== undefined);
             let flags = (source.seriesCSVFields.flags !== undefined);
             let filler = `,${(stdErr ? "," : "")}${(flags ? "," : "")}`;
@@ -1664,7 +1743,7 @@ function getChartCsv(v, chartId) {
                 `${source.seriesCSVFields.date},${source.seriesCSVFields.val}${(stdErr ? `,${source.seriesCSVFields.stdErr}` : "")}${(flags ? `,${source.seriesCSVFields.flags}` : "")}`/*,
                 `UTC,${source.name}${(stdErr ? ",stdErr" : "")}${(flags ? ",flags" : "")}`    */
             ];
-            for (let seriesIndex = 0; seriesIndex < seriesLists[sourceIndex].length; seriesIndex++) {
+            for (let seriesIndex = 0; seriesIndex < seriesLists[sourceIndex].length; seriesIndex++) {                
                 let series = seriesLists[sourceIndex][seriesIndex];
                 series.forEach(function (sample) {
                     exportSeries.push(`${sample.date},${sample.val}${(stdErr ? `,${sample.stdErr}` : "")}${(flags ? `,${sample.flags}` : "")}`);
@@ -1689,7 +1768,7 @@ function getChartCsv(v, chartId) {
             }
         }
     }
-    return csv;
+    return [csv, txt];
 }
 
 // For a given chart, get a list that contains for each source a list of series. Each series is a list of samples. Each sample consists of a date, a val and possibly stdErr and/or flags.

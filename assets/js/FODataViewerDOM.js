@@ -1318,6 +1318,7 @@ function addPermanentDrawingListeners() {
                     return [date.getUTCFullYear(), (date.getUTCMonth() + 1).toString().padStart(2, '0'), date.getUTCDate().toString().padStart(2, '0')].join('-');
                 }
                 download.onclick = function (e) {
+                    let filenameBody = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}`;
                     {
                         // download image
                         prepYGrid(v, chartId);
@@ -1333,20 +1334,30 @@ function addPermanentDrawingListeners() {
                         let url = URL.createObjectURL(blob);
                         let downloadLink = document.createElement("a");
                         downloadLink.href = url;
-                        downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.svg`;
+                        downloadLink.download = `${filenameBody}.svg`;
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
                     }
-
+                    let [csvData, txtData] = getChartCsvAndTxt(v, chartId);
                     {
-                        // download table
-                        let data = getChartCsv(v, chartId);
-                        let blob = new Blob([data], { type: "text/csv;charset=utf-8" });
+                        // download table                        
+                        let blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
                         let url = URL.createObjectURL(blob);
                         let downloadLink = document.createElement("a");
                         downloadLink.href = url;
-                        downloadLink.download = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}.csv`;
+                        downloadLink.download = `${filenameBody}.csv`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    }
+                    {
+                        // download table info txt
+                        let blob = new Blob([txtData], { type: "text/plain;charset=utf-8" });
+                        let url = URL.createObjectURL(blob);
+                        let downloadLink = document.createElement("a");
+                        downloadLink.href = url;
+                        downloadLink.download = `${filenameBody}.txt`;
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
@@ -1857,59 +1868,12 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         });
     }
 
-
     if (v.credits !== undefined) {
-        for (const [creditId, credit] of Object.entries(v.credits)) {
-            creditStr += '<p>';
-            let chartTitles = v.chartIds.filter(chartId => credit.charts[chartId] !== undefined).map(chartId => translate(v.charts[chartId], "title", chartId, "en"));
-            let chartsStr = chartTitles.slice(0, -1).join(', ') + ((chartTitles.length > 1) ? " and " : "") + chartTitles.slice(-1);
-            let years = Object.keys(credit.years).sort((a, b) => a - b);
-            let yearsStr = years.join(', ');
-            switch (creditId) {
-                case "sentinelDerivative":
-                    creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} modified <a href="https://scihub.copernicus.eu/dhus" target="_blank">Copernicus Sentinel</a> data (${yearsStr}). <a href="https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice/">License</a>.`;
-                    break;
-                case "camsModified":
-                    creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} modified <a href="https://atmosphere.copernicus.eu/" target="_blank">Copernicus Atmosphere Monitoring Service</a> Information (${yearsStr}). <a href="https://confluence.ecmwf.int/display/CKB/How+to+reference+or+acknowledge+data+from+CAMS+%28Copernicus+Atmosphere+Monitoring+Service%29+in+a+publication">Reference and license</a>. Neither the European Commission nor <a href="https://www.ecmwf.int/" target="_blank">ECMWF</a> is responsible for any use that may be made of the information it contains.`;
-                    break;
-                case "fmiOpenData":
-                    creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} open weather data from the <a href="https://en.ilmatieteenlaitos.fi/" target="_blank">Finnish Meteorological Institute</a> (FMI). <a href="https://en.ilmatieteenlaitos.fi/open-data-licence">License</a>.`;
-                    break;
-                case "smhiOpenData":
-                    creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} open weather data from the <a href="https://www.smhi.se/en" target="_blank">Swedish Meteorological and Hydrological Institute</a> (SMHI). <a href="https://www.smhi.se/en/services/open-data/conditions-of-use-1.33347">License</a>.`;
-                    break;
-                case "ecmwf_ensemble_forecast":
-                    creditStr += `The probability forecast in ${chartsStr} is produced by the <a href="https://www.ecmwf.int/" target="_blank">European Centre for Medium-Range Weather Forecasts</a> (ECMWF) and disseminated by the <a href="https://en.ilmatieteenlaitos.fi/" target="_blank">Finnish Meteorological Institute</a>.`;
-                    break;
-                case "fmiIntensiveSite":
-                    {
-                        let principalInvestigator;
-                        if (v.site.id === "qvidja") {
-                            principalInvestigator = " Laura Heimsch (laura.heimsch [at] fmi.fi)";
-                        } else if (v.site.id === "ruukki") {
-                            principalInvestigator = " Henriikka Vekuri (henriikka.vekuri [at] fmi.fi)";
-                        }
-                        creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data produced by the <a href="https://en.ilmatieteenlaitos.fi/" target="_blank">Finnish Meteorological Institute</a> under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International license (CC BY 4.0)</a> and provided without warranty of any kind. Please note that the data are provisional and will be subject to further quality control.`;
-                        v.principalInvestigator = principalInvestigator;
-                    }
-                    break;
-                case "hy":
-                    {
-                        let principalInvestigator = undefined;
-                        if (v.site.id === "haltiala") {
-                            principalInvestigator = " Annalea Lohila (Annalea.Lohila [at] helsinki.fi)";
-                        }
-                        creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data produced by the <a href="https://www2.helsinki.fi/en/inar-institute-for-atmospheric-and-earth-system-research" target="_blank">INAR Institute of University of Helsinki</a> under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International license (CC BY 4.0)</a> and provided without warranty of any kind. Please note that the data are provisional and will be subject to further quality control.`;
-                        v.principalInvestigator = principalInvestigator;
-                    }
-                    break;
-                case "datasense":
-                    creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data from <a href="https://www.datasense.fi/" target="_blank">Datasense</a> sensors.`;
-                    break;
-            }   
-            creditStr += "</p>";
+        for (const credit of Object.values(v.credits)) {
+            creditStr += getCreditStr(credit, true);
         }
     }
+
     if (creditStr !== "") {
         creditStr = '<h3 id="Data_credits_and_licenses">Data credits and licenses</h3>' + creditStr;
     }
@@ -1936,9 +1900,6 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             dataCreditsElement.innerHTML = creditStr;
         }
     }
-
-    // console.log("v =");
-    // console.log(v);
 
     function onRefreshChartsMessage(e) {
         //console.log(`Received refreshCharts, refreshIndex = ${e.data.refreshIndex}`);
