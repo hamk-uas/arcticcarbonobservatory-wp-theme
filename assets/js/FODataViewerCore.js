@@ -1654,7 +1654,6 @@ function getCreditStr(credit, isHtml) {
     if (isHtml) {
         creditStr += '<p>';
     }
-    console.log(credit.charts);
     let chartTitles = Object.keys(credit.charts).map(chartId => translate(v.charts[chartId], "title", chartId, "en"));
     let chartsStr = chartTitles.slice(0, -1).join(', ') + ((chartTitles.length > 1) ? " and " : "") + chartTitles.slice(-1);
     let years = Object.keys(credit.years).sort((a, b) => a - b);
