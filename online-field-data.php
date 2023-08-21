@@ -64,7 +64,8 @@
                 </div>
             </div>
             <div id="satelliteImageDiv"></div>
-            <div id="Details" class="hidden"></div>
+            <div id="Details" class="FOPopup hidden"></div>
+            <div id="DownloadPopup" class="FOPopup hidden"></div>
         </div>
     </div>
 </div>

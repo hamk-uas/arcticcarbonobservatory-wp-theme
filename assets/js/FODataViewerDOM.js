@@ -425,30 +425,37 @@ function trackMouse(e) {
     clientY = e.clientY;
 }
 
-function showDetails(innerHTML) {
-    let detailsElement = document.getElementById("Details");
-    detailsElement.innerHTML = innerHTML;
-    if (!detailsElement.classList.contains("moved")) {
-        detailsElement.style.left = clientX + 10 + 'px';
-        detailsElement.style.top = clientY + 10 + 'px';
+function showFOPopup(elementId, innerHTML) {
+    let popupElement = document.getElementById(elementId);    
+    popupElement.innerHTML = innerHTML;
+    if (!popupElement.classList.contains("moved")) {
+        popupElement.style.left = clientX + 10 + 'px';
+        popupElement.style.top = clientY + 10 + 'px';
     }
-    detailsElement.classList.add('visible');
-    detailsElement.classList.remove('hidden');
-    let overflow = (parseInt(detailsElement.style.left) + detailsElement.offsetWidth) - document.body.clientWidth;
+    popupElement.classList.add('visible');
+    popupElement.classList.remove('hidden');
+    let overflow = (parseInt(popupElement.style.left) + popupElement.offsetWidth) - document.body.clientWidth;
     if (overflow > 0) {
-        detailsElement.style.left = parseInt(detailsElement.style.left) - overflow + 'px';
+        popupElement.style.left = parseInt(popupElement.style.left) - overflow + 'px';
     }
-    makeElementDraggableByHeading("Details");
-    document.querySelector("#Details > .Close").onclick = function() {
-        detailsElement.classList.remove('moved');
-        hideDetails();
+    makeElementDraggableByHeading(elementId);
+    document.querySelector(`#${elementId} > .Close`).onclick = function() {
+        popupElement.classList.remove('moved');
+        hideFOPopup(elementId);
     };
 }
 
-function hideDetails() {    
-    let detailsElement = document.getElementById("Details");
+function hideFOPopup(elementId) {    
+    let detailsElement = document.getElementById(elementId);
     detailsElement.classList.add('hidden');
     detailsElement.classList.remove('visible');
+}
+
+function hideFOPopups() {
+    const elements = document.querySelectorAll('.FOPopup');
+    for (const element of elements) {
+        hideFOPopup(element.id);
+    }
 }
 
 function makeElementDraggableByHeading(elementId) {
@@ -1318,49 +1325,54 @@ function addPermanentDrawingListeners() {
                     return [date.getUTCFullYear(), (date.getUTCMonth() + 1).toString().padStart(2, '0'), date.getUTCDate().toString().padStart(2, '0')].join('-');
                 }
                 download.onclick = function (e) {
-                    let filenameBody = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}`;
-                    {
-                        // download image
-                        prepYGrid(v, chartId);
-                        let svgBoundingClientRect = document.getElementById(`chart_svg_${chartId}`).getBoundingClientRect();                   
-                        //console.log(svgBoundingClientRect);
-                        let legendItemCoordinates = [];
-                        chart.sources.forEach(function (source) {
-                            let legendItemBoundingClientRect = document.getElementById(`chart_${chartId}_legend_element_${source.legendId}`).getBoundingClientRect();
-                            legendItemCoordinates.push([legendItemBoundingClientRect.left - svgBoundingClientRect.left, legendItemBoundingClientRect.top - svgBoundingClientRect.top]);
-                        });
-                        let data = getChartSvgOuterHtml(v, chartId, true, legendItemCoordinates);
-                        let blob = new Blob([data], { type: "image/svg+xml;charset=utf-8" });
-                        let url = URL.createObjectURL(blob);
-                        let downloadLink = document.createElement("a");
-                        downloadLink.href = url;
-                        downloadLink.download = `${filenameBody}.svg`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                    }
-                    let [csvData, txtData] = getChartCsvAndTxt(v, chartId);
-                    {
-                        // download table                        
-                        let blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
-                        let url = URL.createObjectURL(blob);
-                        let downloadLink = document.createElement("a");
-                        downloadLink.href = url;
-                        downloadLink.download = `${filenameBody}.csv`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                    }
-                    {
-                        // download table info txt
-                        let blob = new Blob([txtData], { type: "text/plain;charset=utf-8" });
-                        let url = URL.createObjectURL(blob);
-                        let downloadLink = document.createElement("a");
-                        downloadLink.href = url;
-                        downloadLink.download = `${filenameBody}.txt`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
+                    let [csvData, txtData, popupHTML] = getChartCsvAndTxt(v, chartId);
+                    showFOPopup("DownloadPopup", `<div class="Close">✕</div><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getDownloadSymbolHtml("DownloadPopupIcon", 1, 0, undefined, "#fff", "#7CAD39", scale = 0.872)}</svg><h3>${translate(t.tooltip, 'chartDownload')}</h3>${popupHTML}<div style="display:grid; align-items: center"><button id="FODownloadButton" type="button" style="margin:auto; min-width:120px; min-height:40px; padding:5px; cursor:pointer">OK</button></div>`);
+                    let downloadButtonElement = document.getElementById("FODownloadButton");
+                    downloadButtonElement.onclick = function (e) {
+                        let filenameBody = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}`;
+                        {
+                            // download image
+                            prepYGrid(v, chartId);
+                            let svgBoundingClientRect = document.getElementById(`chart_svg_${chartId}`).getBoundingClientRect();                   
+                            //console.log(svgBoundingClientRect);
+                            let legendItemCoordinates = [];
+                            chart.sources.forEach(function (source) {
+                                let legendItemBoundingClientRect = document.getElementById(`chart_${chartId}_legend_element_${source.legendId}`).getBoundingClientRect();
+                                legendItemCoordinates.push([legendItemBoundingClientRect.left - svgBoundingClientRect.left, legendItemBoundingClientRect.top - svgBoundingClientRect.top]);
+                            });
+                            let data = getChartSvgOuterHtml(v, chartId, true, legendItemCoordinates);
+                            let blob = new Blob([data], { type: "image/svg+xml;charset=utf-8" });
+                            let url = URL.createObjectURL(blob);
+                            let downloadLink = document.createElement("a");
+                            downloadLink.href = url;
+                            downloadLink.download = `${filenameBody}.svg`;
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                        }                    
+                        {
+                            // download table                        
+                            let blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+                            let url = URL.createObjectURL(blob);
+                            let downloadLink = document.createElement("a");
+                            downloadLink.href = url;
+                            downloadLink.download = `${filenameBody}.csv`;
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                        }
+                        {
+                            // download table info txt
+                            let blob = new Blob([txtData], { type: "text/plain;charset=utf-8" });
+                            let url = URL.createObjectURL(blob);
+                            let downloadLink = document.createElement("a");
+                            downloadLink.href = url;
+                            downloadLink.download = `${filenameBody}.txt`;
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                        }
+                        hideFOPopup("DownloadPopup");
                     }
                 };
             }
@@ -1538,7 +1550,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             let managementHTML = (translate(feature.properties, "management", null) == null) ? '' : `
             <tr>
                <td>${translate(t.plaintext_titles, "management")}:</td>
-               <td>${translate(feature.properties, "management")}</td>
+               <td title="Ley farming refers to the growing of grass or legumes in rotation with grain or crops as a soil conservation measure. Grasses increase soil carbon content, while legumes are known especially for their ability to increase the amount of nitrogen in the soil.">${translate(feature.properties, "management")}</td>
             </tr>`;
             let speciesHTML = (translate(feature.properties, "species", null) == null) ? '' : `
             <tr>
@@ -2108,7 +2120,7 @@ function unviewSiteAndViewSiteSelector() {
     window.onpopstate = defaultPopstateHandler;
     let detailsElement = document.getElementById("Details");
     detailsElement.classList.remove('moved');
-    hideDetails();
+    hideFOPopups();
     worker.terminate();
     map.removeLayer("blocks");
     map.removeLayer("blockLines");
@@ -2214,9 +2226,9 @@ function showEventDetails() {
                 if (source.blockGroup !== undefined) {
                     title += ` ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}` // No support at this point.
                 }
-                let textHTML = `<div class="Close">✕</div><svg class="large_management_event_symbol" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
+                let textHTML = `<div class="Close">✕</div><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
                 textHTML += `${jsonToHTML(event, resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}`;
-                showDetails(textHTML);
+                showFOPopup("Details", textHTML);
             }
         }
     }    
@@ -2249,7 +2261,7 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
     } else {
         let detailsElement = document.getElementById("Details");
         detailsElement.classList.remove('moved');
-        hideDetails();
+        hideFOPopup("Details");
     }
     // Refresh charts
     chartRefreshIndex++;

@@ -47,6 +47,22 @@
     margin-right: max(0px, 50% - 640px);
 }
 
+/*
+.Dataviewer *[title] {
+    text-decoration: underline dotted #71CDB6;
+    text-underline-offset: 0.45rem;
+}
+*/
+/*
+.Dataviewer *[title]::after {
+    content: 'ⓘ';
+    font-size: 26px;
+    width: 40px;
+    height: 40px;
+    color: #71CDB6;
+}
+*/
+
 .SiteSelector #mapInfoDiv {
     display: block;
 }
@@ -509,7 +525,7 @@
     grid-template-columns: repeat(1,1fr);
 }
 
-#Details {
+.FOPopup {
     /*position: absolute;*/
     /*pointer-events: none;*/
     position: fixed;
@@ -523,11 +539,21 @@
     max-width: 640px;
 }
 
-#Details * {
+.FOPopup > * {
     font-size: calc(18px*0.98);
-    margin: 0px;
     padding-left:5px;
     padding-right:5px;
+    line-height: 1;
+}
+
+:is(#DownloadPopup *):not(h3, .Close, .FOPopupIcon){
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.FOPopup * {
+    font-size: calc(18px*0.98);
+    margin: 0px;
     line-height: 1;
 }
 
@@ -536,7 +562,7 @@
     padding-right:0px;
 }
 
-#Details > .Close {
+.FOPopup > .Close {
     margin-left: -5px;
     margin-top: -5px;
     font-size: 18pt;
@@ -554,7 +580,7 @@
     padding-right:0px;
 }
 
-#Details > .large_management_event_symbol {
+.FOPopup > .FOPopupIcon {
     margin-right: -5px;
     margin-top: -5px;
     color: #fff;
@@ -571,11 +597,11 @@
     padding-right:0px;
 }
 
-#Details.hidden {
+.FOPopup.hidden {
     visibility: hidden;
 }
 
-#Details > h3 {
+.FOPopup > h3 {
     display: flex;
     vertical-align: middle;
     align-items: center;

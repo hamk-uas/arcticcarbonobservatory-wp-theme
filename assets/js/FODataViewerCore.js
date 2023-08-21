@@ -1225,22 +1225,24 @@ function getAutoZoomSymbolHtml(chartId, x, y, tooltipString) {
     </svg>`;
 }
 
-function getDownloadSymbolHtml(id, x, y, tooltipString) {
+function getDownloadSymbolHtml(id, x, y, tooltipString, color = "#71cdb6", backgroundColor = "#fff", scale = 1) {
     return `
     <svg x="${x}" y="${y}" width="42.321" height="45.321" viewBox="0 0 42.321 45.321">
-      <g transform="translate(${(42.321 - 40) / 2} ${(45.321 - 39) / 2})">
-        <g fill="#fff" stroke="#71cdb6" stroke-width="4">
-          <rect width="40" height="39" rx="19.5" stroke="none"/>
-          <rect x="2" y="2" width="36" height="35" rx="17.5" fill="none"/>
-        </g>
-        <g transform="translate(13 9)">
-          <line id="Line_8" data-name="Line 8" y2="12" transform="translate(7)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
-          <g id="Group_17" data-name="Group 17" transform="translate(2.857 8.806)">
-            <path id="Line_10" data-name="Line 10" d="M344.706,568.969l-4.127,4.4-4.127-4.4" transform="translate(-336.452 -568.969)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+      <g transform="scale(${scale})">
+        <g transform="translate(${(42.321 - 40) / 2} ${(45.321 - 39) / 2})">
+          <g fill="${backgroundColor}" stroke="${color}" stroke-width="4">
+            <rect width="40" height="39" rx="19.5" stroke="none"/>
+            <rect x="2" y="2" width="36" height="35" rx="17.5" fill="none"/>
           </g>
-          <line id="Line_11" data-name="Line 11" x1="14" transform="translate(0 20)" fill="none" stroke="#71cdb6" stroke-linecap="round" stroke-width="4"/>
+          <g transform="translate(13 9)">
+            <line id="Line_8" data-name="Line 8" y2="12" transform="translate(7)" fill="none" stroke="${color}" stroke-linecap="round" stroke-width="4"/>
+            <g id="Group_17" data-name="Group 17" transform="translate(2.857 8.806)">
+              <path id="Line_10" data-name="Line 10" d="M344.706,568.969l-4.127,4.4-4.127-4.4" transform="translate(-336.452 -568.969)" fill="none" stroke="${color}" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            </g>
+            <line id="Line_11" data-name="Line 11" x1="14" transform="translate(0 20)" fill="none" stroke="${color}" stroke-linecap="round" stroke-width="4"/>
+          </g>
+          <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent">${(tooltipString !== undefined)?`<title>${tooltipString}</title>`:''}</rect>
         </g>
-        <rect id="${id}" style="cursor:pointer" x="0" y="0" width="42.321" height="45.321" fill="transparent"><title>${tooltipString}</title></rect>
       </g>
     </svg>`;
 }
@@ -1649,7 +1651,7 @@ function linkify(url, text, isHtml) {
     }
 }
 
-function getCreditStr(credit, isHtml) {
+function getCreditStr(credit, isHtml, enableSitePI) {
     let creditStr = "";
     if (isHtml) {
         creditStr += '<p>';
@@ -1709,6 +1711,7 @@ function getChartCsvAndTxt(v, chartId) {
         }
     }
     let txt = `The CSV file is encoded in UTF-8.\n`;
+    let popupHTML = '';
     if (hasFlags) {
         txt += `\nFlags, combined using binary OR: 1: prediction 2: final scientific QC. 4: stable. 8: unstable. 16: online filtering v1. 32: online gapfilling v1.`;
     }
@@ -1717,10 +1720,12 @@ function getChartCsvAndTxt(v, chartId) {
             let chartCredit = {...credit};
             chartCredit.charts = {};
             chartCredit.charts[chartId] = chart;
-            txt += `\n${getCreditStr(chartCredit, false)}`;
+            txt += `\n${getCreditStr(chartCredit, false, true)}`;
+            popupHTML += `\n${getCreditStr(chartCredit, true, true)}`;
         }
     }
-    //txt += `\n${(chart.credits["fmiIntensiveSite"]) ? `CC BY 4.0 FMI. No warranty. The data is provisional. Info for research use: ${v.site.principalInvestigator}.` : ""}`;
+    txt += `\n${(chart.credits["fmiIntensiveSite"]) ? `We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.` : ""}`;
+    popupHTML += `\n${(chart.credits["fmiIntensiveSite"]) ? `<p>We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.</p>` : ""}`;
     txt += `\n${(loading ? "WARNING: CSV exported in the middle of data load" : "")}`;
     txt += `\ntitle=${v.charts[chartId].title}`;
     txt += `\nyLabel=${v.charts[chartId].yLabel}`;
@@ -1765,7 +1770,7 @@ function getChartCsvAndTxt(v, chartId) {
             }
         }
     }
-    return [csv, txt];
+    return [csv, txt, popupHTML];
 }
 
 // For a given chart, get a list that contains for each source a list of series. Each series is a list of samples. Each sample consists of a date, a val and possibly stdErr and/or flags.
