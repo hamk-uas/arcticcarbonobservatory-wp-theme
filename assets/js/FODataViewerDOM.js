@@ -2819,8 +2819,24 @@ async function initPage() {
     }
 
     document.addEventListener("keydown", function (event) {
-        if ((event.key === "Esc" || event.key === "Escape") && handleEsc !== undefined) {
-            handleEsc();
+        if (event.key === "Esc" || event.key === "Escape") {
+            // Close a popup
+            let popupElements = document.getElementsByClassName('FOPopup');
+            console.log(popupElements);
+            let foundOpenPopup = false;
+            for (let popupElement of popupElements) {                
+                if (popupElement.classList.contains('visible')) {
+                    hideFOPopup(popupElement.id); 
+                    foundOpenPopup = true;
+                    break;
+                }
+            }
+            // Call esc handler
+            if (!foundOpenPopup) {
+                if (handleEsc !== undefined) {
+                    handleEsc();
+                }
+            }
         }
     });
 }
