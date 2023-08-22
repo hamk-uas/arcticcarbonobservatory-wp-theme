@@ -425,18 +425,22 @@ function trackMouse(e) {
     clientY = e.clientY;
 }
 
-function showFOPopup(elementId, innerHTML) {
+function showFOPopup(elementId, innerHTML, x, y) {
     let popupElement = document.getElementById(elementId);    
     popupElement.innerHTML = innerHTML;
     if (!popupElement.classList.contains("moved")) {
-        popupElement.style.left = clientX + 10 + 'px';
-        popupElement.style.top = clientY + 10 + 'px';
+        popupElement.style.left = x + 'px';
+        popupElement.style.top = y + 'px';
     }
     popupElement.classList.add('visible');
     popupElement.classList.remove('hidden');
-    let overflow = (parseInt(popupElement.style.left) + popupElement.offsetWidth) - document.body.clientWidth;
-    if (overflow > 0) {
-        popupElement.style.left = parseInt(popupElement.style.left) - overflow + 'px';
+    let xOverflow = (parseInt(popupElement.style.left) + popupElement.offsetWidth) - (document.documentElement.clientWidth || document.body.clientWidth);
+    if (xOverflow > 0) {
+        popupElement.style.left = parseInt(popupElement.style.left) - xOverflow + 'px';
+    }
+    let yOverflow = (parseInt(popupElement.style.top) + popupElement.offsetHeight) - window.innerHeight;
+    if (yOverflow > 0) {
+        popupElement.style.top = parseInt(popupElement.style.top) - yOverflow + 'px';
     }
     makeElementDraggableByHeading(elementId);
     document.querySelector(`#${elementId} > .Close`).onclick = function() {
@@ -1326,9 +1330,43 @@ function addPermanentDrawingListeners() {
                 }
                 download.onclick = function (e) {
                     let [csvData, txtData, popupHTML] = getChartCsvAndTxt(v, chartId);
-                    showFOPopup("DownloadPopup", `<div class="Close">✕</div><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getDownloadSymbolHtml("DownloadPopupIcon", 1, 0, undefined, "#fff", "#7CAD39", scale = 0.872)}</svg><h3>${translate(t.tooltip, 'chartDownload')}</h3>${popupHTML}<div style="display:grid; align-items: center"><button id="FODownloadButton" type="button" style="margin:auto; min-width:120px; min-height:40px; padding:5px; cursor:pointer">OK</button></div>`);
-                    let downloadButtonElement = document.getElementById("FODownloadButton");
-                    downloadButtonElement.onclick = function (e) {
+                    showFOPopup("DownloadPopup", `
+                        <div class="Close">✕</div>
+                        <svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getDownloadSymbolHtml("DownloadPopupIcon", 1, 0, undefined, "#fff", "#7CAD39", scale = 0.85)}</svg>
+                        <h3>${translate(t.tooltip, 'chartDownload')}</h3>                        
+                        ${popupHTML}
+                        <h4>CSV options (more coming soon)</h4>
+                        <div>
+                            <!--<input type="radio" id="csv_download_combined" name="download_csv_format" ${(v.csvDownloadFormat === "csv_download_combined")? 'checked="checked"': ''}>
+                            <label for="csv_download_combined">Combine date columns.</label><br>
+                            <input type="radio" id="csv_download_separate" name="download_csv_format" ${(v.csvDownloadFormat === "csv_download_separate")? 'checked="checked"': ''}>
+                            <label for="csv_download_separate">Separate date columns.</label><br>
+                            -->
+                            <input type="radio" id="csv_download_separate_gapped" name="download_csv_format" ${(v.csvDownloadFormat === "csv_download_separate_gapped")? 'checked="checked"': ''}>
+                            <label for="csv_download_separate_gapped">Separate date columns. Indicate gaps by empty rows.</label>
+                        </div>
+                        <div style="display:grid; align-items: center">
+                            <div style="margin:auto; display:flex;">
+                                <!--<button id="FODownloadButton" type="button">Download CSV</button>
+                                <button id="FODownloadButton" type="button">Download SVG</button>
+                                -->
+                                <button id="FODownloadAllButton" type="button">Download SVG and CSV</button>
+                            </div>
+                        </div>`,
+                    clientX, clientY);
+                    let downloadFunction = function (e) {
+                        console.log(e.srcElement.id);
+                        let csvDownloadCombinedElement = document.getElementById('csv_download_combined');
+                        if (csvDownloadCombinedElement && csvDownloadCombinedElement.checked) {
+                            v.csvDownloadFormat = "csv_download_combined";
+                        }
+                        let csvDownloadSeparateElement = document.getElementById('csv_download_separate');
+                        if (csvDownloadSeparateElement && csvDownloadSeparateElement.checked) {
+                            v.csvDownloadFormat = "csv_download_separate";
+                        }
+                        if (document.getElementById('csv_download_separate_gapped').checked) {
+                            v.csvDownloadFormat = "csv_download_separate_gapped";
+                        }
                         let filenameBody = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}`;
                         {
                             // download image
@@ -1374,6 +1412,7 @@ function addPermanentDrawingListeners() {
                         }
                         hideFOPopup("DownloadPopup");
                     }
+                    document.getElementById("FODownloadAllButton").onclick = downloadFunction;
                 };
             }
         }
@@ -1520,7 +1559,8 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         minPixelsPerMonthTickLabel: 30,
         minPixelsPerYearTickLabel: 30,
         minPixelsPerValTickLabel: 40,
-        minPixelsPerUTCText: 30
+        minPixelsPerUTCText: 30,
+        csvDownloadFormat: "csv_download_separate_gapped"
     }
     addChartColors(v);
 
@@ -2228,7 +2268,7 @@ function showEventDetails() {
                 }
                 let textHTML = `<div class="Close">✕</div><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
                 textHTML += `${jsonToHTML(event, resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}`;
-                showFOPopup("Details", textHTML);
+                showFOPopup("Details", textHTML, clientX + 10, clientY + 10);
             }
         }
     }    

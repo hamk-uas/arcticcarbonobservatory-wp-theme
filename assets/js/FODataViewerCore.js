@@ -1711,7 +1711,7 @@ function getChartCsvAndTxt(v, chartId) {
         }
     }
     let txt = `The CSV file is encoded in UTF-8.\n`;
-    let popupHTML = '';
+    let popupHTML = '<h4>Credits and licenses</h4>';
     if (hasFlags) {
         txt += `\nFlags, combined using binary OR: 1: prediction 2: final scientific QC. 4: stable. 8: unstable. 16: online filtering v1. 32: online gapfilling v1.`;
     }
@@ -1725,7 +1725,7 @@ function getChartCsvAndTxt(v, chartId) {
         }
     }
     txt += `\n${(chart.credits["fmiIntensiveSite"]) ? `We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.` : ""}`;
-    popupHTML += `\n${(chart.credits["fmiIntensiveSite"]) ? `<p>We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.</p>` : ""}`;
+    popupHTML += `\n${(chart.credits["fmiIntensiveSite"]) ? `<h4>Notice</h4><p>We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.</p>` : ""}`;
     txt += `\n${(loading ? "WARNING: CSV exported in the middle of data load" : "")}`;
     txt += `\ntitle=${v.charts[chartId].title}`;
     txt += `\nyLabel=${v.charts[chartId].yLabel}`;
