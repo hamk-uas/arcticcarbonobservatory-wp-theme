@@ -1347,10 +1347,9 @@ function addPermanentDrawingListeners() {
                         </div>
                         <div style="display:grid; align-items: center">
                             <div style="margin:auto; display:flex;">
-                                <!--<button id="FODownloadButton" type="button">Download CSV</button>
-                                <button id="FODownloadButton" type="button">Download SVG</button>
-                                -->
-                                <button id="FODownloadAllButton" type="button">Download SVG and CSV</button>
+                                <button id="FODownloadSVGButton" type="button">Download SVG</button>
+                                <button id="FODownloadCSVButton" type="button">Download CSV</button>
+                                <button id="FODownloadAllButton" type="button">Download all</button>
                             </div>
                         </div>`,
                     clientX, clientY);
@@ -1368,7 +1367,7 @@ function addPermanentDrawingListeners() {
                             v.csvDownloadFormat = "csv_download_separate_gapped";
                         }
                         let filenameBody = `retrieved_${formatDateYYYYMinusMMMinusDD(new Date(foConfig.now))}_${v.site.id}_${chartId}_${formatDateYYYYMinusMMMinusDD(new Date(v.startDate))}_to_${formatDateYYYYMinusMMMinusDD(new Date(v.endDate))}`;
-                        {
+                        if (e.srcElement.id === "FODownloadSVGButton" || e.srcElement.id === "FODownloadAllButton") {
                             // download image
                             prepYGrid(v, chartId);
                             let svgBoundingClientRect = document.getElementById(`chart_svg_${chartId}`).getBoundingClientRect();                   
@@ -1388,7 +1387,7 @@ function addPermanentDrawingListeners() {
                             downloadLink.click();
                             document.body.removeChild(downloadLink);
                         }                    
-                        {
+                        if (e.srcElement.id === "FODownloadCSVButton" || e.srcElement.id === "FODownloadAllButton") {
                             // download table                        
                             let blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
                             let url = URL.createObjectURL(blob);
@@ -1412,6 +1411,8 @@ function addPermanentDrawingListeners() {
                         }
                         hideFOPopup("DownloadPopup");
                     }
+                    document.getElementById("FODownloadSVGButton").onclick = downloadFunction;
+                    document.getElementById("FODownloadCSVButton").onclick = downloadFunction;
                     document.getElementById("FODownloadAllButton").onclick = downloadFunction;
                 };
             }
