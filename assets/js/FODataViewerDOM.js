@@ -1499,10 +1499,15 @@ function getCountryMapSVG(countryBorders, siteCoordinates, siteStyle, svgWidth, 
     return svgHTML;
 }
 
-async function viewSiteAfterLoadingEssentials(zoomDuration) {
-    // Get all blocks of this site and find and zoom to the minimal bounding box
-    let siteBlocks = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
+/*function addSiteOrBlockProperty(sitePropertyTableHTML) {
 
+}
+
+function isBlockProperty(property) {
+    if (v.site[property] == )
+}
+*/
+async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (typeof (Worker) == "undefined") {
         throw new Error('Web workers not supported by the browser.')
     }
@@ -1585,74 +1590,99 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         }
     }
 
-    // Set site description
+    // Initialize v.site with sitesGeoJson feature properties and blocks from blocksGeoJson
+    // Note that the block order in v.site will be the same as in (filtered) blocksGeoJson 
+    // Also initialize v.site.blockIdToBlock
     sitesGeoJson.features.forEach(feature => {
-        if (feature.properties.site === getSiteId()) {          
-            let managementHTML = (translate(feature.properties, "management", null) == null) ? '' : `
-            <tr>
-               <td>${translate(t.plaintext_titles, "management")}:</td>
-               <td title="Ley farming refers to the growing of grass or legumes in rotation with grain or crops as a soil conservation measure. Grasses increase soil carbon content, while legumes are known especially for their ability to increase the amount of nitrogen in the soil.">${translate(feature.properties, "management")}</td>
-            </tr>`;
-            let speciesHTML = (translate(feature.properties, "species", null) == null) ? '' : `
-            <tr>
-               <td>${translate(t.plaintext_titles, "species")}:</td>
-               <td>${translate(feature.properties, "species")}</td>
-            </tr>`;
-            let soilTypeHTML = undefined;
-            let blocksWithDifferentSoilTexture = siteBlocks.filter(block => block.properties.soil_texture !== undefined && block.properties.soil_texture != null && block.properties.soil_texture !== feature.properties.soil_texture);
-            if (blocksWithDifferentSoilTexture.length > 0) {
-                soilTypeHTML = siteBlocks.map(block => `<td><span style="white-space: nowrap;">${translate(block.properties, "Name")}</span><br>${translate(t.soil_texture_choice_plaintext, block.properties.soil_texture)}</td>`).join(" ");
-            } else {
-                if (feature.properties.soil_texture != null) {
-                    soilTypeHTML = `<td>${translate(t.soil_texture_choice_plaintext, feature.properties.soil_texture, "")}</td>`;
-                }
-            }
-            let description = `
-            <p style="animation:fadein 1s">${translate(feature.properties, "site_type_Name", (feature.properties.site_type === undefined) ? "" : feature.properties.site_type)}</p>
-            <p style="animation:fadein 1s">${translate(feature.properties, "description", "")}</p>
-            <!-- <h3 id="Farming_methods">Farming methods</h3> -->
-            <table style="animation:fadein 1s;">
-                ${managementHTML}
-                ${speciesHTML}
-                ${(soilTypeHTML !== undefined)? `
-                <tr>
-                    <td style="vertical-align: top;">${translate(t.plaintext_titles, "soil_texture")}:</td>
-                    ${soilTypeHTML}
-                </tr>`: ""}
-            </table>`;
-            let satelliteImagesTitleElement = document.getElementById('Satellite_images');
-            if (satelliteImagesTitleElement) {
-                satelliteImagesTitleElement.innerHTML = translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title");
-            }
-            let countryMapElement = document.getElementById('countryMap');
-            if (countryMapElement !== null) {
-                countryMapElement.innerHTML = getCountryMapSVG(countryBorders[getSiteTypeCountry(feature.properties.site_type)], feature.geometry.coordinates, foConfig.countryMapSiteStyle !== undefined ? foConfig.countryMapSiteStyle : `fill: ${getSiteTypeColor(feature.properties.site_type)}`, countryMapElement.getAttribute("width"), countryMapElement.getAttribute("height"));
-            }
-            if (foConfig.mapEnabled) {
-                if (feature.properties.demo) {
-                    document.getElementById('siteName').innerHTML = `${translate(feature.properties, "Name", feature.properties.id)} (demo)`;
-                } else {
-                    document.getElementById('siteName').innerHTML = translate(feature.properties, "Name", feature.properties.id);
-                }
-                document.getElementById('siteDescription').innerHTML = description;
-            }
+        if (feature.properties.site === getSiteId()) {
+            v.site = {
+                ...feature.properties,
+                geometry: feature.geometry,
+                blockFeatures: blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId())),
+                blockIdToBlock: {}
+            };            
+            v.site.blocks = v.site.blockFeatures.map(feature => ({...feature.properties, geometry: feature.geometry}));
+            v.site.blocks.forEach(block => {
+                block.long_id = block.id;
+                block.id = block.block;
+                delete block.block;
+                v.site.blockIdToBlock[block.id] = block;                
+            });
         }
     });
+/*
+    // Set site description
+    let sitePropertyTableHTML = "";
+    let blockPropertyTableHTML = "";
+    if (isBlockVariable("management")) {
+        sitePropertyTableHTML += 
+    } else {
+        blockPropertyTableHTML += 
+    }
+
+*/
+    let managementHTML = (translate(v.site, "management", null) == null) ? '' : `
+    <tr>
+        <td>${translate(t.plaintext_titles, "management")}:</td>
+        <td>${translate(v.site, "management")}</td>
+    </tr>`; // Add to td: title="Ley farming refers to the growing of grass or legumes in rotation with grain or crops as a soil conservation measure. Grasses increase soil carbon content, while legumes are known especially for their ability to increase the amount of nitrogen in the soil."
+    let speciesHTML = (translate(v.site, "species", null) == null) ? '' : `
+    <tr>
+        <td>${translate(t.plaintext_titles, "species")}:</td>
+        <td>${translate(v.site, "species")}</td>
+    </tr>`;
+    let soilTypeHTML = undefined;
+    let blocksWithDifferentSoilTexture = v.site.blocks.filter(block => block.soil_texture !== undefined && block.soil_texture != null && block.soil_texture !== v.site.soil_texture);
+    if (blocksWithDifferentSoilTexture.length > 0) {
+        soilTypeHTML = v.site.blocks.map(block => `<td><span style="white-space: nowrap;">${translate(block, "Name")}</span><br>${translate(t.soil_texture_choice_plaintext, block.soil_texture)}</td>`).join(" ");
+    } else {
+        if (v.site.soil_texture != null) {
+            soilTypeHTML = `<td>${translate(t.soil_texture_choice_plaintext, v.site.soil_texture, "")}</td>`;
+        }
+    }
+    let description = `
+    <p style="animation:fadein 1s">${translate(v.site, "site_type_Name", (v.site.site_type === undefined) ? "" : v.site.site_type)}</p>
+    <p style="animation:fadein 1s">${translate(v.site, "description", "")}</p>            
+    <table style="animation:fadein 1s;">
+        ${managementHTML}
+    </table>
+    <table style="animation:fadein 1s;">
+        ${speciesHTML}
+    </table>
+    ${(soilTypeHTML !== undefined)? `
+    <table style="animation:fadein 1s;">
+        <tr>
+            <td style="vertical-align: top;">${translate(t.plaintext_titles, "soil_texture")}:</td>
+            ${soilTypeHTML}
+        </tr>
+    </table>`: ""}`;
+    let satelliteImagesTitleElement = document.getElementById('Satellite_images');
+    if (satelliteImagesTitleElement) {
+        satelliteImagesTitleElement.innerHTML = translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title");
+    }
+    let countryMapElement = document.getElementById('countryMap');
+    if (countryMapElement !== null) {
+        countryMapElement.innerHTML = getCountryMapSVG(countryBorders[getSiteTypeCountry(v.site.site_type)], v.site.geometry.coordinates, foConfig.countryMapSiteStyle !== undefined ? foConfig.countryMapSiteStyle : `fill: ${getSiteTypeColor(v.site.site_type)}`, countryMapElement.getAttribute("width"), countryMapElement.getAttribute("height"));
+    }
+    if (foConfig.mapEnabled) {
+        if (v.site.demo) {
+            document.getElementById('siteName').innerHTML = `${translate(v.site, "Name", v.site.id)} (demo)`;
+        } else {
+            document.getElementById('siteName').innerHTML = translate(v.site, "Name", v.site.id);
+        }
+        document.getElementById('siteDescription').innerHTML = description;
+    }
     if (v.mapElementId !== undefined) {
         adjustLayoutOnSize();
     }
 
     if (siteJson === undefined) {
-        for (let feature of sitesGeoJson.features) {
-            if (feature.properties.site === getSiteId()) {                
-                siteJson = await fetch(`${feature.properties.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(new Date(foConfig.now))}`).then(async response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch ${response.url}: ${response.status}`);
-                    }
-                    return await response.json();
-                });
+        siteJson = await fetch(`${v.site.storageUrl}/${getSiteId()}/site.json?date=${getCacheRefreshDate(new Date(foConfig.now))}`).then(async response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${response.url}: ${response.status}`);
             }
-        }
+            return await response.json();
+        });
     }
 
     onWindowResize(); // Reorganize layout for small screen
@@ -1660,32 +1690,23 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     console.log("siteJson =");
     console.log(JSON.parse(JSON.stringify(siteJson))); // Create deep copies so that console.log statements show what was loaded
 
-    // Merge sitesGeoJson feature and siteJson properties into siteJson, with siteJson properties taking priority
-    sitesGeoJson.features.forEach(feature => {
-        if (feature.properties.site === getSiteId()) {
-            siteJson = { ...feature.properties, ...siteJson };
-        }
-    });
+    // Merge siteJson properties into v.site, overwriting existing properties (excluding blocks)
+    let blocklessSiteJson = { ...siteJson };
+    delete blocklessSiteJson.blocks;
+    Object.assign(v.site, blocklessSiteJson)
 
-    // Merge blocksGeoJson features and siteJson block properties into siteJson, with siteJson block properties taking priority
-    siteJson.blocks.forEach((block, index) => {        
-        blocksGeoJson.features.forEach(feature => {
-            if (feature.properties.site === getSiteId() && feature.properties.id === `${getSiteId()}_${block.id}`) {
-                siteJson.blocks[index] = { ...feature.properties, ...block };
-            }
-        });
-    });
-
-    // Create siteJson.blockIdToBlock
-    siteJson.blockIdToBlock = {};
-    siteJson.blocks.forEach((block, index) => {        
-        siteJson.blockIdToBlock[block.id] = block;
+    // Merge siteJson block properties into siteJson, overwriting existing properties
+    siteJson.blocks.forEach(block => {
+        console.log(block.id);
+        console.log(v.site.blockIdToBlock);
+        console.log(block);
+        Object.assign(v.site.blockIdToBlock[block.id], block);
     });
 
     // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
-    prepCharts(v, siteJson, chartsJson);
+    prepCharts(v, chartsJson);
     // console.log("Charts prepped");
-
+    
     // Create chart DIV and SVG elements in the same order they appear in chartsJson.
     let hasSatelliteImages = false;
     v.chartIds.forEach(function (chartId) {        
@@ -1777,11 +1798,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (foConfig.mapEnabled) {
         whenMapLoadedDo(function () {
             map.resize(); // Use this, because onWindowResize() screws up map fitBounds execution.
-            if (siteBlocks.length > 0) {
+            if (v.site.blockFeatures.length > 0) {
                 // Blocks source
                 map.addSource("blocks", {
                     type: "geojson",
-                    data: { ...blocksGeoJson, ...{ features: siteBlocks } }, // Only this site's blocks
+                    data: { ...blocksGeoJson, ...{ features: v.site.blockFeatures } }, // Only this site's blocks
                     cluster: false
                 });
             }
@@ -1880,10 +1901,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             
             map.setMaxZoom(siteMapView.maxZoom);
             map.setMinZoom(siteMapView.minZoom);
-            if (siteBlocks.length > 0) {
-                map.fitBounds(getBoundingBox(siteBlocks), { padding: 40, duration: zoomDuration });
+            if (v.site.blockFeatures.length > 0) {
+                map.fitBounds(getBoundingBox(v.site.blockFeatures), { padding: 40, duration: zoomDuration });
             }
-            //map.setMaxBounds(getBoundingBox(siteBlocks));
         });
     }
 

@@ -490,8 +490,7 @@ function addChartColors(v) {
 }
 
 // Find out which charts can be made and prepare chart data structures, discarding everything unnecessary
-function prepCharts(v, siteJson, chartsJson) {
-    siteJson = JSON.parse(JSON.stringify(siteJson)); // Create copies so that we can modify the variables
+function prepCharts(v, chartsJson) {
     chartsJson = JSON.parse(JSON.stringify(chartsJson));
 
     if (foConfig.chartFilter !== undefined) {
@@ -501,8 +500,8 @@ function prepCharts(v, siteJson, chartsJson) {
     var sourceTypeToSources = {}; // Dict: sourceType id => source
 
     // Add those sources for which non-empty csvList or geoTiffList exists, to dictionary sourceTypeToSources. This is needed for determining which charts need to be made.
-    //siteJson.sources = siteJson.sources.filter(source => source !== null); // Fix upstream bug
-    siteJson.sources.forEach(function (source) {
+    //v.site.sources = v.site.sources.filter(source => source !== null); // Fix upstream bug
+    v.site.sources.forEach(function (source) {
         if (source.csvList !== undefined) {
             let newCSVList = source.csvList.filter(csv => !csv.url.includes(".cor.")); // *** TODO: Do the filtering at FMI instead.
             if (newCSVList.length < source.csvList.length) {
@@ -524,8 +523,7 @@ function prepCharts(v, siteJson, chartsJson) {
         }
     });
 
-    delete siteJson.sources;
-    v.site = siteJson;
+    delete v.site.sources;
     
     // Replace sourceTypes with sources. Add charts that will be made to v.charts.
     chartsJson.charts.forEach(function (chart) {
