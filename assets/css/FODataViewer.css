@@ -267,11 +267,31 @@
     padding: 5px 0px 5px 0px;
 }
 
-.chart_gridcontainer .fieldInfoDiv td {
-    font-size: calc(18px*0.98);
-    padding: 4px 16px 4px 0px;
+.chart_gridcontainer .fieldInfoDiv :is(th, td) {
     color: #5E5E5E;
-    display: inline-block;
+    text-align: center;    
+    padding-left: 10px;
+}
+
+.chart_gridcontainer .fieldInfoDiv .block_name {
+    color: #000;
+}
+
+.chart_gridcontainer .fieldInfoDiv th {
+    font-weight: normal;
+    color: #000;
+}
+
+.chart_gridcontainer .fieldInfoDiv #sitePropertyTable :is(th,td) {
+    text-align: start;
+}
+
+.chart_gridcontainer .fieldInfoDiv :is(th,td):first-child {
+    padding-left: 0px;
+}
+
+.chart_gridcontainer .fieldInfoDiv table + table {
+    margin-top: 10px;
 }
 
 .chart_grid {

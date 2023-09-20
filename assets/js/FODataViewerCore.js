@@ -443,6 +443,7 @@ var t = {
         "block_fi": "Lohko",
         "block_sv": "Skifte",
     },
+    languageExtList: ["", "_fi", "_sv"]
 }
 
 // Get property of object in the current language.
@@ -1080,10 +1081,9 @@ function getSatelliteSymbolHtml(x, y, color, tooltipString) {
     </g><rect x="${x-13}" y="${y}" width="26" height="20" fill="transparent"><title>${tooltipString}</title></rect>`;
 }
 
-function getVisibleSymbolHtml(chartId, legendId, color, tooltipString, visible = true, defsHtml = "") {
-    let id = `chart_${chartId}_visible_${legendId}`;
+function getVisibleSymbolHtml(id, color, onClick, tooltipString, visible = true, defsHtml = "") {
     return `
-    <svg id="${id}" style="vertical-align:middle; cursor:pointer" width="39.413" height="40" viewBox="0 -7.3355 39.413 40" onclick="toggleLegendItemVisibility('${chartId}', '${legendId}', event);" onmousedown="preventDefault(event)">
+    <svg id="${id}" style="vertical-align:middle; cursor:pointer" width="39.413" height="40" viewBox="0 -7.3355 39.413 40" onclick="${onClick}" onmousedown="preventDefault(event)">
         <title>${tooltipString}</title>
         <defs>${defsHtml}</defs>
         <rect x="0" y="-7.3355" width="39.413" height="40" style="fill:none; stroke:none"/>

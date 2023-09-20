@@ -1499,14 +1499,48 @@ function getCountryMapSVG(countryBorders, siteCoordinates, siteStyle, svgWidth, 
     return svgHTML;
 }
 
-/*function addSiteOrBlockProperty(sitePropertyTableHTML) {
-
+// propertyTableHTMLs = [sitePropertyTableHTML, blockPropertyTableHTML], each to be concatenated to
+// property = property name
+// translations = dictionary where translations can be found for the property value, undefined to display value as is
+function concatenatePropertyTableHTMLs(propertyTableHTMLs, property, translations = undefined) {
+    // First we clean up the properties. No property should be both a site and a block property. Cleanup is based on the default language.
+    // Delete a null or undefined site property
+    if (v.site[property] == undefined) {
+        (translations? t.languageExtList: [""]).forEach(languageExt => delete v.site[property + languageExt]);
+    }
+    // Delete each null or undefined block property
+    v.site.blocks.filter(block => (block[property] == undefined)).forEach(block => {
+        (translations? t.languageExtList: [""]).forEach(languageExt => delete block[property + languageExt]);
+    });
+    // Remove block properties if they all match with the site property
+    if (v.site[property] != undefined && v.site.blocks.length > 0 && v.site.blocks.every(block => (block[property] != undefined && block[property] === v.site[property]))) {
+        v.site.blocks.forEach(block => (translations? t.languageExtList: [""]).forEach(languageExt => delete block[property + languageExt]));
+    }
+    // Remove site property if any block has a different value
+    if (v.site[property] != undefined && v.site.blocks.length > 0 && v.site.blocks.some(block => (block[property] != undefined && block[property] !== v.site[property]))) {
+        (translations? t.languageExtList: [""]).forEach(languageExt => delete v.site[property + languageExt]);
+    }
+    // If each block has the same property value, make that a site property instead
+    if (v.site.blocks.length > 0 && v.site.blocks.every(block => (block[property] != undefined && block[property] === v.site.blocks[0][property]))) {
+        (translations? t.languageExtList: [""]).forEach(languageExt => {
+            v.site[property + languageExt] = v.site.blocks[0][property + languageExt];
+            v.site.blocks.forEach(block => delete block[property + languageExt]);
+        });
+    }
+    // Return either a site or a block property HTML
+    if (v.site[property] != undefined) {
+        // Return site property HTML
+        return propertyTableHTMLs[0] += `<tr><th>${translate(t.plaintext_titles, property)}</th><td>${translations? translate(translations, v.site[property]): translate(v.site, property)}</td></tr>`;
+    } else if (v.site.blocks.length > 0 && v.site.blocks.some(block => (block[property] != undefined))) {
+        // Return block property HTML
+        propertyTableHTMLs[1] += `<tr><th>${translate(t.plaintext_titles, property)}</th>`;
+        v.site.blocks.forEach(function(block) {
+            propertyTableHTMLs[1] += `<td>${translations? translate(translations, block[property]): translate(block, property)}</td>`;
+        });
+        propertyTableHTMLs[1] += "</tr>"
+    } // Else do nothing...
 }
 
-function isBlockProperty(property) {
-    if (v.site[property] == )
-}
-*/
 async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (typeof (Worker) == "undefined") {
         throw new Error('Web workers not supported by the browser.')
@@ -1610,52 +1644,38 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             });
         }
     });
-/*
-    // Set site description
-    let sitePropertyTableHTML = "";
-    let blockPropertyTableHTML = "";
-    if (isBlockVariable("management")) {
-        sitePropertyTableHTML += 
-    } else {
-        blockPropertyTableHTML += 
+
+    let propertyTableHTMLs = ["", ""]; // ${translate(t.plaintext, "plot")} // <th></th><th>${translate(v.site, "Name", v.site.id)}</th>
+    concatenatePropertyTableHTMLs(propertyTableHTMLs, "management");
+    concatenatePropertyTableHTMLs(propertyTableHTMLs, "species");
+    concatenatePropertyTableHTMLs(propertyTableHTMLs, "soil_texture", t.soil_texture_choice_plaintext);
+    let blockPropertyTableHasHeading = (propertyTableHTMLs[1].length > 0);
+    let blockPropertyTablePreHTML = "<tr>";
+    if (blockPropertyTableHasHeading) {
+        blockPropertyTablePreHTML += "<th></th>";
+    }
+    v.site.blocks.forEach(function (block) {
+        blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`plot_visible_${block.id}`, v.chartColors[0], "", translate(t.tooltip, "togglePlotVisibility"), block.visible)}</td>`;
+    });
+    blockPropertyTablePreHTML += "</tr><tr>";
+    if (blockPropertyTableHasHeading) {
+        blockPropertyTablePreHTML += "<th></th>";
+    }
+    v.site.blocks.forEach(function (block) {
+        blockPropertyTablePreHTML += `<td class="block_name">${translate(block, "Name")}</td>`;
+    });
+    blockPropertyTablePreHTML += "</tr>";
+
+    let description = `
+    <p>${translate(v.site, "site_type_Name", (v.site.site_type === undefined) ? "" : v.site.site_type)}</p>
+    <p>${translate(v.site, "description", "")}</p>`;
+    if (propertyTableHTMLs[0].length > 0) {
+        description += `<table id="sitePropertyTable">${propertyTableHTMLs[0]}</table>`;
+    }
+    if (v.site.blocks.length > 0) {
+        description += `<table id="blockPropertyTable">${blockPropertyTablePreHTML}${propertyTableHTMLs[1]}</table>`;
     }
 
-*/
-    let managementHTML = (translate(v.site, "management", null) == null) ? '' : `
-    <tr>
-        <td>${translate(t.plaintext_titles, "management")}:</td>
-        <td>${translate(v.site, "management")}</td>
-    </tr>`; // Add to td: title="Ley farming refers to the growing of grass or legumes in rotation with grain or crops as a soil conservation measure. Grasses increase soil carbon content, while legumes are known especially for their ability to increase the amount of nitrogen in the soil."
-    let speciesHTML = (translate(v.site, "species", null) == null) ? '' : `
-    <tr>
-        <td>${translate(t.plaintext_titles, "species")}:</td>
-        <td>${translate(v.site, "species")}</td>
-    </tr>`;
-    let soilTypeHTML = undefined;
-    let blocksWithDifferentSoilTexture = v.site.blocks.filter(block => block.soil_texture !== undefined && block.soil_texture != null && block.soil_texture !== v.site.soil_texture);
-    if (blocksWithDifferentSoilTexture.length > 0) {
-        soilTypeHTML = v.site.blocks.map(block => `<td><span style="white-space: nowrap;">${translate(block, "Name")}</span><br>${translate(t.soil_texture_choice_plaintext, block.soil_texture)}</td>`).join(" ");
-    } else {
-        if (v.site.soil_texture != null) {
-            soilTypeHTML = `<td>${translate(t.soil_texture_choice_plaintext, v.site.soil_texture, "")}</td>`;
-        }
-    }
-    let description = `
-    <p style="animation:fadein 1s">${translate(v.site, "site_type_Name", (v.site.site_type === undefined) ? "" : v.site.site_type)}</p>
-    <p style="animation:fadein 1s">${translate(v.site, "description", "")}</p>            
-    <table style="animation:fadein 1s;">
-        ${managementHTML}
-    </table>
-    <table style="animation:fadein 1s;">
-        ${speciesHTML}
-    </table>
-    ${(soilTypeHTML !== undefined)? `
-    <table style="animation:fadein 1s;">
-        <tr>
-            <td style="vertical-align: top;">${translate(t.plaintext_titles, "soil_texture")}:</td>
-            ${soilTypeHTML}
-        </tr>
-    </table>`: ""}`;
     let satelliteImagesTitleElement = document.getElementById('Satellite_images');
     if (satelliteImagesTitleElement) {
         satelliteImagesTitleElement.innerHTML = translate(chartsJson.charts.find(chart => chart.id === "satelliteImages"), "title");
@@ -1743,7 +1763,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 let tooltipString = translate(t.tooltip, "selectSatelliteImageType");
                 v.charts[chartId].sourceCategoryList.forEach(function (sourceCategory) {
                     let visibleSymbolHtml;
-                    visibleSymbolHtml = getVisibleSymbolHtml(chartId, sourceCategory.id, v.chartColors[0], tooltipString, v.charts[chartId].visible[sourceCategory.id]);
+                    visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${sourceCategory.id}`, v.chartColors[0], `toggleLegendItemVisibility('${chartId}', '${sourceCategory.id}', event);`, tooltipString, v.charts[chartId].visible[sourceCategory.id]);
                     legend += `<span class="chart_legend_element">${visibleSymbolHtml}<span class="chart_legend_text">${translate(sourceCategory, "title")}</span></span>`;
                 });
             } else {
@@ -1751,9 +1771,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 v.charts[chartId].sources.forEach(function (source) {
                     let visibleSymbolHtml;
                     if (chartId === 'temperature' && source.rainbow !== undefined) {
-                        visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, `url(#chart_${chartId}_visible_${source.id}_gradient)`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
+                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, `url(#chart_${chartId}_visible_${source.id}_gradient)`, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', event);`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
                     } else {
-                        visibleSymbolHtml = getVisibleSymbolHtml(chartId, source.legendId, source.color, tooltipString, v.charts[chartId].visible[source.legendId]);
+                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, source.color, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', event);`, tooltipString, v.charts[chartId].visible[source.legendId]);
                     }
                     legend += `<span id="chart_${chartId}_legend_element_${source.legendId}" class="chart_legend_element"><span>${visibleSymbolHtml}</span><span class="chart_legend_text">${source.name}</span></span>`;
                 });
