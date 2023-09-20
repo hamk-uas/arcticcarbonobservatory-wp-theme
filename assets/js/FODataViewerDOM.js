@@ -1655,7 +1655,8 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         blockPropertyTablePreHTML += "<th></th>";
     }
     v.site.blocks.forEach(function (block) {
-        blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`plot_visible_${block.id}`, v.chartColors[0], "", translate(t.tooltip, "togglePlotVisibility"), block.visible)}</td>`;
+        block.visible = true;
+        blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`block_visible_${block.id}`, v.chartColors[0], `toggleBlockVisibility('${block.id}', event)`, translate(t.tooltip, "togglePlotVisibility"), block.visible)}</td>`;
     });
     blockPropertyTablePreHTML += "</tr><tr>";
     if (blockPropertyTableHasHeading) {
@@ -1717,9 +1718,6 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
 
     // Merge siteJson block properties into siteJson, overwriting existing properties
     siteJson.blocks.forEach(block => {
-        console.log(block.id);
-        console.log(v.site.blockIdToBlock);
-        console.log(block);
         Object.assign(v.site.blockIdToBlock[block.id], block);
     });
 
@@ -1763,7 +1761,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 let tooltipString = translate(t.tooltip, "selectSatelliteImageType");
                 v.charts[chartId].sourceCategoryList.forEach(function (sourceCategory) {
                     let visibleSymbolHtml;
-                    visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${sourceCategory.id}`, v.chartColors[0], `toggleLegendItemVisibility('${chartId}', '${sourceCategory.id}', event);`, tooltipString, v.charts[chartId].visible[sourceCategory.id]);
+                    visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${sourceCategory.id}`, v.chartColors[0], `toggleLegendItemVisibility('${chartId}', '${sourceCategory.id}', false, event);`, tooltipString, v.charts[chartId].visible[sourceCategory.id]);
                     legend += `<span class="chart_legend_element">${visibleSymbolHtml}<span class="chart_legend_text">${translate(sourceCategory, "title")}</span></span>`;
                 });
             } else {
@@ -1771,9 +1769,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 v.charts[chartId].sources.forEach(function (source) {
                     let visibleSymbolHtml;
                     if (chartId === 'temperature' && source.rainbow !== undefined) {
-                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, `url(#chart_${chartId}_visible_${source.id}_gradient)`, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', event);`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
+                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, `url(#chart_${chartId}_visible_${source.id}_gradient)`, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', false, event);`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
                     } else {
-                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, source.color, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', event);`, tooltipString, v.charts[chartId].visible[source.legendId]);
+                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, source.color, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', false, event);`, tooltipString, v.charts[chartId].visible[source.legendId]);
                     }
                     legend += `<span id="chart_${chartId}_legend_element_${source.legendId}" class="chart_legend_element"><span>${visibleSymbolHtml}</span><span class="chart_legend_text">${source.name}</span></span>`;
                 });
@@ -2350,7 +2348,35 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
     requestWorkerRefreshCharts(v.chartIds.filter(testChartId => testChartId !== chartId && !v.charts[testChartId].hidden), chartRefreshIndex);
 }
 
-function toggleLegendItemVisibility(chartId, legendId, event = null) {
+function toggleBlockVisibility(blockId, event = null) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    let block = v.site.blockIdToBlock[blockId];
+    block.visible = !block.visible;
+    if (block.visible) {
+        document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: visible";
+        document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: hidden";
+    } else {
+        document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: hidden";
+        document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: visible";
+    }
+    v.chartIds.forEach(function (chartId) {
+        if (chartId !== "satelliteImages" && chartId !== "global") {
+            let chart = v.charts[chartId];
+            chart.sources.forEach(function (source) {   
+                if (source.block === blockId) {
+                    if (chart.visible[source.legendId] !== block.visible) {
+                        toggleLegendItemVisibility(chartId, source.legendId, true);
+                    }
+                }
+            });
+        }
+    });
+}
+
+function toggleLegendItemVisibility(chartId, legendId, workerOnly = false, event = null) {
     if (event) {
         event.stopPropagation();
         event.preventDefault();
@@ -2375,7 +2401,7 @@ function toggleLegendItemVisibility(chartId, legendId, event = null) {
             // Make visible
             document.getElementById(`chart_${chartId}_visible_${legendId}_hidden`).style = "visibility: hidden";
             document.getElementById(`chart_${chartId}_visible_${legendId}_visible`).style = "visibility: visible";
-            chart.visible[legendId] = true;            
+            chart.visible[legendId] = true;   
             worker.postMessage({
                 command: "chartUpdate",
                 chartId: chartId,
@@ -2409,11 +2435,46 @@ function toggleLegendItemVisibility(chartId, legendId, event = null) {
             document.getElementById(`chart_${chartId}_visible_${legendId}_hidden`).style = "visibility: visible";
             document.getElementById(`chart_${chartId}_visible_${legendId}_visible`).style = "visibility: hidden";
             chart.visible[legendId] = false;
+            // If the source concerns a block that is visible, check if in all charts all sources concerning a block are hidden. If so, hide the block.
+            let source = chart.legendIdToSource[legendId];
+            if (source.block != undefined) {
+                let block = v.site.blockIdToBlock[source.block];
+                let blockId = block.id;
+                if (block.visible) {
+                    let someVisible = false;
+                    v.chartIds.forEach(function (chartId) {                
+                        if (chartId !== "satelliteImages" && chartId !== "global") {
+                            let chart = v.charts[chartId];
+                            chart.sources.forEach(function (source) {
+                                if (source.block === blockId) {                                    
+                                    if (chart.visible[source.legendId]) {
+                                        someVisible = true;
+                                    }
+                                }
+                            });
+                        }
+                    });                    
+                    if (!someVisible) {
+                        block.visible = false;
+                        document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: hidden";
+                        document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: visible";
+                    }
+                }                
+            }
         } else {
             // Make visible
             document.getElementById(`chart_${chartId}_visible_${legendId}_hidden`).style = "visibility: hidden";
             document.getElementById(`chart_${chartId}_visible_${legendId}_visible`).style = "visibility: visible";
             chart.visible[legendId] = true;
+            // If the source concerns a block that is hidden, make the block visible
+            let source = chart.legendIdToSource[legendId];
+            if (source.block != undefined) {
+                let block = v.site.blockIdToBlock[source.block];
+                let blockId = block.id;
+                block.visible = true;
+                document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: visible";
+                document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: hidden";
+            }
         }
         worker.postMessage({
             command: "chartUpdate",
@@ -2424,7 +2485,11 @@ function toggleLegendItemVisibility(chartId, legendId, event = null) {
         });
     }
     chartRefreshIndex++;
-    refreshChart(chartId, chartRefreshIndex);
+    if (workerOnly) {
+        mustRefreshChartIds[chartId] = true;
+    } else {
+        refreshChart(chartId, chartRefreshIndex);
+    }
     requestWorkerRefreshCharts(Object.keys(mustRefreshChartIds), chartRefreshIndex);
 }
 

@@ -726,11 +726,15 @@ function prepCharts(v, chartsJson) {
         } else {
             chart.sources.forEach(function (source) {
                 if (source.seriesCSVFields !== undefined) { 
-                    source.legendId = `${source.id}_${source.seriesCSVFields.val}`;
+                    source.legendId = `${source.id}_${source.seriesCSVFields.val}`;                    
                 } else if (source.seriesEventFields !== undefined) {
                     source.legendId = `${source.id}_${source.seriesEventFields.val}`;
                 }
                 chart.visible[source.legendId] = true;
+                if (!chart.legendIdToSource) {
+                    chart.legendIdToSource = {};
+                }
+                chart.legendIdToSource[source.legendId] = source;
             });
             if (chart.relatedSatelliteImage !== undefined && v.charts[chart.relatedSatelliteImage.chart] !== undefined && v.charts[chart.relatedSatelliteImage.chart].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId] !== undefined) {
                 v.charts[chart.relatedSatelliteImage.chart].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].relatedChart = chart.id;
