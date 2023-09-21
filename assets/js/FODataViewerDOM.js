@@ -1656,7 +1656,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
     v.site.blocks.forEach(function (block) {
         block.visible = true;
-        blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`block_visible_${block.id}`, v.chartColors[0], `toggleBlockVisibility('${block.id}', event)`, translate(t.tooltip, "togglePlotVisibility"), block.visible)}</td>`;
+        blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`block_visible_${block.id}`, v.chartColors[0], `toggleBlockVisibility('${block.id}', true, event)`, translate(t.tooltip, "legendItemVisibility"), block.visible)}</td>`;
     });
     blockPropertyTablePreHTML += "</tr><tr>";
     if (blockPropertyTableHasHeading) {
@@ -1761,7 +1761,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 let tooltipString = translate(t.tooltip, "selectSatelliteImageType");
                 v.charts[chartId].sourceCategoryList.forEach(function (sourceCategory) {
                     let visibleSymbolHtml;
-                    visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${sourceCategory.id}`, v.chartColors[0], `toggleLegendItemVisibility('${chartId}', '${sourceCategory.id}', false, event);`, tooltipString, v.charts[chartId].visible[sourceCategory.id]);
+                    visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${sourceCategory.id}`, v.chartColors[0], `toggleLegendItemVisibility('${chartId}', '${sourceCategory.id}', true, event);`, tooltipString, v.charts[chartId].visible[sourceCategory.id]);
                     legend += `<span class="chart_legend_element">${visibleSymbolHtml}<span class="chart_legend_text">${translate(sourceCategory, "title")}</span></span>`;
                 });
             } else {
@@ -1769,9 +1769,9 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                 v.charts[chartId].sources.forEach(function (source) {
                     let visibleSymbolHtml;
                     if (chartId === 'temperature' && source.rainbow !== undefined) {
-                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, `url(#chart_${chartId}_visible_${source.id}_gradient)`, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', false, event);`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
+                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, `url(#chart_${chartId}_visible_${source.id}_gradient)`, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', true, event);`, tooltipString, v.charts[chartId].visible[source.legendId], getTemperatureGradientHtml(`chart_${chartId}_visible_${source.id}_gradient`, 0, 620, 0, 584, -50, 50));
                     } else {
-                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, source.color, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', false, event);`, tooltipString, v.charts[chartId].visible[source.legendId]);
+                        visibleSymbolHtml = getVisibleSymbolHtml(`chart_${chartId}_visible_${source.legendId}`, source.color, `toggleLegendItemVisibility('${chartId}', '${source.legendId}', true, event);`, tooltipString, v.charts[chartId].visible[source.legendId]);
                     }
                     legend += `<span id="chart_${chartId}_legend_element_${source.legendId}" class="chart_legend_element"><span>${visibleSymbolHtml}</span><span class="chart_legend_text">${source.name}</span></span>`;
                 });
@@ -2077,7 +2077,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                         let mapSourceId = `satelliteImage_${source.id}_${geoTiff.index}`;
                         let geoJson = {
                             'type': 'FeatureCollection',
-                            'features': []
+                            'features': [],
+                            'properties': {
+                                block: 123
+                            }
                         };
                         let iter = data[0].values();
                         // Precalculate coordinates of pixel corners
@@ -2126,8 +2129,8 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
                         if (v.satelliteImageSourceToGeoTiff === undefined) {
                             v.satelliteImageSourceToGeoTiff = {};
                         }
-                        v.satelliteImageSourceToGeoTiff[mapSourceId] = geoTiff;
-                        if (geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && new Date(geoTiff.time).valueOf() == v.satelliteImageDate) {
+                        v.satelliteImageSourceToGeoTiff[mapSourceId] = geoTiff;                        
+                        if (v.site.blockIdToBlock[geoTiff.source.block].visible && geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && new Date(geoTiff.time).valueOf() == v.satelliteImageDate) {
                             addSatelliteImageLayer(mapSourceId, cmap[geoTiff.source.sourceType]);
                         }
                     }
@@ -2348,7 +2351,7 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
     requestWorkerRefreshCharts(v.chartIds.filter(testChartId => testChartId !== chartId && !v.charts[testChartId].hidden), chartRefreshIndex);
 }
 
-function toggleBlockVisibility(blockId, event = null) {
+function toggleBlockVisibility(blockId, userInitiated, event = null) {
     if (event) {
         event.stopPropagation();
         event.preventDefault();
@@ -2362,21 +2365,55 @@ function toggleBlockVisibility(blockId, event = null) {
         document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: hidden";
         document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: visible";
     }
-    v.chartIds.forEach(function (chartId) {
-        if (chartId !== "satelliteImages" && chartId !== "global") {
-            let chart = v.charts[chartId];
-            chart.sources.forEach(function (source) {   
-                if (source.block === blockId) {
-                    if (chart.visible[source.legendId] !== block.visible) {
-                        toggleLegendItemVisibility(chartId, source.legendId, true);
-                    }
-                }
-            });
+    worker.postMessage({
+        command: "blockUpdate",
+        blockId: blockId,
+        blockUpdate: {
+            visible: block.visible
         }
     });
+    let mustRefreshChartIds = {};
+    if (userInitiated) {
+        v.chartIds.forEach(function (chartId) {
+            if (chartId !== "satelliteImages" && chartId !== "global") {
+                let charts = [v.charts[chartId]];
+                charts.forEach(function (chart) {
+                    chart.sources.forEach(function (source) {
+                        if (source.block === blockId) {
+                            if (chart.visible[source.legendId] !== block.visible) {
+                                toggleLegendItemVisibility(chartId, source.legendId, false);
+                                mustRefreshChartIds[chartId] = true;
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    }
+    let globalChart = v.charts["global"];
+    if (globalChart) {
+        globalChart.sources.forEach(function (source) {
+            if (source.block === blockId) {
+                v.chartIds.forEach(function (chartId) {
+                    if (chartId !== "global") {
+                        mustRefreshChartIds[chartId] = true;
+                    }
+                });
+            }
+        });
+    }
+    chartRefreshIndex++;
+    if (userInitiated) {
+        refreshChart("satelliteImages", chartRefreshIndex);
+        requestWorkerRefreshCharts(Object.keys(mustRefreshChartIds).filter(chartId => chartId !== "global" && chartId !== "satelliteImages"), chartRefreshIndex);
+        whenMapLoadedDo(removeSatelliteImageLayers);
+        whenMapLoadedDo(addSatelliteImageLayersFromAvailableSources);
+    } else {
+        return mustRefreshChartIds;
+    }
 }
 
-function toggleLegendItemVisibility(chartId, legendId, workerOnly = false, event = null) {
+function toggleLegendItemVisibility(chartId, legendId, userInitiated, event = null) {
     if (event) {
         event.stopPropagation();
         event.preventDefault();
@@ -2440,7 +2477,7 @@ function toggleLegendItemVisibility(chartId, legendId, workerOnly = false, event
             if (source.block != undefined) {
                 let block = v.site.blockIdToBlock[source.block];
                 let blockId = block.id;
-                if (block.visible) {
+                if (userInitiated && block.visible) {
                     let someVisible = false;
                     v.chartIds.forEach(function (chartId) {                
                         if (chartId !== "satelliteImages" && chartId !== "global") {
@@ -2455,9 +2492,7 @@ function toggleLegendItemVisibility(chartId, legendId, workerOnly = false, event
                         }
                     });                    
                     if (!someVisible) {
-                        block.visible = false;
-                        document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: hidden";
-                        document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: visible";
+                        mustRefreshChartIds = {...mustRefreshChartIds, ...toggleBlockVisibility(blockId, false)};
                     }
                 }                
             }
@@ -2468,12 +2503,12 @@ function toggleLegendItemVisibility(chartId, legendId, workerOnly = false, event
             chart.visible[legendId] = true;
             // If the source concerns a block that is hidden, make the block visible
             let source = chart.legendIdToSource[legendId];
-            if (source.block != undefined) {
+            if (userInitiated && source.block != undefined) {
                 let block = v.site.blockIdToBlock[source.block];
                 let blockId = block.id;
-                block.visible = true;
-                document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: visible";
-                document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: hidden";
+                if (!block.visible) {
+                    mustRefreshChartIds = {...mustRefreshChartIds, ...toggleBlockVisibility(blockId, false)};
+                }
             }
         }
         worker.postMessage({
@@ -2485,12 +2520,13 @@ function toggleLegendItemVisibility(chartId, legendId, workerOnly = false, event
         });
     }
     chartRefreshIndex++;
-    if (workerOnly) {
-        mustRefreshChartIds[chartId] = true;
-    } else {
+    if (userInitiated) {
         refreshChart(chartId, chartRefreshIndex);
+        requestWorkerRefreshCharts(Object.keys(mustRefreshChartIds).filter(key => key !== chartId), chartRefreshIndex);
+    } else {
+        mustRefreshChartIds[chartId] = true;
+        requestWorkerRefreshCharts(Object.keys(mustRefreshChartIds), chartRefreshIndex);
     }
-    requestWorkerRefreshCharts(Object.keys(mustRefreshChartIds), chartRefreshIndex);
 }
 
 function removeSatelliteImageLayers() {
@@ -2570,8 +2606,8 @@ function addSatelliteImageLayer(mapSourceId, colorMap) {
 function addSatelliteImageLayersFromAvailableSources() {    
     for (let mapSourceId in map.getStyle().sources) {
         if (v.satelliteImageSourceToGeoTiff !== undefined && v.satelliteImageSourceToGeoTiff[mapSourceId] !== undefined) {
-            let geoTiff = v.satelliteImageSourceToGeoTiff[mapSourceId];            
-            if (geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && new Date(geoTiff.time).valueOf() == v.satelliteImageDate) {
+            let geoTiff = v.satelliteImageSourceToGeoTiff[mapSourceId];
+            if (v.site.blockIdToBlock[geoTiff.source.block].visible && geoTiff.source.sourceCategoryId === v.satelliteImageLegendId && new Date(geoTiff.time).valueOf() == v.satelliteImageDate) {
                 addSatelliteImageLayer(mapSourceId, cmap[geoTiff.source.sourceType]);
             }
         }
@@ -2595,7 +2631,7 @@ function selectNearestSatelliteImage(legendId, date, event = null) {
         });
         if (v.satelliteImageLegendId !== legendId) {
             setSatelliteImageDate(bestDate, null, false);
-            toggleLegendItemVisibility("satelliteImages", legendId);
+            toggleLegendItemVisibility("satelliteImages", legendId, false);
         } else {
             setSatelliteImageDate(bestDate);
         }

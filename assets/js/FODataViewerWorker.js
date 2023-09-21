@@ -186,7 +186,7 @@ async function loadData() {
                     }
                 }
             });
-        } else if (source.jsonList !== undefined) {
+        } else if (source.jsonList !== undefined) {            
             source.jsonList.forEach(function (json, jsonListIndex) {
                 // Load JSON file
                 if (json.loaded === undefined) {
@@ -341,6 +341,9 @@ onmessage = function (e) {
             break;
         case "chartUpdate": // Update chart properties
             v.charts[e.data.chartId] = { ...v.charts[e.data.chartId], ...e.data.chartUpdate }; // Merge new vars into old vars with overwriting
+            break;
+        case "blockUpdate": // Update block properties
+            v.site.blockIdToBlock[e.data.blockId] = { ...v.site.blockIdToBlock[e.data.blockId], ...e.data.blockUpdate }; // Merge new vars into old vars with overwriting
             break;
         case "loadData":
             loadData();

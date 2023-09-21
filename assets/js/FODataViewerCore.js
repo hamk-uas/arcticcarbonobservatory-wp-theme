@@ -298,9 +298,9 @@ var t = {
         "useTwoFingersToMoveTheMap_fi": "Liikuta karttaa kahdella sormella",
         "useTwoFingersToMoveTheMap_sv": "Använd två fingrar för att flytta på kartan",
         /* Satellite image selector */
-        "toggleSatelliteImages": $ => `Show/hide ${$.numImages} images\n${$.dateString}`,
-        "toggleSatelliteImages_fi": $ => `Näytä/piilota ${$.numImages} kuvaa\n${$.dateString}`,
-        "toggleSatelliteImages_sv": $ => `Visa/dölj ${$.numImages} bilder\n${$.dateString}`,
+        "toggleSatelliteImages": $ => `Show/hide ${$.numImages? $.numImages + " ": ""}images\n${$.dateString}`,
+        "toggleSatelliteImages_fi": $ => `Näytä/piilota ${$.numImages? $.numImages + " kuvaa": "kuvat"}\n${$.dateString}`,
+        "toggleSatelliteImages_sv": $ => `Visa/dölj ${$.numImages? $.numImages + " ": ""}bilder\n${$.dateString}`,
         /* Selected satellite image date indicator */
         "satellite": $ => `Selected satellite image date\n${$.dateString}`,
         "satellite_fi": $ => `Valittu satelliittikuvan päivämäärä\n${$.dateString}`,
@@ -2091,7 +2091,8 @@ function getDrawingHtmls(v, chartId, standalone = false) {
             if (chart.visible[sourceCategory.id]) {
                 sourceCategory.geoTiffDates.forEach(function (date, index) {
                     let x = ((date - v.startDate) * pixelsPerMillisecond);
-                    if (x >= -20 && x <= v.dimensions.width + 20) {
+                    let numImages = sourceCategory.dateToGeoTiffList[date].filter(geoTiff => v.site.blockIdToBlock[geoTiff.source.block].visible).length;
+                    if (numImages > 0 && x >= -20 && x <= v.dimensions.width + 20) {
                         let color = v.disabledColor;                        
                         let selected = false;
                         if (date === v.satelliteImageDate) {
@@ -2100,9 +2101,9 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                         }
                         let dateObject = new Date(date);
                         let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                        let tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: sourceCategory.dateToGeoTiffList[date].length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                        let tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: numImages, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
                         drawingHtml += `<circle id="${circleId}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}"><title>${tooltipString}</title></circle>`;
-                        drawingHtml += `<text pointer-events="none" font-family="sans-serif" font-size="18px" ${(selected) ? 'font-weight="bold"' : ''} fill="${color}" text-anchor="middle" dominant-baseline="middle" x="${x.toFixed(1)}" y="${height / 2 + 2}">${sourceCategory.dateToGeoTiffList[date].length}</text>`;
+                        drawingHtml += `<text pointer-events="none" font-family="sans-serif" font-size="18px" ${(selected) ? 'font-weight="bold"' : ''} fill="${color}" text-anchor="middle" dominant-baseline="middle" x="${x.toFixed(1)}" y="${height / 2 + 2}">${numImages}</text>`;
                         if (date === v.satelliteImageDate && !cursorDrawn) {
                             drawingHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="${-v.dimensions.topMargin/2}" x2="${x.toFixed(1)}" y2="${height}" stroke="${v.chartColors[0]}" stroke-width="1" stroke-dasharray="4" />`;
                             cursorDrawn = true;
@@ -2255,10 +2256,10 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                             if (chart.relatedSatelliteImage !== undefined && !standalone && v.charts["satelliteImages"] !== undefined && v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId] !== undefined) {
                                 let date = Math.round(v.startDate + useDate / pixelsPerMillisecond);
                                 let dateObject = new Date(date);
-                                let geoTiffList = v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].dateToGeoTiffList[date];
+                                let geoTiffList = v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].dateToGeoTiffList[date];                                
                                 if (geoTiffList !== undefined) {
                                     clickStr = `cursor="pointer" onclick="selectNearestSatelliteImage('${chart.relatedSatelliteImage.sourceCategoryId}', ${v.startDate + useDate / pixelsPerMillisecond}, event)" onmousedown = "preventDefault(event)"`;
-                                    tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: geoTiffList.length, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                                    tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
                                 }
                             }                            
                             if (tooltipString !== undefined) {
@@ -2454,8 +2455,8 @@ function getDrawingHtmls(v, chartId, standalone = false) {
     let yOffset = 0;
     if (v.charts["global"] !== undefined) {
         v.charts["global"].sources.forEach(function (source, sourceIndex) {
-            if (source.sourceType === "mgmt_event") {
-                source.jsonList.forEach(function (json, jsonIndex) {
+            if (source.sourceType === "mgmt_event") {                
+                if (source.block == undefined || v.site.blockIdToBlock[source.block].visible) source.jsonList.forEach(function (json, jsonIndex) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
                         if (json.loaded === undefined) {
                             loading = true;
