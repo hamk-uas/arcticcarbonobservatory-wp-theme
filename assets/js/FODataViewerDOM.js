@@ -793,7 +793,7 @@ async function unviewSiteSelectorAndViewSite(site) {
     //Hide filters
     var filterContainer = document.getElementById("mapFilterContainer");
     window.onpopstate = defaultPopstateHandler;
-    handleEsc = undefined;    
+    handleEsc = undefined;
     updateState({ site: site });
     removeMapEventHandlers();
     popup.remove();
@@ -1654,8 +1654,23 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     if (blockPropertyTableHasHeading) {
         blockPropertyTablePreHTML += "<th></th>";
     }
+    if (history.state.blocks !== undefined) {
+        v.site.blocks.forEach(function (block) {
+            block.visible = false;
+        });
+        let visibleBlocks = history.state.blocks.split("-");
+        visibleBlocks.forEach(function (blockId) {
+            let block = v.site.blockIdToBlock[blockId];
+            if (block !== undefined) {
+                block.visible = true;
+            }
+        });
+    } else {
+        v.site.blocks.forEach(function (block) {
+            block.visible = true;
+        });        
+    }
     v.site.blocks.forEach(function (block) {
-        block.visible = true;
         blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`block_visible_${block.id}`, v.chartColors[0], `toggleBlockVisibility('${block.id}', true, event)`, translate(t.tooltip, "legendItemVisibility"), block.visible)}</td>`;
     });
     blockPropertyTablePreHTML += "</tr><tr>";
@@ -1747,6 +1762,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             }
         } else {
             if (!chart.hidden) {                
+                chart.sources.forEach(function (source) {
+                    if (source.block !== undefined) {
+                        chart.visible[source.legendId] = v.site.blockIdToBlock[source.block].visible;
+                    }
+                });
                 document.getElementById(foConfig.chartContainerElementId).insertAdjacentHTML("beforeend", getChartDivOuterHtml(v, chartId));
             }
         }
@@ -2218,7 +2238,7 @@ function unviewSiteAndViewSiteSelector() {
         }
     });
     document.getElementById("dataCredits").remove();
-    updateState({ site: undefined });
+    updateState({ site: undefined, blocks: undefined });
     document.body.classList.remove('Site');
     document.body.classList.remove('Obfuscated');    
     // ***
@@ -2351,13 +2371,36 @@ function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refr
     requestWorkerRefreshCharts(v.chartIds.filter(testChartId => testChartId !== chartId && !v.charts[testChartId].hidden), chartRefreshIndex);
 }
 
-function toggleBlockVisibility(blockId, userInitiated, event = null) {
+function toggleBlockVisibility(blockId, userInitiated, event = null) {    
     if (event) {
         event.stopPropagation();
         event.preventDefault();
     }
     let block = v.site.blockIdToBlock[blockId];
     block.visible = !block.visible;
+
+    // Update history.state
+    stateUpdate = {
+        blocks: ""
+    }
+    let someBlocksInvisible = false;
+    v.site.blocks.forEach(function (block) {            
+        if (block.visible) {
+            if (stateUpdate.blocks.length > 0) {
+                stateUpdate.blocks += "-" + [block.id];
+            } else {
+                stateUpdate.blocks += [block.id];
+            }
+        } else {
+            someBlocksInvisible = true;
+        }
+    });
+    if (someBlocksInvisible) {
+        updateState(stateUpdate);
+    } else {
+        updateState({ blocks: undefined });
+    }
+
     if (block.visible) {
         document.getElementById(`block_visible_${blockId}_visible`).style = "visibility: visible";
         document.getElementById(`block_visible_${blockId}_hidden`).style = "visibility: hidden";
