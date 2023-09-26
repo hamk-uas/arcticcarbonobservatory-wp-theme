@@ -202,7 +202,7 @@ function setState(state) {
     url.search = new URLSearchParams(state);
     history.replaceState(state, "", url.href);
     // Wordpress-specific: include url parameters in language selector
-    for (let languageParent of document.getElementsByClassName("lang-item")) {        
+    for (let languageParent of document.getElementsByClassName("lang-item")) {
         let languageA = languageParent.firstChild;
         if (languageA !== undefined) {
             let languageHref = languageA.href;
@@ -212,7 +212,7 @@ function setState(state) {
                 languageA.href = languageUrl.href;
             }
         }
-    }      
+    }
 }
 
 // Init state from location URL parameters
