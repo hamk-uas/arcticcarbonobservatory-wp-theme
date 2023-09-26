@@ -588,11 +588,10 @@ function viewSiteSelectorAfterLoadingEssentials() {
             /*while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }*/
-            var siteType = sitesGeoJson.features[siteIndex].properties.site_type;
             popup
                 .setLngLat(coordinates)
                 .setOffset([0, -25])
-                .setHTML('<h1>' + sitesGeoJson.features[siteIndex].properties.Name + '</h1><p>' + translate(siteTypes[siteType].properties, "site_type_Name", siteType) + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
+                .setHTML('<h1>' + sitesGeoJson.features[siteIndex].properties.Name + '</h1><p>' + sitesGeoJson.features[siteIndex].properties.siteTypeList.map(siteType => translate(siteTypes[siteType].properties, "site_type_Name", siteType)).join('</p><p>') + '</p><h2>' + translate(t.plaintext_titles, "click_to_view_data") + '</h2>')
                 .addTo(map);
         }
 
@@ -1567,12 +1566,12 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         sources: {}, // Dictionary: source ID => source object. These will not have parameters merged from sourceTypes.
         dimensions: { // Chart SVG dimensions in pixels.
             width: 640, // Drawing area width.
-            height: 350, // Drawing area height. Was: 450
-            satelliteImagesHeight: 98, // Drawing area height for satelliteImages chart. 53 is a good narrow value
+            height: 350, // Drawing area height.
+            satelliteImagesHeight: 98, // Drawing area height for satelliteImages chart.
             yAxisAreaWidth: 80, // Left axis area width.
             leftMargin: 20, // Left margin width.
             rightMargin: 20, // Right margin width.
-            topMargin: 47, // Top margin height. (Was 25 until 16.6.2021)
+            topMargin: 47, // Top margin height.
             bottomMargin: 40 // Bottom axis area height.
         },
         satelliteImageDate: 0,        
