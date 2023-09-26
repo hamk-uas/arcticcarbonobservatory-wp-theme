@@ -113,13 +113,17 @@ async function loadEssentials() {
         }
         return response.json();
     }
-
-    let siteSelectorViewPromises = [
-        fetch(`${foConfig.storageUrl}/fieldobs_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { sitesGeoJson = json; })
-    ];
-    let siteViewPromises = [
+    let geoJsonPromises = [
+        fetch(`${foConfig.storageUrl}/fieldobs_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { sitesGeoJson = json; }),
         fetch(`${foConfig.storageUrl}/fieldobs_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { blocksGeoJson = json; }),
-        fetch(`${foConfig.storageUrl}/fieldobs_mapbackgrounds_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson)).catch(async (e) => ({features: []})).then(json => { mapbackgroundsJson = json; }),
+        fetch(`${foConfig.storageUrl}/fieldobs_mapbackgrounds_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => fetch(`${foConfig.storageUrl}/fieldobs_sites_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson)).catch(async (e) => ({features: []})).then(json => { mapbackgroundsJson = json; })
+    ];
+    if (history.state.demo !== undefined) {
+        geoJsonPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
+        geoJsonPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
+        geoJsonPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_mapbackgrounds_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson)).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
+    }
+    let promises = [
         fetch(foConfig.managementEventSchemaJsonUrl).then(getJson).then(json => {
             managementEventSchemaJson = json;
             compileJsonSchema(managementEventSchemaJson);
@@ -136,55 +140,53 @@ async function loadEssentials() {
             }
             console.log("countryBorders:");
             console.log(countryBorders);
-        })
-    ];
-    if (history.state.demo !== undefined) {
-        siteSelectorViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_sites_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoSitesGeoJson = json; demoSitesGeoJson.features.forEach(feature => feature.properties.demo = true); }));
-        siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_blocks_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).then(async (json) => { demoBlocksGeoJson = json }));
-        siteViewPromises.push(fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_mapbackgrounds_translated.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson).catch(async (e) => fetch(`${foConfig.demoStorageUrl}/${history.state.demo}_site_mapbackgrounds.geojson?date=${getCacheRefreshDate(foConfig.now)}`).then(getJson)).catch(async (e) => ({features: []})).then(async (json) => {demoMapbackgroundsJson = json;}));
-    }
-    let promises = [
-        Promise.all(siteSelectorViewPromises).then(async function () {
+        }),
+        Promise.all(geoJsonPromises).then(async function () {
+            // Store site storage url in sitesGeoJson
             sitesGeoJson.features.forEach(function (feature) {
                 feature.properties.storageUrl = foConfig.storageUrl;
             });
+            // Handle demo geojsons
             if (history.state.demo !== undefined) {
                 demoSitesGeoJson.features.forEach(function (feature) {
                     feature.properties.storageUrl = foConfig.demoStorageUrl;
                 });
                 sitesGeoJson.features.push(...demoSitesGeoJson.features);
+                blocksGeoJson.features.push(...demoBlocksGeoJson.features);
+                mapbackgroundsJson.features.push(...demoMapbackgroundsJson.features);
             };
-            // Find unique site types
-            sitesGeoJson.features.forEach(function (feature) {
-                if (siteTypes[feature.properties.site_type] === undefined) {
+            // For each site, create siteTypes dict and siteTypeList list
+            let siteFeatures = {};
+            sitesGeoJson.features.forEach(function (siteFeature) {
+                siteFeatures[siteFeature.properties.id] = siteFeature;
+                siteFeature.properties.siteTypes = {};
+                siteFeature.properties.siteTypeList = [];
+            });
+            // In each block
+            blocksGeoJson.features.forEach(function (feature) {
+                // Add any novel site type to siteTypes, siteTypeList and filterSiteTypeEnabled
+                if (siteTypes[feature.properties.site_type] === undefined) {                    
                     siteTypes[feature.properties.site_type] = feature; // sample feature
                     siteTypeList.push(feature.properties.site_type);
                     filterSiteTypeEnabled[feature.properties.site_type] = true;
+                }
+                // Add any novel site type to the site's siteypes and siteTypeList
+                let siteFeature = siteFeatures[feature.properties.site];                
+                if (!siteFeature.properties.siteTypes[feature.properties.site_type]) {
+                    siteFeature.properties.siteTypes[feature.properties.site_type] = true;
+                    siteFeature.properties.siteTypeList.push(feature.properties.site_type);
                 }
             });
             siteSelectorMapView = {
                 ...siteSelectorMapView,
                 bounds: getBoundingBox(sitesGeoJson.features),
             }
-            if (getSiteId() === undefined && foConfig.mapEnabled) {
-                initMap(siteSelectorMapView);
-            };
-        }),
-        Promise.all(siteViewPromises).then(async function () {
-            if (history.state.demo !== undefined) {
-                blocksGeoJson.features.push(...demoBlocksGeoJson.features);
-                mapbackgroundsJson.features.push(...demoMapbackgroundsJson.features);
-            };
-            if (getSiteId() !== undefined) {
-                // Init map view to site blocks
-                let filteredFeatures = blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId()));
-                if (filteredFeatures.length == 0) {
-                    filteredFeatures = blocksGeoJson.features;
-                }
-                if (foConfig.mapEnabled) {
+            if (foConfig.mapEnabled) {
+                if (getSiteId() === undefined) {                
+                    initMap(siteSelectorMapView);
+                } else {
                     initMap({
-                        ...siteMapView/*,
-                        bounds: getBoundingBox(filteredFeatures)*/
+                        ...siteMapView
                     });
                 }
             }
@@ -631,7 +633,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 }
                 // Find nearest other feature
                 for (let [index, feature] of sitesGeoJson.features.entries()) {
-                    if (index != clickedIndex && filterSiteTypeEnabled[feature.properties.site_type]) {
+                    if (index != clickedIndex && feature.properties.siteTypeList.some(site_type => filterSiteTypeEnabled[site_type])) {
                         let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
                         let distanceSquared = (xy.x - clickedXY.x)*(xy.x - clickedXY.x) + (xy.y - clickedXY.y)*(xy.y - clickedXY.y);
                         if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
@@ -642,7 +644,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
             } else {                
                 // Find clicked feature
                 for (let [index, feature] of sitesGeoJson.features.entries()) {
-                    if (filterSiteTypeEnabled[feature.properties.site_type]) {
+                    if (feature.properties.siteTypeList.some(site_type => filterSiteTypeEnabled[site_type])) {
                         let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
                         let distanceSquared = (xy.x - e.point.x)*(xy.x - e.point.x) + (xy.y - e.point.y)*(xy.y - e.point.y);
                         if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
@@ -657,7 +659,7 @@ function viewSiteSelectorAfterLoadingEssentials() {
                 for (let referenceFeature of e.features) {
                     let referenceXY = map.project({lng: referenceFeature.properties.lon, lat: referenceFeature.properties.lat});
                     for (let feature of sitesGeoJson.features) {
-                        if (referenceFeature.properties.id !== feature.properties.id && filterSiteTypeEnabled[feature.properties.site_type]) {
+                        if (referenceFeature.properties.id !== feature.properties.id && feature.properties.siteTypeList.some(site_type => filterSiteTypeEnabled[site_type])) {
                             let xy = map.project({lng: feature.properties.lon, lat: feature.properties.lat});
                             let distanceSquared = (xy.x - referenceXY.x)*(xy.x - referenceXY.x) + (xy.y - referenceXY.y)*(xy.y - referenceXY.y);
                             if (smallestDistanceSquared === undefined || distanceSquared < smallestDistanceSquared) {
@@ -770,8 +772,8 @@ function checkCheckBoxes() {
     filterSiteTypeEnabled = {}
     let filterList = siteTypeList.filter(function (siteType) {
         filterSiteTypeEnabled[siteType] = document.getElementById(`checkBox${siteType.replaceAll(' ', '')}`).checked;
-        return filterSiteTypeEnabled[siteType];
-    }).map(siteType => ['==', ['get', 'site_type'], siteType]);
+        return filterSiteTypeEnabled[siteType];        
+    }).map(siteType => ['in', siteType, ['get', 'siteTypeList']]);
 
     let base = ['any'];
     let filter = base.concat(filterList);
@@ -1530,12 +1532,12 @@ function concatenatePropertyTableHTMLs(propertyTableHTMLs, property, translation
     // Return either a site or a block property HTML
     if (v.site[property] != undefined) {
         // Return site property HTML
-        return propertyTableHTMLs[0] += `<tr><th>${translate(t.plaintext_titles, property)}</th><td>${translations? translate(translations, v.site[property]): translate(v.site, property)}</td></tr>`;
+        return propertyTableHTMLs[0] += `<tr class="propertyTableRow"><th>${translate(t.plaintext_titles, property)}</th><td>${translations? translate(translations, v.site[property]): translate(v.site, property)}</td></tr>`;
     } else if (v.site.blocks.length > 0 && v.site.blocks.some(block => (block[property] != undefined))) {
         // Return block property HTML
-        propertyTableHTMLs[1] += `<tr><th>${translate(t.plaintext_titles, property)}</th>`;
+        propertyTableHTMLs[1] += `<tr class="propertyTableRow"><th>${translate(t.plaintext_titles, property)}</th>`;
         v.site.blocks.forEach(function(block) {
-            propertyTableHTMLs[1] += `<td>${translations? translate(translations, block[property]): translate(block, property)}</td>`;
+            propertyTableHTMLs[1] += `<td class="blockPropertyTableElement">${translations? translate(translations, block[property]): translate(block, property)}</td>`;
         });
         propertyTableHTMLs[1] += "</tr>"
     } // Else do nothing...
@@ -1646,6 +1648,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     });
 
     let propertyTableHTMLs = ["", ""]; // ${translate(t.plaintext, "plot")} // <th></th><th>${translate(v.site, "Name", v.site.id)}</th>
+    concatenatePropertyTableHTMLs(propertyTableHTMLs, "site_type_Name");
     concatenatePropertyTableHTMLs(propertyTableHTMLs, "management");
     concatenatePropertyTableHTMLs(propertyTableHTMLs, "species");
     concatenatePropertyTableHTMLs(propertyTableHTMLs, "soil_texture", t.soil_texture_choice_plaintext);
@@ -1671,19 +1674,19 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         });        
     }
     v.site.blocks.forEach(function (block) {
-        blockPropertyTablePreHTML += `<td>${getVisibleSymbolHtml(`block_visible_${block.id}`, v.chartColors[0], `toggleBlockVisibility('${block.id}', true, event)`, translate(t.tooltip, "legendItemVisibility"), block.visible)}</td>`;
+        blockPropertyTablePreHTML += `<td class="blockPropertyTableElement">${getVisibleSymbolHtml(`block_visible_${block.id}`, v.chartColors[0], `toggleBlockVisibility('${block.id}', true, event)`, translate(t.tooltip, "legendItemVisibility"), block.visible)}</td>`;
     });
     blockPropertyTablePreHTML += "</tr><tr>";
     if (blockPropertyTableHasHeading) {
         blockPropertyTablePreHTML += "<th></th>";
     }
     v.site.blocks.forEach(function (block) {
-        blockPropertyTablePreHTML += `<td class="block_name">${translate(block, "Name")}</td>`;
+        blockPropertyTablePreHTML += `<td class="block_name blockPropertyTableElement"">${translate(block, "Name")}</td>`;
     });
     blockPropertyTablePreHTML += "</tr>";
 
-    let description = `
-    <p>${translate(v.site, "site_type_Name", (v.site.site_type === undefined) ? "" : v.site.site_type)}</p>
+    description = ''; // `<p class="siteTypes">${v.site.siteTypeList.map(siteType => translate(siteTypes[siteType].properties, "site_type_Name", siteType)).join(', ')}</p>`;
+    description += `
     <p>${translate(v.site, "description", "")}</p>`;
     if (propertyTableHTMLs[0].length > 0) {
         description += `<table id="sitePropertyTable">${propertyTableHTMLs[0]}</table>`;
@@ -1993,10 +1996,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         offlineDataStr += '<p>Tuomas Mattila. (2020). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2019 [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.3670653" target="_blank">http://doi.org/10.5281/zenodo.3670653</a></p>';
     }
     if (v.site.id === "ae" || v.site.id === "ai" || v.site.id === "ik" || v.site.id === "ja" || v.site.id === "jn" || v.site.id === "ki" || v.site.id === "ko" || v.site.id === "kp" || v.site.id === "la" || v.site.id === "li" || v.site.id === "mi" || v.site.id === "mo" || v.site.id === "mu" || v.site.id === "na" || v.site.id === "ne" || v.site.id === "ni" || v.site.id === "pa" || v.site.id === "pi" || v.site.id === "pu" || v.site.id === "si") {
-        offlineDataStr += '<p">Mattila, Tuomas, & Heinonen, Reija. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2020 [Data set]. Zenodo. <a href="http://doi.org/10.5281/zenodo.4068271" target="_blank">http://doi.org/10.5281/zenodo.4068271</a></p>';
+        offlineDataStr += '<p>Mattila, Tuomas, & Heinonen, Reija. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2020 [Data set]. Zenodo. <a href="http://doi.org/10.5281/zenodo.4068271" target="_blank">http://doi.org/10.5281/zenodo.4068271</a></p>';
     }
     if (v.site.id === "la" || v.site.id === "pi" || v.site.id === "ni" || v.site.id === "ae" || v.site.id === "ki" || v.site.id === "mu" || v.site.id === "pa" || v.site.id === "jn" || v.site.id === "mi" || v.site.id === "ik" || v.site.id === "mo" || v.site.id === "ai" || v.site.id === "ja" || v.site.id === "ne" || v.site.id === "na" || v.site.id === "pu" || v.site.id === "si" || v.site.id === "li" || v.site.id === "ko" || v.site.id === "kp") {
-        offlineDataStr += '<p">Mattila Tuomas, & Girz Andrei. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2021 [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.5575531" target="_blank">https://doi.org/10.5281/zenodo.5575531</a></p>';
+        offlineDataStr += '<p>Mattila Tuomas, & Girz Andrei. (2021). Carbon action MULTA Finnish carbon sequestration experimental field dataset 2021 [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.5575531" target="_blank">https://doi.org/10.5281/zenodo.5575531</a></p>';
     }
     if (offlineDataStr !== "") {
         creditStr += '<h3 id="Offline_data">Offline data</h3>';

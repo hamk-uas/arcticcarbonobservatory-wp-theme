@@ -269,7 +269,6 @@
 
 .chart_gridcontainer .fieldInfoDiv :is(th, td) {
     color: #5E5E5E;
-    text-align: center;    
     padding-left: 10px;
 }
 
@@ -282,8 +281,12 @@
     color: #000;
 }
 
-.chart_gridcontainer .fieldInfoDiv #sitePropertyTable :is(th,td) {
+.chart_gridcontainer .fieldInfoDiv table * {
     text-align: start;
+}
+
+.chart_gridcontainer .fieldInfoDiv .blockPropertyTableElement {
+    text-align: center;
 }
 
 .chart_gridcontainer .fieldInfoDiv :is(th,td):first-child {
@@ -294,6 +297,9 @@
     margin-top: 10px;
 }
 
+.chart_gridcontainer .fieldInfoDiv tr.propertyTableRow :is(th,td) {
+    padding-top: 3px;
+}
 .chart_grid {
     stroke: #000000;
     stroke-opacity: 0.08;

@@ -360,7 +360,10 @@ var t = {
         "click_to_zoom_sv": "Klicka för att zooma",
         "click_to_view_data": "Click to view data",
         "click_to_view_data_fi": "Napsauta katsoaksesi dataa",
-        "click_to_view_data_sv": "Klicka för att se data"
+        "click_to_view_data_sv": "Klicka för att se data",
+        "site_type_Name": "Farm type",
+        "site_type_Name_fi": "Maatilatyyppi",
+        "site_type_Name_sv": "Gårdstypen"
     },
     soil_texture_choice_plaintext: {
         "PEAT": "peat",
