@@ -975,19 +975,6 @@ function prepCharts(v, chartsJson) {
             chart[getTranslationKey(chart, "description")] = chartDescription;
         }
     });
-
-    // Get principal investigator from site id
-    switch (v.site.id) {
-        case "qvidja":
-            v.site.principalInvestigator = "Laura Heimsch (laura.heimsch [at] fmi.fi)";
-            break;
-        case "ruukki":    
-            v.site.principalInvestigator = "Henriikka Vekuri (henriikka.vekuri [at] fmi.fi)";
-            break;
-        case "haltiala":
-            v.site.principalInvestigator = "Annalea Lohila (Annalea.Lohila [at] helsinki.fi)";
-            break;
-    }
 }
 
 function getManagementEventSymbolHtml(mgmt_operations_event, x, y, color, scale = 1) {
@@ -1729,8 +1716,8 @@ function getChartCsvAndTxt(v, chartId) {
             popupHTML += `\n${getCreditStr(chartCredit, true, true)}`;
         }
     }
-    txt += `\n${(chart.credits["fmiIntensiveSite"]) ? `We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.` : ""}`;
-    popupHTML += `\n${(chart.credits["fmiIntensiveSite"]) ? `<h4>Notice</h4><p>We kindly ask you to contact the principal investigator of the site, ${v.site.principalInvestigator}, about scientific use of the data.</p>` : ""}`;
+    txt += `\n${(chart.credits["fmiIntensiveSite"] && v.site.pi_Name && v.site.pi_email) ? `We kindly ask you to contact the principal investigator of the site, ${v.site.pi_Name} (${v.site.pi_email}), about scientific use of the data.` : `The principal investigator of the site is ${v.site.pi_Name} (${v.site.pi_email})`}`;
+    popupHTML += `\n${(chart.credits["fmiIntensiveSite"] && v.site.pi_Name && v.site.pi_email) ? `<h4>Notice</h4><p>We kindly ask you to contact the principal investigator of the site, ${v.site.pi_Name} (${v.site.pi_email}), about scientific use of the data.</p>` : ""}`;
     txt += `\n${(loading ? "WARNING: CSV exported in the middle of data load" : "")}`;
     txt += `\ntitle=${v.charts[chartId].title}`;
     txt += `\nyLabel=${v.charts[chartId].yLabel}`;
