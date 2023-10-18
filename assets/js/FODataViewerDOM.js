@@ -1355,7 +1355,6 @@ function addPermanentDrawingListeners() {
                         </div>`,
                     clientX, clientY);
                     let downloadFunction = function (e) {
-                        console.log(e.srcElement.id);
                         let csvDownloadCombinedElement = document.getElementById('csv_download_combined');
                         if (csvDownloadCombinedElement && csvDownloadCombinedElement.checked) {
                             v.csvDownloadFormat = "csv_download_combined";
@@ -2237,9 +2236,14 @@ function unviewSiteAndViewSiteSelector() {
     hideFOPopups();
     worker.terminate();
     whenMapLoadedDo(function () {
-        ["blocks", "blockLines", "blockNames", "blocks"].forEach(function (layerId) {
+        ["blocks", "blockLines", "blockNames"].forEach(function (layerId) {
             if (map.getLayer(layerId)) {
                 map.removeLayer(layerId);
+            }
+        });
+        ["blocks"].forEach(function (sourceId) {
+            if (map.getSource(sourceId)) {
+                map.removeSource(sourceId);
             }
         });
         removeSatelliteImageLayers();
@@ -3025,7 +3029,6 @@ async function initPage() {
         if (event.key === "Esc" || event.key === "Escape") {
             // Close a popup
             let popupElements = document.getElementsByClassName('FOPopup');
-            console.log(popupElements);
             let foundOpenPopup = false;
             for (let popupElement of popupElements) {                
                 if (popupElement.classList.contains('visible')) {
