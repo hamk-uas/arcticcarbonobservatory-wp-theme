@@ -170,7 +170,7 @@ async function loadEssentials() {
                     siteTypeList.push(feature.properties.site_type);
                     filterSiteTypeEnabled[feature.properties.site_type] = true;
                 }
-                // Add any novel site type to the site's siteypes and siteTypeList
+                // Add any novel site type to the site's siteTypes and siteTypeList
                 let siteFeature = siteFeatures[feature.properties.site];                
                 if (!siteFeature.properties.siteTypes[feature.properties.site_type]) {
                     siteFeature.properties.siteTypes[feature.properties.site_type] = true;
@@ -1646,6 +1646,16 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
         }
     });
 
+    // Site not found?
+    if (blocksGeoJson.features.filter(feature => (feature.properties.site === getSiteId())).length == 0) {
+        updateState({
+            site: undefined
+        });
+        unviewSiteAndViewSiteSelector();
+        return;
+    }
+    
+
     let propertyTableHTMLs = ["", ""]; // ${translate(t.plaintext, "plot")} // <th></th><th>${translate(v.site, "Name", v.site.id)}</th>
     concatenatePropertyTableHTMLs(propertyTableHTMLs, "site_type_Name");
     concatenatePropertyTableHTMLs(propertyTableHTMLs, "management");
@@ -2226,12 +2236,15 @@ function unviewSiteAndViewSiteSelector() {
     detailsElement.classList.remove('moved');
     hideFOPopups();
     worker.terminate();
-    map.removeLayer("blocks");
-    map.removeLayer("blockLines");
-    map.removeLayer("blockNames");
-    map.removeSource("blocks");
-    removeSatelliteImageLayers();
-    removeSatelliteImageSources();
+    whenMapLoadedDo(function () {
+        ["blocks", "blockLines", "blockNames", "blocks"].forEach(function (layerId) {
+            if (map.getLayer(layerId)) {
+                map.removeLayer(layerId);
+            }
+        });
+        removeSatelliteImageLayers();
+        removeSatelliteImageSources();
+    });
     siteJson = undefined;
     v.chartIds.forEach(function (chartId) {
         let chart = v.charts[chartId];
@@ -2239,12 +2252,15 @@ function unviewSiteAndViewSiteSelector() {
             document.getElementById(`chart_div_${chartId}`).remove(); // Remove charts if any
         }
     });
-    document.getElementById("dataCredits").remove();
+    let dataCreditsElement = document.getElementById("dataCredits");
+    if (dataCreditsElement !== null ) {
+        document.getElementById("dataCredits").remove();
+    }
     updateState({ site: undefined, blocks: undefined });
     document.body.classList.remove('Site');
     document.body.classList.remove('Obfuscated');    
     // ***
-    if (mapbackgrounds.length > 0) {
+    if (mapbackgrounds !== undefined && mapbackgrounds.length > 0) {
         for (let layer of map.getStyle().layers) {
             if (layer.id === "satelliteZ") {
                 break;
