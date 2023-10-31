@@ -1980,12 +1980,12 @@
             ],
             "oneOf": [
                 {
-                    "title": "soil",
-                    "title_fi": "maaperä",
+                    "title": "soil observation",
+                    "title_fi": "maaperähavainto",
                     "properties": {
                         "observation_type": {
-                            "title": "soil",
-                            "title_fi": "maaperä",
+                            "title": "soil observation",
+                            "title_fi": "maaperähavainto",
                             "const": "observation_type_soil"
                         },
                         "root_depth": {
@@ -2019,12 +2019,12 @@
                     }
                 },
                 {
-                    "title": "vegetation",
-                    "title_fi": "kasvillisuus",
+                    "title": "vegetation observation",
+                    "title_fi": "kasvillisuushavainto",
                     "properties": {
                         "observation_type": {
-                            "title": "vegetation",
-                            "title_fi": "kasvillisuus",
+                            "title": "vegetation observation",
+                            "title_fi": "kasvillisuushavainto",
                             "const": "observation_type_vegetation"
                         },
                         "growth_stage": {
@@ -2122,12 +2122,12 @@
                     }
                 },
                 {
-                    "title": "water",
-                    "title_fi": "vesi",
+                    "title": "water observation",
+                    "title_fi": "vesihavainto",
                     "properties": {
                         "observation_type": {
-                            "title": "water",
-                            "title_fi": "vesi",
+                            "title": "water observation",
+                            "title_fi": "vesihavainto",
                             "const": "observation_type_water"
                         },
                         "floodwater_depth": {

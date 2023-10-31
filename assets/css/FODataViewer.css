@@ -773,7 +773,45 @@
     margin-bottom: auto;
 }
 
+#Details .UnknownJSONProperty {
+    color: darkred;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-weight: bold;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    display: grid;
+    margin-bottom: auto;
+}
+
+#Details .MissingJSONProperty {
+    color: grey;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-weight: bold;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    display: grid;
+    margin-bottom: auto;
+}
+
 #Details .ValueTitle {
+    padding-left: 5px;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    display: grid;    
+}
+
+#Details .UnknownJSONValue {
+    color: darkred;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    padding-left: 5px;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    display: grid;    
+}
+
+#Details .MissingJSONValue {
+    color: grey;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     padding-left: 5px;
     grid-column-start: 2;
     grid-column-end: 3;

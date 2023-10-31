@@ -124,6 +124,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
                 for (requiredPropertyId of schema.required) {
                     if (requiredPropertyId in json === false) {
                         console.warn(`Failed JSON Schema resolve at ${schema.path}. Missing required property '${requiredPropertyId}' in:\n${JSON.stringify(json, null, 4)}`);
+                        resolvedSchema.properties[requiredPropertyId] = undefined; // Mark missing property
                     }
                 }
             }
@@ -225,9 +226,17 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
     }
     if (resolvedSchema.type === "object") {
         for (const [propertyId, propertySchema] of Object.entries(resolvedSchema.properties)) {
-            if (!bannedProperties.includes(propertyId) && json[propertyId] !== undefined) {
-                //console.log(`property ${propertyId} jsonToHTML`);
+            if (!bannedProperties.includes(propertyId)/* && json[propertyId] !== undefined*/) {
+                //console.log(`property ${propertyId} jsonToHTML`);                
+                if (propertySchema === undefined) {
+                    html += `<li title="Missing property"><span class="VariableTitle MissingJSONProperty">${propertyId}:</span> <span class="ValueTitle MissingJSONValue">(missing required property)</span></li>`;
+                }
                 html += jsonToHTML(json[propertyId], propertySchema, bannedProperties);
+            }
+        }
+        for (const [propertyId, propertyValue] of Object.entries(json)) {
+            if (propertyId in resolvedSchema.properties === false) {
+                html += `<li title="Unknown property"><span class="UnknownJSONProperty">${propertyId}:</span> <span class="UnknownJSONValue">${JSON.stringify(propertyValue)} (unknown property)</span></li>`;
             }
         }
         html += "</ul>";
@@ -240,7 +249,6 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
         }
         html += "</ol>";
     }
-
     //console.log(html);
     return html;
 }
