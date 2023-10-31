@@ -105,23 +105,24 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
         }
         // Handle properties of object type schema
         if (schema.properties !== undefined) {
-            // Copy properties from schema to resolved schema, resolving each property
+            // Copy properties from schema to resolved schema, resolving each property. Only do that if the property exists in json.
             for (const [propertyId, propertySchema] of Object.entries(schema.properties)) {
-                let resolvedPropertySchema = {};
-                if (resolvedSchema.properties !== undefined && resolvedSchema.properties[propertyId] !== undefined) {
-                    resolvedPropertySchema = resolvedSchema.properties[propertyId];
+                if (propertyId in json) {
+                    let resolvedPropertySchema = {};
+                    if (resolvedSchema.properties !== undefined && resolvedSchema.properties[propertyId] !== undefined) {
+                        resolvedPropertySchema = resolvedSchema.properties[propertyId];
+                    }
+                    resolveJsonSchema(json !== undefined? json[propertyId] : undefined, resolvedPropertySchema, propertySchema, rootJson, rootSchema, titleIds, `${jsonPath}[${propertyId}]`);
+                    if (resolvedSchema.properties === undefined) {
+                        resolvedSchema.properties = {};
+                    }
+                    resolvedSchema.properties[propertyId] = resolvedPropertySchema;
                 }
-                // console.log(`property ${propertyId}`);
-                resolveJsonSchema(json !== undefined? json[propertyId] : undefined, resolvedPropertySchema, propertySchema, rootJson, rootSchema, titleIds, `${jsonPath}[${propertyId}]`);
-                if (resolvedSchema.properties === undefined) {
-                    resolvedSchema.properties = {};
-                }
-                resolvedSchema.properties[propertyId] = resolvedPropertySchema;
             }
             // Check required properties for presence
-            if (schema.required !== undefined) {
+            if (schema.required !== undefined) {                
                 for (requiredPropertyId of schema.required) {
-                    if (json[requiredPropertyId] === undefined) {
+                    if (requiredPropertyId in json === false) {
                         console.warn(`Failed JSON Schema resolve at ${schema.path}. Missing required property '${requiredPropertyId}' in:\n${JSON.stringify(json, null, 4)}`);
                     }
                 }
@@ -157,7 +158,6 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
         resolvedSchema.items = []
         for (let [index, element] of json.entries()) {
             let resolvedItemSchema = {}
-            //console.log("element");
             resolveJsonSchema(element, resolvedItemSchema, schema.items, rootJson, rootSchema, titleIds, `${jsonPath}[${index}]`);
             resolvedSchema.items.push(resolvedItemSchema);
         }

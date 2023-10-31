@@ -2327,7 +2327,6 @@ function showEventDetails() {
             let json = source.jsonList[0];            
             if (json.data !== undefined && json.data.management !== undefined && json.data.management.events !== undefined) {
                 let event = json.data.management.events[v.eventIndex]
-                console.log("event:");
                 console.log(event);
                 let resolvedSchema = {};
                 resolveJsonSchema(event, resolvedSchema, v.managementEventSchemaJson);

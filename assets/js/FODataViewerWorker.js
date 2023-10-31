@@ -193,7 +193,7 @@ async function loadData() {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
                         if (json.fetchAbortController === undefined) {
                             let path = `${v.site.storageUrl}/${v.site.id}/${json.url}?date=${getCacheRefreshDate(new Date(foConfig.now))}`;
-                            console.log(`Fetch json file ${path}`);
+                            //console.log(`Fetch json file ${path}`);
                             json.fetchAbortController = new AbortController();
                             let fetchPromise = fetch(`${path}`, { method: 'GET', signal: json.fetchAbortController.signal }).then(async function (result) {
                                 if (!result.ok) {
