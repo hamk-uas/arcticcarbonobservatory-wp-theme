@@ -448,6 +448,139 @@
                     "title_sv": "applicering av organiskt material",
                     "const": "organic_material"
                 },
+                "organic_material": {
+                    "title": "organic material",
+                    "title_fi": "eloperäinen aine",
+                    "title_sv": "organisk material",
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "title": "generic crop residue",
+                            "title_fi": "yleinen kasvijäte",
+                            "title_sv": "allmänna växtrester",
+                            "const": "RE001"
+                        },
+                        {
+                            "title": "green manure",
+                            "title_fi": "viherlannoitus",
+                            "title_sv": "gröngödsel",
+                            "const": "RE002"
+                        },
+                        {
+                            "title": "barnyard manure",
+                            "title_fi": "kuivalanta",
+                            "title_sv": "gårdsgödsel",
+                            "const": "RE003"
+                        },
+                        {
+                            "title": "liquid manure",
+                            "title_fi": "lietelanta",
+                            "title_sv": "slamgödsel",
+                            "const": "RE004"
+                        },
+                        {
+                            "title": "compost",
+                            "title_fi": "komposti",
+                            "title_sv": "kompost",
+                            "const": "RE005"
+                        },
+                        {
+                            "title": "bark",
+                            "title_fi": "puun kuori",
+                            "title_sv": "bark",
+                            "const": "RE006"
+                        },
+                        {
+                            "title": "generic legume residue",
+                            "title_fi": "palkokasvijäte",
+                            "title_sv": "baljväxtrester",
+                            "const": "RE101"
+                        },
+                        {
+                            "title": "faba bean",
+                            "title_fi": "härkäpapu",
+                            "title_sv": "bondböna",
+                            "const": "RE109"
+                        },
+                        {
+                            "title": "pea residue",
+                            "title_fi": "hernejäte",
+                            "title_sv": "ärtavfall",
+                            "const": "RE110"
+                        },
+                        {
+                            "title": "hairy vetch",
+                            "title_fi": "ruisvirna",
+                            "title_sv": "luddvicker",
+                            "const": "RE111"
+                        },
+                        {
+                            "title": "generic cereal crop residue",
+                            "title_fi": "viljakasvijäte",
+                            "title_sv": "spannmålsavfall",
+                            "const": "RE201"
+                        },
+                        {
+                            "title": "wheat residue",
+                            "title_fi": "vehnäjäte",
+                            "title_sv": "veteavfall",
+                            "const": "RE205"
+                        },
+                        {
+                            "title": "barley",
+                            "title_fi": "ohra",
+                            "title_sv": "korn",
+                            "const": "RE206"
+                        },
+                        {
+                            "title": "rye",
+                            "title_fi": "ruis",
+                            "title_sv": "råg",
+                            "const": "RE208"
+                        },
+                        {
+                            "title": "generic grass",
+                            "title_fi": "ruohokasvi",
+                            "title_sv": "gräsväxti",
+                            "const": "RE301"
+                        },
+                        {
+                            "title": "bermudagrass",
+                            "title_fi": "varvasheinä",
+                            "title_sv": "hundtandsgräs",
+                            "const": "RE303"
+                        },
+                        {
+                            "title": "switchgrass",
+                            "title_fi": "lännenhirssi",
+                            "title_sv": "jungfruhirs",
+                            "const": "RE304"
+                        },
+                        {
+                            "title": "brachiaria",
+                            "title_fi": "viittaheinät",
+                            "title_sv": "brachiaria",
+                            "const": "RE305"
+                        },
+                        {
+                            "title": "forage grasses",
+                            "title_fi": "nurmikasvit",
+                            "title_sv": "vallväxter",
+                            "const": "RE306"
+                        },
+                        {
+                            "title": "decomposed crop residue",
+                            "title_fi": "maatunut kasvijäte",
+                            "title_sv": "nedbrutet växtavfall",
+                            "const": "RE999"
+                        },
+                        {
+                            "title": "other",
+                            "title_fi": "muu",
+                            "const": "REOTHER"
+                        }
+                    ]
+                },
                 "N_in_applied_fertilizer": {
                     "title": "amount of total nitrogen (N) in fertilizer (kg/ha)",
                     "title2": "amount of nitrogen (N) in fertilizer (kg/ha)",
@@ -615,20 +748,7 @@
                     "title_fi": "muut ravinteet lannoitteessa (kg/ha)",
                     "type": "string"
                 },
-                "fertilizer_type": {
-                    "title": "fertilizer type",
-                    "title_fi": "lannoitteen tyyppi",
-                    "type": "string",
-                    "oneOf": [
-                        {
-                            "title": "organic",
-                            "title_fi": "eloperäinen lannoite",
-                            "title_sv": "organisk material",
-                            "const": "fertilizer_type_organic"
-                        }
-                    ]
-                },
-                "fertilizer_applic_method": {
+                "org_material_appl_depth": {
                     "allOf": [
                         {
                             "title": "application method",
@@ -639,28 +759,17 @@
                         }
                     ]
                 },
-                "application_depth_fert": {
-                    "title": "application depth (cm)",
-                    "title_fi": "levityssyvyys (cm)",
-                    "type": "number",
-                    "minimum": 0,
-                    "x-ui": {
-                        "unit": "cm",
-                        "unitless_title": "application depth",
-                        "unitless_title_fi": "levityssyvyys"
-                    }
-                },
-                "fertilizer_total_amount": {
-                    "title": "total amount of fertilizer (kg/ha)",
-                    "title_fi": "lannoitteen kokonaismäärä (kg/ha)",
-                    "title_sv": "totala mändgen gödsel (kg/ha)",
+                "org_material_applic_amnt": {
+                    "title": "total amount (kg/ha)",
+                    "title_fi": "kokonaismäärä (kg/ha)",
+                    "title_sv": "totala mändgen (kg/ha)",
                     "type": "number",
                     "minimum": 0,
                     "x-ui": {
                         "unit": "kg/ha",
-                        "unitless_title": "total amount of fertilizer",
-                        "unitless_title_fi": "lannoitteen kokonaismäärä",
-                        "unitless_title_sv": "totala mändgen gödsel"
+                        "unitless_title": "total amount",
+                        "unitless_title_fi": "kokonaismäärä",
+                        "unitless_title_sv": "totala mändgen"
                     }
                 },
                 "fertilizer_notes": {
@@ -677,8 +786,8 @@
             },
             "required": [
                 "date",
-                "fertilizer_type",
-                "fertilizer_total_amount"
+                "organic_material",
+                "org_material_applic_amnt"
             ]
         },
         {
@@ -901,16 +1010,19 @@
                                     {
                                         "title": "combined",
                                         "title_fi": "leikkuupuimuri",
+                                        "title_sv": "skördetröska",
                                         "const": "HM001"
                                     },
                                     {
                                         "title": "hand picked, no further processing",
                                         "title_fi": "poimittu käsin, ei muuta prosessointia",
+                                        "title_sv": "handplockat, ingen övrig bearbetning",
                                         "const": "HM004"
                                     },
                                     {
                                         "title": "hand picked, machine processing",
                                         "title_fi": "poimittu käsin, prosessoitu koneella",
+                                        "title_sv": "handplockat, maskin bearbetat",
                                         "const": "HM005"
                                     },
                                     {
@@ -936,6 +1048,7 @@
                                     {
                                         "title": "method unknown/not given",
                                         "title_fi": "tapa ei tiedossa",
+                                        "title_sv": "okänd metod",
                                         "const": "HM999"
                                     }
                                 ]
@@ -950,36 +1063,43 @@
                                     {
                                         "title": "canopy",
                                         "title_fi": "latvusto",
+                                        "title_sv": "krontak",
                                         "const": "canopy"
                                     },
                                     {
                                         "title": "leaves",
                                         "title_fi": "lehdet",
+                                        "title_sv": "blad",
                                         "const": "leaf"
                                     },
                                     {
                                         "title": "grain, legume seeds",
                                         "title_fi": "jyvä, palkokasvin siemen",
+                                        "title_sv": "korn, baljväxtens frö",
                                         "const": "grain"
                                     },
                                     {
                                         "title": "silage",
                                         "title_fi": "säilörehu",
+                                        "title_sv": "ensilage",
                                         "const": "silage"
                                     },
                                     {
                                         "title": "tuber, root, etc.",
                                         "title_fi": "mukula, juuri, yms.",
+                                        "title_sv": "knöl, rot, etc.",
                                         "const": "tuber"
                                     },
                                     {
                                         "title": "fruit",
                                         "title_fi": "hedelmä",
+                                        "title_sv": "frukt",
                                         "const": "fruit"
                                     },
                                     {
                                         "title": "stem",
                                         "title_fi": "varsi",
+                                        "title_sv": "stjälk",
                                         "const": "stem"
                                     }
                                 ]
@@ -1011,12 +1131,12 @@
                                 }
                             },
                             "plant_density_harvest": {
-                                "title": "plant density at harvest (plants/m2)",
-                                "title_fi": "kasvitiheys korjuuhetkellä (kasveja/m2)",
+                                "title": "plant density at harvest (plants/m²)",
+                                "title_fi": "kasvitiheys korjuuhetkellä (kasveja/m²)",
                                 "type": "number",
                                 "minimum": 0,
                                 "x-ui": {
-                                    "unit": "1/m2",
+                                    "unit": "1/m²",
                                     "unitless_title": "plant density at harvest",
                                     "unitless_title_fi": "kasvitiheys korjuuhetkellä"
                                 }
@@ -1425,6 +1545,7 @@
                         {
                             "title": "cattle",
                             "title_fi": "nautakarja",
+                            "title_sv": "nötkreatur",
                             "const": "grazing_species_cattle"
                         },
                         {
@@ -1535,6 +1656,7 @@
                         {
                             "title": "rotation",
                             "title_fi": "lohkosyöttö",
+                            "title_sv": "rotationsbetning",
                             "const": "grazing_type_rotation"
                         },
                         {
@@ -1948,34 +2070,34 @@
                             ]
                         },
                         "plant_density": {
-                            "title": "plant density (plants/m2)",
-                            "title_fi": "kasvitiheys (kasveja/m2)",
+                            "title": "plant density (plants/m²)",
+                            "title_fi": "kasvitiheys (kasveja/m²)",
                             "type": "number",
                             "minimum": 0,
                             "x-ui": {
-                                "unit": "1/m2",
+                                "unit": "1/m²",
                                 "unitless_title": "plant density",
                                 "unitless_title_fi": "kasvitiheys"
                             }
                         },
                         "specific_leaf_area": {
-                            "title": "specific leaf area (cm2/g)",
-                            "title_fi": "ominaislehtiala (cm2/g)",
+                            "title": "specific leaf area (cm²/g)",
+                            "title_fi": "ominaislehtiala (cm²/g)",
                             "type": "number",
                             "minimum": 0,
                             "x-ui": {
-                                "unit": "cm^2/g",
+                                "unit": "cm²/g",
                                 "unitless_title": "specific leaf area",
                                 "unitless_title_fi": "ominaislehtiala"
                             }
                         },
                         "leaf_area_index": {
-                            "title": "leaf area index (m2/m2)",
-                            "title_fi": "lehtialaindeksi (m2/m2)",
+                            "title": "leaf area index (m²/m²)",
+                            "title_fi": "lehtialaindeksi (m²/m²)",
                             "type": "number",
                             "minimum": 0,
                             "x-ui": {
-                                "unit": "m^2/m^2",
+                                "unit": "m²/m²",
                                 "unitless_title": "leaf area index",
                                 "unitless_title_fi": "lehtialaindeksi"
                             }
@@ -2287,6 +2409,38 @@
             ]
         },
         {
+            "$id": "#measurement",
+            "title": "measurement",            
+            "title_fi": "mittaus",            
+            "properties": {
+                "mgmt_operations_event": {
+                    "title": "measurement",            
+                    "title_fi": "mittaus",            
+                    "const": "measurement"
+                },
+                "carbon_soil_tot": {
+                    "title": "average carbon in 1 m soil column (kg/m²)",
+                    "title_fi": "hiiltä keskimäärin 1 m maakolonnissa (kg/m²)",
+                    "title_sv": "kol i medeltal i 1 m markpelare (kg/m²)",
+                    "type": "number",
+                    "minimum": 0,
+                    "x-ui": {
+                        "unit": "kg/m²",
+                        "unitless_title": "average carbon in 1 m soil column",
+                        "unitless_title_fi": "hiiltä keskimäärin 1 m maakolonnissa",
+                        "unitless_title_sv": "kol i medeltal i 1 m markpelare"
+                    }
+                },
+                "carbon_soil_tot_sd": {
+                    "title": "standard deviation",
+                    "title_fi": "keskihajonta",
+                    "title_sv": "standardavvikelse",
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        {
             "$id": "#other",
             "title": "other",
             "title2": "other management event",
@@ -2321,16 +2475,19 @@
                 {
                     "title": "timothy (Phleum pratense)",
                     "title_fi": "timotei (Phleum pratense)",
+                    "title_sv": "timotej (Phleum pratense)",
                     "const": "FRG"
                 },
                 {
                     "title": "wheat (Triticum spp.)",
                     "title_fi": "vehnä (Triticum spp.)",
+                    "title_sv": "vete (Triticum spp.)",
                     "const": "WHT"
                 },
                 {
                     "title": "oats (Avena sativa)",
                     "title_fi": "kaura (Avena sativa)",
+                    "title_sv": "havre (Avena sativa)",
                     "const": "OAT"
                 },
                 {
@@ -2341,6 +2498,7 @@
                 {
                     "title": "barley (Hordeum vulgare)",
                     "title_fi": "ohra (Hordeum vulgare)",
+                    "title_sv": "korn (Hordeum vulgare)",
                     "const": "BAR"
                 },
                 {
@@ -2436,6 +2594,7 @@
                 {
                     "title": "meadow fescue (Festuca pratensis)",
                     "title_fi": "nurminata (Festuca pratensis)",
+                    "title_sv": "ängssvingel (Festuca pratensis)",
                     "const": "FEP"
                 },
                 {
@@ -2541,6 +2700,7 @@
                 {
                     "title": "method unknown/not given",
                     "title_fi": "tapa ei tiedossa",
+                    "title_sv": "känd metod",
                     "const": "AP999"
                 }
             ]
