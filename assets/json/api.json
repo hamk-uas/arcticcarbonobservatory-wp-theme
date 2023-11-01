@@ -6,25 +6,13 @@
         }
     ],
     "info": {
-        "title": "Field Observatory REST API (DEMO)",
-        "description": "Field Observatory REST API (DEMO).",
+        "title": "Farm management data OpenAPI documentation",
+        "description": "There is no API. This page is only for testing the OpenAPI compatibility of farm management data schemas.",
         "version": "0.0.0"
     },
-    "externalDocs": {
-        "description": "Field Observatory REST API",
-        "url": "https://api.fieldobservatory.org"
-    },
-    "tags": [
-        {
-            "description": "Endpoints to obtain data using the REST API.",
-            "name": "actions"
-        }
-    ],
     "paths": {
         "/management/{site}": {
             "get": {
-                "description": "Obtain field management data of a site using REST API",
-                "summary": "Get field management data of a site",
                 "operationId": "management",
                 "parameters": [
                     {

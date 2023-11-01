@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://raw.githubusercontent.com/hamk-uas/fieldobservatory-data-schemas/main/management-data.schema.json",
+  "$id": "management-data.schema.json",
   "title": "management data",
   "description": "management data, currently only agronomic management events",
   "type": "object",
@@ -8,7 +8,7 @@
     "$schema": {
       "type": "string",
       "format": "url",
-      "const": "https://raw.githubusercontent.com/hamk-uas/fieldobservatory-data-schemas/main/management-data.schema.json"
+      "const": "management-data.schema.json"
     },
     "management": {
       "description": "Container object for management data",

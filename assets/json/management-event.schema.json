@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/hamk-uas/fieldobservatory-data-schemas/main/management-event.schema.json",
+    "$id": "management-event.schema.json",
     "@context": {
         "@language": "en",
         "title": {
@@ -99,6 +99,8 @@
                 },
                 "planting_list": {
                     "type": "array",
+                    "title": "planting list",
+                    "title_fi": "kylvölista",
                     "items": {
                         "type": "object",
                         "properties": {
@@ -974,6 +976,8 @@
                 },
                 "harvest_list": {
                     "type": "array",
+                    "title": "harvested items",
+                    "title_fi": "sadonkorjuun kohteet",
                     "items": {
                         "type": "object",
                         "properties": {
@@ -1988,6 +1992,76 @@
                             "title_fi": "maaperähavainto",
                             "const": "observation_type_soil"
                         },
+                        "soil_layer_list": {
+                            "type": "array",
+                            "title": "soil layers",
+                            "title_fi": "maakerrokset",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "soil_layer_top_depth": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "title": "Soil layer depth, top (cm)",
+                                        "title_fi": "Kerroksen yläosan syvyys (cm)",
+                                        "x-ui": {
+                                            "unit": "cm",
+                                            "unitless_title": "Soil layer depth, top",
+                                            "unitless_title_fi": "Kerroksen yläosan syvyys"
+                                        }
+                                    },
+                                    "soil_layer_base_depth": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "title": "Soil layer depth, bottom (cm)",
+                                        "title_fi": "Kerroksen alaosan syvyys (cm)",
+                                        "x-ui": {
+                                            "unit": "cm",
+                                            "unitless_title": "Soil layer depth, top",
+                                            "unitless_title_fi": "Kerroksen yläosan syvyys"
+                                        }
+                                    },
+                                    "soil_classification_by_layer": {                                        
+                                        "type": "string",
+                                        "title": "Soil structure (MARA score card)",                                    
+                                        "title_fi": "Maan rakenne (MARA-kortti)",
+                                        "description": "visual evaluation of soil structure (Ball et al. 2007, Franco et al. 2019)",
+                                        "oneOf": [
+                                            {
+                                                "const": "soil_classification_1",
+                                                "title": "structure quality 1 friable",
+                                                "title_fi": "luokka 1 erittäin tiivis",
+                                                "title_sv": "klass 1 mycket kompakt"
+                                            },
+                                            {
+                                                "const": "soil_classification_2",
+                                                "title": "structure quality 2 intact",
+                                                "title_fi": "luokka 2 tiivis",
+                                                "title_sv": "klass 2 kompakt"
+                                            },
+                                            {
+                                                "const": "soil_classification_3",
+                                                "title": "structure quality 3 firm",
+                                                "title_fi": "luokka 3 kiinteä",
+                                                "title_sv": "klass 3 fast"
+                                            },
+                                            {
+                                                "const": "soil_classification_4",
+                                                "title": "structure quality 4 compact",
+                                                "title_fi": "luokka 4 tiivistymätön",
+                                                "title_sv": "klass 4 opackad"
+                                            },
+                                            {
+                                                "const": "soil_classification_5",
+                                                "title": "structure quality 5 very compact",
+                                                "title_fi": "luokka 5 mureneva",
+                                                "title_sv": "klass 5 lucker"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
                         "root_depth": {
                             "title": "root depth (m)",
                             "title_fi": "juurten syvyys (m)",
@@ -2100,6 +2174,28 @@
                                 "unit": "m²/m²",
                                 "unitless_title": "leaf area index",
                                 "unitless_title_fi": "lehtialaindeksi"
+                            }
+                        },
+                        "total_biomass_dw": {
+                            "title": "total biomass, dry weight (kg/ha)",
+                            "title_fi": "kokonaisbiomassa, kuivapaino (kg/ha)",
+                            "type": "number",
+                            "minimum": 0,
+                            "x-ui": {
+                                "unit": "kg/ha",
+                                "unitless_title": "total biomass, dry weight",
+                                "unitless_title_fi": "kokonaisbiomassa, kuivapaino"
+                            }
+                        },
+                        "tops_C": {
+                            "title": "carbon in aboveground biomass (kg[C]/ha)",
+                            "title_fi": "biomassa maanpinnalla (kg[C]/ha)",
+                            "type": "number",
+                            "minimum": 0,
+                            "x-ui": {
+                                "unit": "kg[C]/ha",
+                                "unitless_title": "carbon in aboveground biomass",
+                                "unitless_title_fi": "biomassa maanpinnalla"
                             }
                         },
                         "canopy_height": {

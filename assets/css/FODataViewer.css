@@ -739,6 +739,25 @@
     border-top: 1px solid black;
 }
 
+#Details ol + li::before {
+    content: '';
+    padding-top: 10px;
+}
+
+#Details li + ol::before {
+    content: '';
+    grid-column-start: 1;
+    grid-column-end: 4;    
+    padding-top: 3px;
+    border-top: 1px solid black;
+    margin-bottom: -5px;
+}
+
+#Details .ArrayTitle {
+    margin-bottom: -10px;
+    margin-top: 10px;
+}
+
 #Details ol {
     counter-reset: item;
 }
@@ -752,7 +771,7 @@
     counter-increment: item;
 }
 
-#Details ol > ul/*:not(:only-child)*/ > li:first-child::before {
+#Details ol > ul > li:first-child::before {
     font-family: 'LatoLatinWebHeavy', sans-serif;
     font-weight: normal;
     content: counter(item) ".\00a0";
@@ -769,8 +788,7 @@
     font-weight: normal;
     grid-column-start: 1;
     grid-column-end: 2;
-    display: grid;
-    margin-bottom: auto;
+    display: grid;    
 }
 
 #Details .UnknownJSONProperty {

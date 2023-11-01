@@ -1,20 +1,13 @@
-    
-  <?php get_header(); ?>
-    
-
-
-
-
-
-    <redoc spec-url="<?php echo get_template_directory_uri(); ?>/assets/json/api.json?ver=<?php echo wp_get_theme()->version ?>" json-sample-expand-level="all" schema-expansion-level="all"></redoc>
-    <!-- redoc spec-url="https://raw.githubusercontent.com/hamk-uas/fieldobservatory-data-schemas/main/api.json" json-sample-expand-level="all" schema-expansion-level="all"></redoc -->
-    <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"> </script>
-
-
-
-
-
-
+<?php get_header(); ?>
+<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"> </script>    
+<div id="redoc-container"></div>
+<script>
+  Redoc.init('<?php echo get_template_directory_uri(); ?>/assets/json/api.json?ver=<?php echo wp_get_theme()->version ?>', {
+    "expandResponses": "all",
+    "jsonSampleExpandLevel": "all",
+    "schemaExpansionLevel": "all"
+  }, document.getElementById('redoc-container'))
+</script>
 
 <?php
 wp_footer();

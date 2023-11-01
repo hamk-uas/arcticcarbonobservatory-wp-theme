@@ -234,16 +234,32 @@ async function loadData() {
                                                 }
                                             }
                                             // Ensure compatibility of older JSON files with JSON Schema
+                                            delete event.soil_layer_count;
+                                            let listId;
+                                            listId = `${event.mgmt_operations_event}_list`; // planting_list, harvest_list
+                                            switch (event.mgmt_operations_event) {
+                                                case "observation":
+                                                    switch (event.observation_type) {
+                                                        case "observation_type_soil":
+                                                            listId = "soil_layer_list";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "chemical":
+                                                    listId = "chemical_applic_material";
+                                                    break;
+                                            }
                                             for (const [propertyId, property] of Object.entries(event)) {
                                                 if (property === "-99.0") {
                                                     delete event[propertyId];
                                                 }
                                             }
                                             for (let [propertyId, property] of Object.entries(event)) {
-                                                listId = `${event.mgmt_operations_event}_list`;
-                                                if (!Array.isArray(property) && ["planted_crop", "planting_material_weight", "planting_depth", "planting_material_source",
-                                                "harvest_crop", "harvest_yield_harvest_dw", "harv_yield_harv_f_wt", "yield_C_at_harvest", "harvest_moisture",  "harvest_method", "harvest_operat_component", "canopy_height_harvest", "harvest_cut_height", "plant_density_harvest", "harvest_residue_placement",
-                                                "soil_layer_top_depth", "soil_layer_base_depth", "soil_classification_by_layer"].includes(propertyId)) {
+                                                if (!Array.isArray(property) && [
+                                                    "planted_crop", "planting_material_weight", "planting_depth", "planting_material_source",
+                                                    "harvest_crop", "harvest_yield_harvest_dw", "harv_yield_harv_f_wt", "yield_C_at_harvest", "harvest_moisture",  "harvest_method", "harvest_operat_component", "canopy_height_harvest", "harvest_cut_height", "plant_density_harvest", "harvest_residue_placement",
+                                                    "soil_layer_top_depth", "soil_layer_base_depth", "soil_classification_by_layer", "soil_bulk_density_moist", "soil_water_wilting_pt", "soil_water_field_cap_1", "soil_water_saturated", "soil_silt_fraction", "soil_sand_fraction", "soil_clay_fraction", "soil_organic_matter_layer", "soil_organic_C_perc_layer"
+                                                ].includes(propertyId)) {
                                                     event[propertyId] = [property];
                                                     property = event[propertyId];
                                                 }
