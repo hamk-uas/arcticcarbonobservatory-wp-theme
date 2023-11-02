@@ -491,7 +491,21 @@ function makeElementDraggableByHeading(elementId) {
         e.preventDefault();
         e.stopPropagation();
         element.style.left = elementOriginX + (e.clientX - cursorOriginX) + "px";
-        element.style.top = elementOriginY + (e.clientY - cursorOriginY) + "px";
+        element.style.top = elementOriginY + (e.clientY - cursorOriginY) + "px";        
+        let xOverflow = (parseInt(element.style.left) + element.offsetWidth) - (document.documentElement.clientWidth || document.body.clientWidth);
+        if (xOverflow > 0) {
+            element.style.left = parseInt(element.style.left) - xOverflow + 'px';
+        }
+        let yOverflow = (parseInt(element.style.top) + element.offsetHeight) - window.innerHeight;
+        if (yOverflow > 0) {
+            element.style.top = parseInt(element.style.top) - yOverflow + 'px';
+        }        
+        if (parseInt(element.style.left) < 0) {
+            element.style.left = '0px';
+        }
+        if (parseInt(element.style.top) < 0) {
+            element.style.top = '0px';
+        }
     }
 
     function finishDrag(e) {
@@ -1200,9 +1214,9 @@ function addTransientDrawingListeners(chartId) {
                                 let eventElementId = `chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}`;
                                 let eventElement = document.getElementById(eventElementId);
                                 if (eventElement != null) {
-                                    if (event.start_date !== undefined && event.end_date !== undefined) {
+                                    if (event.date !== undefined && event.end_date !== undefined) {
                                         eventElement.onclick = function (e) {
-                                            setEventDate(event.start_date, sourceIndex, eventIndex, chartId, e);
+                                            setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
                                             e.stopPropagation();
                                             e.preventDefault();                            
                                         }
@@ -2332,9 +2346,9 @@ function showEventDetails() {
                 resolveJsonSchema(event, resolvedSchema, v.managementEventSchemaJson);
                 let title = `${translate(resolvedSchema, "valuetitle", "")}`;
                 let eventDate = 0;
-                if (event.start_date !== undefined && event.end_date !== undefined) {
-                    eventDate = event.start_date;
-                    let startDateObject = new Date(event.start_date);
+                if (event.date !== undefined && event.end_date !== undefined) {
+                    eventDate = event.date;
+                    let startDateObject = new Date(event.date);
                     let endDateObject = new Date(event.end_date);
                     endDateObject.setDate(endDateObject.getDate() - 1) // Show not the date of midnight, but the date of previous day
                     title += ` ${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()}–${endDateObject.getUTCDate()}.${endDateObject.getUTCMonth() + 1}.${endDateObject.getUTCFullYear()}`;
@@ -2350,7 +2364,7 @@ function showEventDetails() {
                     title += ` ${translate(t.plaintext, "plotgroup")} ${source.blockGroup}` // No support at this point.
                 }
                 let textHTML = `<div class="Close">✕</div><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#fff", scale = 1.75)}</svg><h3>${title.trim()}</h3>`;
-                textHTML += `${jsonToHTML(event, resolvedSchema, ["$schema", "date", "mgmt_operations_event", "observation_type"])}`;
+                textHTML += `${jsonToHTML(event, resolvedSchema, ["$schema", "date", "end_date", "mgmt_operations_event"])}`;
                 showFOPopup("Details", textHTML, clientX + 10, clientY + 10);
             }
         }

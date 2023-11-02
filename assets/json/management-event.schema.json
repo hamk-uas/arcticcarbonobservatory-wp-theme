@@ -1626,25 +1626,19 @@
                         "unitless_title_fi": "laidunnusintensiteetti"
                     }
                 },
-                "grazing_period": {
-                    "title": "grazing period",
-                    "title_fi": "laidunnusjakso",
-                    "properties": {
-                        "start_date": {
-                            "title": "start date",
-                            "title_fi": "alkamispäivä",
-                            "title_sv": "startdatum",
-                            "type": "string",
-                            "format": "date"
-                        },
-                        "end_date": {
-                            "title": "end date",
-                            "title_fi": "päättymispäivä",
-                            "title_sv": "slutdatum",
-                            "type": "string",
-                            "format": "date"
-                        }
-                    }
+                "date": {
+                    "title": "start date",
+                    "title_fi": "alkamispäivä",
+                    "title_sv": "startdatum",
+                    "type": "string",
+                    "format": "date"
+                },
+                "end_date": {
+                    "title": "end date",
+                    "title_fi": "päättymispäivä",
+                    "title_sv": "slutdatum",
+                    "type": "string",
+                    "format": "date"
                 },
                 "grazing_type": {
                     "title": "grazing type",
@@ -1754,7 +1748,8 @@
             },
             "required": [
                 "grazing_species",
-                "grazing_period"
+                "date",
+                "end_date"
             ]
         },
         {
@@ -1984,12 +1979,10 @@
             ],
             "oneOf": [
                 {
-                    "title": "soil observation",
-                    "title_fi": "maaperähavainto",
                     "properties": {
                         "observation_type": {
-                            "title": "soil observation",
-                            "title_fi": "maaperähavainto",
+                            "title": "soil",
+                            "title_fi": "maaperä",
                             "const": "observation_type_soil"
                         },
                         "soil_layer_list": {
@@ -2093,12 +2086,10 @@
                     }
                 },
                 {
-                    "title": "vegetation observation",
-                    "title_fi": "kasvillisuushavainto",
                     "properties": {
                         "observation_type": {
-                            "title": "vegetation observation",
-                            "title_fi": "kasvillisuushavainto",
+                            "title": "vegetation",
+                            "title_fi": "kasvillisuus",
                             "const": "observation_type_vegetation"
                         },
                         "growth_stage": {
@@ -2188,14 +2179,14 @@
                             }
                         },
                         "tops_C": {
-                            "title": "carbon in aboveground biomass (kg[C]/ha)",
-                            "title_fi": "biomassa maanpinnalla (kg[C]/ha)",
+                            "title": "carbon (C) in aboveground biomass (kg/ha)",
+                            "title_fi": "hiilen määrä (C) biomassassa maanpinnalla (kg/ha)",
                             "type": "number",
                             "minimum": 0,
                             "x-ui": {
-                                "unit": "kg[C]/ha",
+                                "unit": "kg/ha",
                                 "unitless_title": "carbon in aboveground biomass",
-                                "unitless_title_fi": "biomassa maanpinnalla"
+                                "unitless_title_fi": "hiilen määrä (C) biomassa maanpinnalla"
                             }
                         },
                         "canopy_height": {
