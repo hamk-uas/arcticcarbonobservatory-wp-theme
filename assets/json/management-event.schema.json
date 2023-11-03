@@ -2016,7 +2016,7 @@
                                     },
                                     "soil_classification_by_layer": {                                        
                                         "type": "string",
-                                        "title": "Soil structure (MARA score card)",                                    
+                                        "title": "Soil structure (VESS or MARA score card)",                                    
                                         "title_fi": "Maan rakenne (MARA-kortti)",
                                         "description": "visual evaluation of soil structure (Ball et al. 2007, Franco et al. 2019)",
                                         "oneOf": [
@@ -2051,6 +2051,105 @@
                                                 "title_sv": "klass 5 lucker"
                                             }
                                         ]
+                                    },
+                                    "soil_bulk_density_moist": {
+                                        "title": "Bulk density (g/cm³)",
+                                        "title_fi": "Irtotiheys (g/cm³)",
+                                        "x-ui": {
+                                            "unitless_title": "Bulk density",
+                                            "unitless_title_fi": "Irtotiheys",
+                                            "unit": "g/cm³"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_water_wilting_pt": {
+                                        "title": "Soil water content at wilting point (cm³/cm³)",
+                                        "title_fi": "Nuutumispiste (cm³/cm³)",
+                                        "x-ui": {
+                                            "unitless_title": "Soil water content at wilting point",
+                                            "unitless_title_fi": "Nuutumispiste",
+                                            "unit": "cm³/cm³"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_water_field_cap_1": {
+                                        "title": "Soil water content at field capacity, 30 kPA (cm³/cm³)",
+                                        "title_fi": "Kenttäkapasiteetti, 30 kPA (cm³/cm³)",
+                                        "x-ui": {
+                                            "unitless_title": "Soil water content at field capacity, 30 kPA",
+                                            "unitless_title_fi": "Kenttäkapasiteetti, 30 kPA",
+                                            "unit": "cm³/cm³"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_water_saturated": {
+                                        "title": "Soil water content at saturation (cm³/cm³)",
+                                        "title_fi": "Kylläisyyspiste (cm³/cm³)",
+                                        "x-ui": {
+                                            "unitless_title": "Soil water content at saturation",
+                                            "unitless_title_fi": "Kylläisyyspiste",
+                                            "unit": "cm³/cm³"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_silt_fraction": {
+                                        "title": "Soil silt fraction (%)",
+                                        "title_fi": "Maaperän lietteen osuus (%)",
+                                        "x-ui": {
+                                            "unitless_title": "Soil silt fraction",
+                                            "unitless_title_fi": "Maaperän lietteen osuus",
+                                            "unit": "%"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_sand_fraction": {
+                                        "title": "Soil sand fraction (%)",
+                                        "title_fi": "Maaperän hiekan osuus (%)",
+                                        "x-ui": {
+                                            "unitless_title": "Soil sand fraction",
+                                            "unitless_title_fi": "Maaperän hiekan osuus",
+                                            "unit": "%"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_clay_fraction": {
+                                        "title": "Soil clay fraction (%)",
+                                        "title_fi": "Maaperän saven osuus (%)",
+                                        "x-ui": {
+                                            "unitless_title": "Soil clay fraction",
+                                            "unitless_title_fi": "Maaperän saven osuus",
+                                            "unit": "%"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_organic_matter_layer": {
+                                        "title": "Total soil organic matter (kg/ha)",
+                                        "title_fi": "Maaperän orgaaninen aines (kg/ha)",
+                                        "x-ui": {
+                                            "unitless_title": "Total soil organic matter",
+                                            "unitless_title_fi": "Maaperän orgaaninen aines",
+                                            "unit": "kg/ha"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "soil_organic_C_perc_layer": {
+                                        "title": "Total soil organic carbon content (%)",
+                                        "title_fi": "Orgaanisen hiilen osuus (%)",
+                                        "x-ui": {
+                                            "unitless_title": "Total soil organic carbon content",
+                                            "unitless_title_fi": "Orgaanisen hiilen osuus",
+                                            "unit": "%"
+                                        },
+                                        "type": "number",
+                                        "minimum": 0
                                     }
                                 }
                             }

@@ -2419,8 +2419,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
         }
     }
     // Show management events
-    let previousX = (v.satelliteImageDate - v.startDate) * pixelsPerMillisecond;
-    let yOffset = 0;
+    let occupiedXs = {};
     if (v.charts["global"] !== undefined) {
         v.charts["global"].sources.forEach(function (source, sourceIndex) {
             if (source.sourceType === "mgmt_event") {                
@@ -2440,12 +2439,22 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                     selected = (startDateObject.valueOf() == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
                                     color = selected ? v.chartColors[2] : v.disabledColor;
                                     let sx = (startDateObject.valueOf() - v.startDate) * pixelsPerMillisecond;
-                                    if (sx == previousX) {
-                                        yOffset += 10;
+                                    let yOffset = 0;
+                                    if (occupiedXs[Math.floor(sx)] !== undefined || occupiedXs[Math.ceil(sx)] !== undefined) {
+                                        if (occupiedXs[Math.floor(sx)] === undefined) {
+                                            occupiedXs[Math.floor(sx)] = 0;
+                                        }
+                                        if (occupiedXs[Math.ceil(sx)] === undefined) {
+                                            occupiedXs[Math.ceil(sx)] = 0;
+                                        }
+                                        yOffset = Math.max(occupiedXs[Math.floor(sx)], occupiedXs[Math.ceil(sx)]) + 10;
+                                        occupiedXs[Math.floor(sx)] = yOffset;
+                                        occupiedXs[Math.ceil(sx)] = yOffset;
                                     } else {
-                                        yOffset = 0;
+                                        occupiedXs[Math.floor(sx)] = 0;
+                                        occupiedXs[Math.ceil(sx)] = 0;
                                     }
-                                    previousX = sx;
+                                    event.foUIYOffset = yOffset;
                                     let ex = ((new Date(event.end_date)).valueOf() - v.startDate) * pixelsPerMillisecond;
                                     if (ex + 21 > 0 && sx - 21 < v.dimensions.width) {
                                         onView = true
@@ -2462,12 +2471,22 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                     selected = ((new Date(event.date)).valueOf() == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
                                     color = selected ? v.chartColors[2] : v.disabledColor;
                                     let x = ((new Date(event.date)).valueOf() - v.startDate) * pixelsPerMillisecond;
-                                    if (x == previousX) {
-                                        yOffset += 10;
+                                    let yOffset = 0;
+                                    if (occupiedXs[Math.floor(x)] !== undefined || occupiedXs[Math.ceil(x)] !== undefined) {
+                                        if (occupiedXs[Math.floor(x)] === undefined) {
+                                            occupiedXs[Math.floor(x)] = 0;
+                                        }
+                                        if (occupiedXs[Math.ceil(x)] === undefined) {
+                                            occupiedXs[Math.ceil(x)] = 0;
+                                        }
+                                        yOffset = Math.max(occupiedXs[Math.floor(x)], occupiedXs[Math.ceil(x)]) + 10;
+                                        occupiedXs[Math.floor(x)] = yOffset;
+                                        occupiedXs[Math.ceil(x)] = yOffset;
                                     } else {
-                                        yOffset = 0;
+                                        occupiedXs[Math.floor(x)] = 0;
+                                        occupiedXs[Math.ceil(x)] = 0;
                                     }
-                                    previousX = x;
+                                    event.foUIYOffset = yOffset;
                                     if (x + 21 > 0 && x - 21 < v.dimensions.width) {
                                         onView = true
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="-2" x2="${x.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
@@ -2479,7 +2498,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 }
                                 if (onView) {
                                     if (iconX !== undefined) {
-                                        drawingHtml += getManagementEventSymbolHtml(event.mgmt_operations_event, iconX.toFixed(1), -14 + yOffset, color);
+                                        drawingHtml += getManagementEventSymbolHtml(event.mgmt_operations_event, iconX.toFixed(1), -14 + event.foUIYOffset, color);
                                     }
                                     if (selected) {
                                         let description0 = "";
@@ -2548,6 +2567,10 @@ function makeManagementEventCompatibleWithSchema(event) {
     if (event.start_date !== undefined) {
         event.date = event.start_date;
         delete event.start_date;
+    }
+    if (event["soil_organic_C_perc_layr"] !== undefined) {
+        event["soil_organic_C_perc_layer"] = event["soil_organic_C_perc_layr"];
+        delete event["soil_organic_C_perc_layr"];
     }
     delete event.soil_layer_count;
     let listId;
