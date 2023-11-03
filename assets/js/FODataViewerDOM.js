@@ -492,19 +492,21 @@ function makeElementDraggableByHeading(elementId) {
         e.stopPropagation();
         element.style.left = elementOriginX + (e.clientX - cursorOriginX) + "px";
         element.style.top = elementOriginY + (e.clientY - cursorOriginY) + "px";        
-        let xOverflow = (parseInt(element.style.left) + element.offsetWidth) - (document.documentElement.clientWidth || document.body.clientWidth);
+        let xOverflow = parseInt(element.style.left) + 80 - (document.documentElement.clientWidth || document.body.clientWidth);
         if (xOverflow > 0) {
             element.style.left = parseInt(element.style.left) - xOverflow + 'px';
         }
-        let yOverflow = (parseInt(element.style.top) + element.offsetHeight) - window.innerHeight;
+        let yOverflow = parseInt(element.style.top) + 40 - window.innerHeight;
         if (yOverflow > 0) {
             element.style.top = parseInt(element.style.top) - yOverflow + 'px';
-        }        
-        if (parseInt(element.style.left) < 0) {
-            element.style.left = '0px';
         }
-        if (parseInt(element.style.top) < 0) {
-            element.style.top = '0px';
+        let xUnderflow = parseInt(element.style.left) + parseInt(window.getComputedStyle(element).minWidth) - 80;
+        if (xUnderflow < 0) {
+            element.style.left = parseInt(element.style.left) - xUnderflow + 'px';
+        }
+        let yUnderflow = parseInt(element.style.top);
+        if (yUnderflow < 0) {
+            element.style.top = parseInt(element.style.top) - yUnderflow + 'px';
         }
     }
 
