@@ -236,7 +236,7 @@ function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
             }
         }
         for (const [propertyId, propertyValue] of Object.entries(json)) {
-            if (resolvedSchema.properties === undefined || propertyId in resolvedSchema.properties === false) {
+            if (!bannedProperties.includes(propertyId) && (resolvedSchema.properties === undefined || propertyId in resolvedSchema.properties === false)) {
                 html += `<li title="Unknown property"><span class="VariableTitle UnknownJSONProperty">${propertyId}:</span> <span class="ValueTitle UnknownJSONValue">${JSON.stringify(propertyValue)} (unknown property)</span></li>`;
             }
         }
