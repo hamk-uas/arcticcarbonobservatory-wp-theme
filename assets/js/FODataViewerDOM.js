@@ -447,6 +447,7 @@ function showFOPopup(elementId, innerHTML, x, y) {
     makeElementDraggableByHeading(elementId);
     document.querySelector(`#${elementId} > .Close`).onclick = function() {
         popupElement.classList.remove('moved');
+        toggleSelectedEvent(undefined);
         hideFOPopup(elementId);
     };
 }
@@ -1133,6 +1134,9 @@ const FODataViewerWorkerJsUrl = document.getElementById("fieldobservatory-FOData
 const FODataViewerCoreJsUrl = document.getElementById("fieldobservatory-FODataViewerCoreJs-js").src;
 
 function refreshChart(chartId, refreshIndex, xAxisHtml, drawingHtmls) {
+    if (chartId === undefined) {
+        return;
+    }
     if (xAxisHtml === undefined) {
         xAxisHtml = getXAxisHtml(v);
     }
@@ -1218,14 +1222,14 @@ function addTransientDrawingListeners(chartId) {
                                 if (eventElement != null) {
                                     if (event.date !== undefined && event.end_date !== undefined) {
                                         eventElement.onclick = function (e) {
-                                            setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
+                                            toggleSelectedEvent(event.date, sourceIndex, eventIndex, chartId, e);
                                             e.stopPropagation();
                                             e.preventDefault();                            
                                         }
                                         eventElement.onmousedown = preventDefault;
                                     } else if (event.date !== undefined) {
                                         eventElement.onclick = function (e) {
-                                            setEventDate(event.date, sourceIndex, eventIndex, chartId, e);
+                                            toggleSelectedEvent(event.date, sourceIndex, eventIndex, chartId, e);
                                             e.stopPropagation();
                                             e.preventDefault();                            
                                         }
@@ -2373,14 +2377,16 @@ function showEventDetails() {
     }    
 }
 
-function setEventDate(date, sourceIndex, eventIndex, chartId, event = null, refreshRelatedChart = true) {
+function toggleSelectedEvent(date, sourceIndex, eventIndex, chartId, event = null, refreshRelatedChart = true) {
     if (event) {
         event.stopPropagation();
         event.preventDefault();
     }
     // Click on an event. Either a) show it or b) if it is already shown then hide it
-    if (v.eventDate == date && v.eventSourceIndex == sourceIndex && v.eventIndex == eventIndex) {
-        v.eventDate = undefined;       
+    if (date === undefined || (v.eventDate == date && v.eventSourceIndex == sourceIndex && v.eventIndex == eventIndex)) {
+        v.eventDate = undefined;
+        v.eventSourceIndex = undefined;
+        v.eventIndex = undefined;
     } else {
         v.eventDate = date;
         v.eventSourceIndex = sourceIndex;

@@ -2436,7 +2436,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 let iconX = undefined;
                                 if (event.date !== undefined && event.end_date !== undefined) {
                                     let startDateObject = new Date(event.date);
-                                    selected = (startDateObject.valueOf() == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
+                                    selected = /*(v.eventDate !== undefined && startDateObject.valueOf() == (new Date(v.eventDate)).valueOf()) &&*/ (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
                                     color = selected ? v.chartColors[2] : v.disabledColor;
                                     let sx = (startDateObject.valueOf() - v.startDate) * pixelsPerMillisecond;
                                     let yOffset = 0;
@@ -2468,7 +2468,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         iconX = sx;
                                     }
                                 } else if (event.date !== undefined) {
-                                    selected = ((new Date(event.date)).valueOf() == v.eventDate) && (eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
+                                    selected = /*(v.eventDate !== undefined && (new Date(event.date)).valueOf() == (new Date(v.eventDate)).valueOf()) && */(eventIndex == v.eventIndex) && (sourceIndex == v.eventSourceIndex);
                                     color = selected ? v.chartColors[2] : v.disabledColor;
                                     let x = ((new Date(event.date)).valueOf() - v.startDate) * pixelsPerMillisecond;
                                     let yOffset = 0;
