@@ -703,6 +703,10 @@
     touch-action: none;
 }
 
+.FOJSONViewer * {
+    line-height: 1;
+}
+
 .FOJSONViewer > ul {
     padding-top: 5px;
 }

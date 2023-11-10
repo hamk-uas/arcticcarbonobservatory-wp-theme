@@ -7,7 +7,7 @@
     foConfig = {
         ...foConfig,
         mapEnabled: false,
-    }    
+    }
     //foConfig.language = "fi"; // Override language.
 </script>
 

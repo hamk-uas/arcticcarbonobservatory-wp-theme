@@ -113,7 +113,7 @@ Promise.all(fetchPromises).then(async (values) => {
             exportButtonElement.innerHTML = "Download all JSONs after modifications";
             debugContainerElement.appendChild(exportButtonElement);                    
             newElement = document.createElement("div");
-            newElement.innerHTML = `Full list of events follows. Search for "property" to find any remaining validation errors.`;
+            newElement.innerHTML = `There are still problems with the following events:`;
             debugContainerElement.appendChild(newElement);
             let files = [];
             for (let siteId of siteIds) {
@@ -128,16 +128,18 @@ Promise.all(fetchPromises).then(async (values) => {
                             makeManagementEventCompatibleWithSchema(event);
                             let resolvedSchema = {};
                             resolveJsonSchema(event, resolvedSchema, managementEventSchemaJson);
-                            siteHtml += "<table><tr>";
-                            let backup_language = foConfig.language;
-                            let width = 640;
-                            for (let language of ["en", "fi", "sv"]) {
-                                foConfig.language = language;                      
-                                siteHtml += `<td style="line-height: 1; vertical-align: top; box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%); padding-left: 5px; padding-right: 5px; margin-left: 10px; margin-bottom: 10px; border: 3px solid #480; border-radius: 10px; width: ${width}px;"><div class="FOJSONViewer" style=""><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#480", 1.75)}</svg><span style="font-size: 40px; margin-left: 10px;">${siteId}_${source.block}</span>`;
-                                siteHtml += `${jsonToHTML(event, resolvedSchema, ["$schema", "mgmt_operations_event", "foUIYOffset"])}</div></td>`;
+                            if (jsonToHTML(event, resolvedSchema, ["$schema", "mgmt_operations_event", "foUIYOffset"]).includes(" property)")) {
+                                siteHtml += "<table><tr>";
+                                let backup_language = foConfig.language;
+                                let width = 640;
+                                for (let language of ["en"]) {
+                                    foConfig.language = language;                      
+                                    siteHtml += `<td style="line-height: 1; vertical-align: top; padding-left: 5px; padding-right: 5px; margin-left: 10px; margin-bottom: 10px; border: 3px solid #480; border-radius: 10px; width: ${width}px;"><div class="FOJSONViewer" style=""><svg class="FOPopupIcon" width="40" height="40" viewBox="0 0 40 40">${getManagementEventSymbolHtml(event.mgmt_operations_event, 20, 20, "#480", 1.75)}</svg><span style="font-size: 40px; margin-left: 10px;">${siteId}_${source.block}</span>`;
+                                    siteHtml += `${jsonToHTML(event, resolvedSchema, ["$schema", "mgmt_operations_event", "foUIYOffset"])}</div></td>`;
+                                }
+                                foConfig.language = backup_language;
+                                siteHtml += "<tr></table>";
                             }
-                            foConfig.language = backup_language;
-                            siteHtml += "<tr></table>";
                         }
                     }
                 }
