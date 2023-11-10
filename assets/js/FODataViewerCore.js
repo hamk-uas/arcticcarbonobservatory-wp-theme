@@ -2422,7 +2422,8 @@ function getDrawingHtmls(v, chartId, standalone = false) {
     let occupiedXs = {};
     if (v.charts["global"] !== undefined) {
         v.charts["global"].sources.forEach(function (source, sourceIndex) {
-            if (source.sourceType === "mgmt_event") {                
+            if (source.sourceType === "mgmt_event") {
+                console.log(source.block);
                 if (source.block == undefined || v.site.blockIdToBlock[source.block].visible) source.jsonList.forEach(function (json, jsonIndex) {
                     if (new Date(json.startTime) <= v.endDate && new Date(json.endTime) >= v.startDate) {
                         if (json.loaded === undefined) {
@@ -2643,4 +2644,9 @@ function makeManagementEventCompatibleWithSchema(event) {
             }
         }
     }
+}
+
+function getCacheRefreshDate(date) {
+    date = new Date(date);
+    return [date.getFullYear(), (date.getMonth() + 1).toString().padStart(2, '0'), date.getDate().toString().padStart(2, '0'), date.getHours().toString().padStart(2, '0')].join('-') + "h";
 }

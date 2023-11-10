@@ -374,11 +374,6 @@ function whenMapLoadedDo(f) {
     }
 }
 
-function getCacheRefreshDate(date) {
-    date = new Date(date);
-    return [date.getFullYear(), (date.getMonth() + 1).toString().padStart(2, '0'), date.getDate().toString().padStart(2, '0'), date.getHours().toString().padStart(2, '0')].join('-') + "h";
-}
-
 // Get bounding box as [[minLng, maxLng], [minLat, maxLat]] of a feature or features, with or without a starting point boundingBox to be extended by modifying it.
 function getBoundingBox(featureOrFeatures, boundingBox = [[Infinity, Infinity], [-Infinity, -Infinity]]) {
     function accumulate(feature) {

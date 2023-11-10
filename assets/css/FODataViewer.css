@@ -703,12 +703,12 @@
     touch-action: none;
 }
 
-#Details > ul {
+.FOJSONViewer > ul {
     padding-top: 5px;
 }
 
-#Details ol,
-#Details ul {
+.FOJSONViewer ol,
+.FOJSONViewer ul {
     display: grid;
     grid-template-columns: auto 1fr;
     padding-left: 0px;
@@ -717,21 +717,21 @@
     grid-row-gap: 5px;
 }
 
-#Details ol {
+.FOJSONViewer ol {
     grid-row-gap: 10px;
     padding-top: 10px;
 }
 
-#Details ul ol,
-#Details ul ul {
+.FOJSONViewer ul ol,
+.FOJSONViewer ul ul {
     grid-column-start: 1;
     grid-column-end: 3;    
     grid-template-columns: 20px auto 1fr;
 }
 
-#Details ol + ul::before,
-#Details ol + ol::before,
-#Details ol + li::before {
+.FOJSONViewer ol + ul::before,
+.FOJSONViewer ol + ol::before,
+.FOJSONViewer ol + li::before {
     content: '';
     grid-column-start: 1;
     grid-column-end: 3;    
@@ -739,12 +739,12 @@
     border-top: 1px solid black;
 }
 
-#Details ol + li::before {
+.FOJSONViewer ol + li::before {
     content: '';
     padding-top: 10px;
 }
 
-#Details li + ol::before {
+.FOJSONViewer li + ol::before {
     content: '';
     grid-column-start: 1;
     grid-column-end: 4;    
@@ -753,25 +753,25 @@
     margin-bottom: -5px;
 }
 
-#Details .ArrayTitle {
+.FOJSONViewer .ArrayTitle {
     margin-bottom: -10px;
     margin-top: 10px;
 }
 
-#Details ol {
+.FOJSONViewer ol {
     counter-reset: item;
 }
 
-#Details li {
+.FOJSONViewer li {
     align-items: center;
     display: contents;
 }
 
-#Details ol > ul {
+.FOJSONViewer ol > ul {
     counter-increment: item;
 }
 
-#Details ol > ul > li:first-child::before {
+.FOJSONViewer ol > ul > li:first-child::before {
     font-family: 'LatoLatinWebHeavy', sans-serif;
     font-weight: normal;
     content: counter(item) ".\00a0";
@@ -779,11 +779,11 @@
     margin-bottom: auto;
 }
 
-#Details ol > ul > li:not(:first-child):not(:only-child)::before {
+.FOJSONViewer ol > ul > li:not(:first-child):not(:only-child)::before {
     visibility: hidden;
 }
 
-#Details .VariableTitle {
+.FOJSONViewer .VariableTitle {
     font-family: 'LatoLatinWebHeavy', sans-serif;
     font-weight: normal;
     grid-column-start: 1;
@@ -791,7 +791,7 @@
     display: grid;    
 }
 
-#Details .UnknownJSONProperty {
+.FOJSONViewer .UnknownJSONProperty {
     color: darkred;
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     font-weight: bold;
@@ -801,7 +801,7 @@
     margin-bottom: auto;
 }
 
-#Details .MissingJSONProperty {
+.FOJSONViewer .MissingJSONProperty {
     color: grey;
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     font-weight: bold;
@@ -811,14 +811,14 @@
     margin-bottom: auto;
 }
 
-#Details .ValueTitle {
+.FOJSONViewer .ValueTitle {
     padding-left: 5px;
     grid-column-start: 2;
     grid-column-end: 3;
     display: grid;    
 }
 
-#Details .UnknownJSONValue {
+.FOJSONViewer .UnknownJSONValue {
     color: darkred;
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     padding-left: 5px;
@@ -827,7 +827,7 @@
     display: grid;    
 }
 
-#Details .MissingJSONValue {
+.FOJSONViewer .MissingJSONValue {
     color: grey;
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
     padding-left: 5px;
@@ -836,19 +836,19 @@
     display: grid;    
 }
 
-#Details .ValueString {
+.FOJSONViewer .ValueString {
     padding-left: 10px;
     grid-column-start: 1;
     grid-column-end: 3;
     display: grid;    
 }
 
-#Details ol > ul > li > .VariableTitle {
+.FOJSONViewer ol > ul > li > .VariableTitle {
     grid-column-start: 2;
     grid-column-end: 3;
 }
 
-#Details ol > ul > li > .ValueTitle {
+.FOJSONViewer ol > ul > li > .ValueTitle {
     grid-column-start: 3;
     grid-column-end: 4;
 }
