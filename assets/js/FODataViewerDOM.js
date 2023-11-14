@@ -2345,7 +2345,7 @@ function showEventDetails() {
                 console.log(event);
                 let resolvedSchema = {};
                 resolveJsonSchema(event, resolvedSchema, v.managementEventSchemaJson);
-                let title = `${translate(resolvedSchema, "valuetitle", "")}`;
+                let title = ""; //`${translate(resolvedSchema, "valuetitle", "")}`;
                 let eventDate = 0;
                 if (event.date !== undefined && event.end_date !== undefined) {
                     eventDate = event.date;

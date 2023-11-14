@@ -31,6 +31,12 @@ function compileJsonSchema(schemaJson, rootSchema = schemaJson, path = "#") {
             compileJsonSchema(subSchema, rootSchema, `${path}/oneOf[${index}]`);
         }
     }
+    /*// Recursively compile each anyOf
+    if (schemaJson.anyOf !== undefined) {
+        for (let [index, subSchema] of schemaJson.anyOf.entries()) {
+            compileJsonSchema(subSchema, rootSchema, `${path}/anyOf[${index}]`);
+        }
+    }*/
     // Expand $ref
     if (schemaJson["$ref"] !== undefined) {
         //console.log(`Expand ${path}/$ref`)
@@ -69,6 +75,7 @@ function compileJsonSchema(schemaJson, rootSchema = schemaJson, path = "#") {
 
 // Resolve the object from the JSON Schema that matches the JSON and return the resolved schema
 function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSchema = schema, titleIds = undefined, jsonPath = "event") {
+    let errors = false;
     //console.log(`Validating ${jsonPath} with ${schema.path}`);
     // Copy titles, copy to valuetitle if a title already exists
     for (const titleId of Object.keys(rootSchema.titleIds)) {
@@ -101,18 +108,18 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
         // Fail validation if the object is an array, a string, a number, or a boolean.
         if (["boolean", "number", "string"].includes(typeof json) || Array.isArray(json)) {            
             console.warn(`Failed JSON validation at ${schema.path}. Expected object, got: ${json}`)
-            return;
+            return true;
         }
-        // Handle properties of object type schema
+        // Handle properties of object type schema        
         if (schema.properties !== undefined) {
-            // Copy properties from schema to resolved schema, resolving each property. Only do that if the property exists in json.
+            // Copy properties from schema to resolved schema, resolving each property. Only do that if the property exists in json.            
             for (const [propertyId, propertySchema] of Object.entries(schema.properties)) {
                 if (propertyId in json) {
                     let resolvedPropertySchema = {};
                     if (resolvedSchema.properties !== undefined && resolvedSchema.properties[propertyId] !== undefined) {
                         resolvedPropertySchema = resolvedSchema.properties[propertyId];
                     }
-                    resolveJsonSchema(json !== undefined? json[propertyId] : undefined, resolvedPropertySchema, propertySchema, rootJson, rootSchema, titleIds, `${jsonPath}[${propertyId}]`);
+                    errors = resolveJsonSchema((json !== undefined)? json[propertyId] : undefined, resolvedPropertySchema, propertySchema, rootJson, rootSchema, titleIds, `${jsonPath}[${propertyId}]`) || errors;
                     if (resolvedSchema.properties === undefined) {
                         resolvedSchema.properties = {};
                     }
@@ -124,6 +131,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
                 for (requiredPropertyId of schema.required) {
                     if (requiredPropertyId in json === false) {
                         console.warn(`Failed JSON Schema resolve at ${schema.path}. Missing required property '${requiredPropertyId}' in:\n${JSON.stringify(json, null, 4)}`);
+                        errors = true;
                         resolvedSchema.properties[requiredPropertyId] = undefined; // Mark missing property
                     }
                 }
@@ -132,7 +140,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
         // Handle oneOf
         if (schema.oneOf !== undefined) {
             // Apply the matching element of a oneOf
-            let subSchema = schema.oneOf.find(function (subSchema) {
+            let subSchemas = schema.oneOf.filter(function (subSchema) {
                 if (subSchema.properties) {
                     for (const [propertyId, property] of Object.entries(subSchema.properties)) {
                         if (property.const !== undefined && json[propertyId] !== undefined && json[propertyId] === property.const ) {
@@ -142,24 +150,47 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
                 }
                 return false;
             });
-            if (subSchema !== undefined) {
+            if (subSchemas.length > 1) {
+                console.warn(`Failed JSON Schema resolve at ${schema.path}. Too many matches (choosing first) in oneOf for:\n${JSON.stringify(json, null, 4)}`)
+                errors = true;
+            }            
+            if (subSchemas.length > 0) {
                 // console.log("oneOf match");
-                resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);                
+                errors = resolveJsonSchema(json, resolvedSchema, subSchemas[0], rootJson, rootSchema, titleIds, jsonPath) || errors;
             } else {
                 console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for:\n${JSON.stringify(json, null, 4)}`)
+                errors = true;
             }
         }
+        /*// Handle anyOf
+        if (schema.anyOf !== undefined) {
+            // Apply any matching elements of a anyOf
+            let subSchemas = schema.anyOf.filter(function (subSchema) {
+                if (subSchema.properties) {
+                    for (const [propertyId, property] of Object.entries(subSchema.properties)) {
+                        if (property.const !== undefined && json[propertyId] !== undefined && json[propertyId] === property.const ) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
+            for (let subSchema of subSchemas) {
+                // console.log("oneOf match");
+                errors = resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath) || errors;
+            }
+        }*/
     }
     if (resolvedSchema.type === "array") {        
         // Fail validation if the object is an array, a string, a number, or a boolean.
         if (["boolean", "number", "string"].includes(typeof json) || !Array.isArray(json)) {            
             console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected array, got:\n${JSON.stringify(json, null, 4)}`)
-            return;
+            return true;
         }
         resolvedSchema.items = []
         for (let [index, element] of json.entries()) {
             let resolvedItemSchema = {}
-            resolveJsonSchema(element, resolvedItemSchema, schema.items, rootJson, rootSchema, titleIds, `${jsonPath}[${index}]`);
+            errors = resolveJsonSchema(element, resolvedItemSchema, schema.items, rootJson, rootSchema, titleIds, `${jsonPath}[${index}]`) || errors;
             resolvedSchema.items.push(resolvedItemSchema);
         }
     }
@@ -167,7 +198,7 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
         // Fail validation if the object is a boolean, a number, an array, or an object
         if (["boolean", "number", "object"].includes(typeof json)) { // typeof Array is also "object"
             console.warn(`Failed JSON Schema resolve at ${schema.path}. Expected string, got:\n${JSON.stringify(json, null, 4)}`)
-            return;
+            return true;
         }
         // Handle string oneOf
         if (schema.oneOf !== undefined) {
@@ -180,26 +211,30 @@ function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSc
             });
             if (subSchema !== undefined) {
                 // console.log("string oneOf match");
-                resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath);
+                errors = resolveJsonSchema(json, resolvedSchema, subSchema, rootJson, rootSchema, titleIds, jsonPath) || errors;
             } else {
                 console.warn(`Failed JSON Schema resolve at ${schema.path}. No match in oneOf for:\n${JSON.stringify(json, null, 4)}`)
+                errors = true;
             }
         }
     }
+    return errors;
     // console.log(`Resolved ${schema.path}: ${JSON.stringify(resolvedSchema)}`);
 }
 
 function jsonToHTML(json, resolvedSchema, bannedProperties = []) {
-    if (json === undefined) return "";
-    let html = "";
-    let title = null;
-    let titleIsUnitless = false;
+    // json can be loosely a json object, a string, a number, a vector, etc.
+    // resolvedSchema is an unambiguous schema for the json
+    if (json === undefined) return ""; // If there is no json, it cannot be HTMLified    
+    let html = ""; // Start with an empty HTML.
+    let title = null; // By default we don't have a title. We may find a title later.
+    let titleIsUnitless = false; // By default we have a usual title not split to resolvedSchema["x-ui"].unitless_title and resolvedSchema["x-ui"].unit
     if (resolvedSchema["x-ui"] !== undefined) {
         title = translate(resolvedSchema["x-ui"], "unitless_title", null);
         if (title !== null && resolvedSchema["x-ui"].unit !== undefined) {           
-            titleIsUnitless = true;
+            titleIsUnitless = true; // Found unitless title and unit
         } else {
-            title = null;
+            title = null; // No unitless title We still need a title.
         }
     }
     if (title === null) {
@@ -2554,27 +2589,71 @@ function getDrawingHtmls(v, chartId, standalone = false) {
 }
 
 function makeManagementEventCompatibleWithSchema(event) {
+    // Convert grazing_period to date and end_date
     if (event.grazing_period !== undefined) {
+        let date;
+        let end_date;
         if (Array.isArray(event.grazing_period)) {
-            event_date = event.grazing_period[0];
-            event_end_date = event.grazing_period[1];
+            date = event.grazing_period[0];
+            end_date = event.grazing_period[1];
         } else {
-            event.date = event.grazing_period.start_date;
-            event.end_date = event.grazing_period.end_date;
+            date = event.grazing_period.start_date;
+            end_date = event.grazing_period.end_date;
         }
+        // Reorder properties
         delete event.grazing_period;
+        let newEvent = {
+            mgmt_operations_event: event.mgmt_operations_event,
+            date: date,
+            end_date: end_date,
+            ...event
+        };
+        for (var key in event){
+            delete event[key];
+        }
+        Object.assign(event, newEvent);
     }
     if (event.start_date !== undefined) {
         event.date = event.start_date;
         delete event.start_date;
     }
-    if (event["soil_organic_C_perc_layr"] !== undefined) {
-        event["soil_organic_C_perc_layer"] = event["soil_organic_C_perc_layr"];
-        delete event["soil_organic_C_perc_layr"];
+    // Replace certain property ids
+    let replacements = {
+        "soil_organic_C_perc_layr": "soil_organic_C_perc_layer",
+        "org_material_appl_depth": "fertilizer_applic_method",
+        "org_material_applic_amnt": "fertilizer_total_amount",
+        "harvest_notes": "harvest_comments"        
+    };
+    for (const [from, to] of Object.entries(replacements)) {
+        if (event[from] !== undefined) {
+            event[to] = event[from];
+            delete event[from];
+        }
     }
-    delete event.soil_layer_count;
+    // Replace certain values of certain properties:
+    let value_replacements = {
+        "mgmt_operations_event": {
+            "organic_material": "fertilizer" // organic material application is considered a "fertilizer" event
+        }
+    }
+    for (const [property, dict] of Object.entries(value_replacements)) {
+        if (event[property] !== undefined && dict[event[property]] !== undefined) {            
+            event[property] = dict[event[property]];
+        }
+    }
+    // Remove certain properties
+    let removables = [
+        "soil_layer_count",
+        "harv_operat_size_categor", // Should we make a note when discarding this information?
+        "organic_material_N_conc", // Should we make a note when discarding this information?
+        "org_material_c_to_n" // Should we make a note when discarding this information?
+    ];
+    for (const removable of removables) {
+        delete event[removable];
+    }
+    // Some events have a list of things like a list of items planted. Figure out the id of such list property
     let listId;
-    listId = `${event.mgmt_operations_event}_list`; // planting_list, harvest_list
+    listId = `${event.mgmt_operations_event}_list`;
     switch (event.mgmt_operations_event) {
         case "observation":
             switch (event.observation_type) {
@@ -2583,24 +2662,33 @@ function makeManagementEventCompatibleWithSchema(event) {
                     break;
             }
             break;
-        case "chemical":
-            listId = "chemical_applic_material";
+        case "chemicals":
+            listId = "chemical_applic_material_list";
             break;
     }
+    // Delete properties that have a value "-99.0" denoting a missing property
     for (const [propertyId, property] of Object.entries(event)) {
         if (property === "-99.0") {
             delete event[propertyId];
         }
     }
+    // If the organic_material property exists, set fertilizer_type accordingly
+    if (event["organic_material"] !== undefined) {
+        event["fertilizer_type"] = "fertilizer_type_organic";
+    }
+    // Collect multiple arrays into a s
     for (let [propertyId, property] of Object.entries(event)) {
+        // Some properties need to be arrays but come as a plain value. Put those into length-one arrays.
         if (!Array.isArray(property) && [
             "planted_crop", "planting_material_weight", "planting_depth", "planting_material_source",
             "harvest_crop", "harvest_yield_harvest_dw", "harv_yield_harv_f_wt", "yield_C_at_harvest", "harvest_moisture",  "harvest_method", "harvest_operat_component", "canopy_height_harvest", "harvest_cut_height", "plant_density_harvest", "harvest_residue_placement",
-            "soil_layer_top_depth", "soil_layer_base_depth", "soil_classification_by_layer", "soil_bulk_density_moist", "soil_water_wilting_pt", "soil_water_field_cap_1", "soil_water_saturated", "soil_silt_fraction", "soil_sand_fraction", "soil_clay_fraction", "soil_organic_matter_layer", "soil_organic_C_perc_layer"
-        ].includes(propertyId)) {
+            "soil_layer_top_depth", "soil_layer_base_depth", "soil_classification_by_layer", "soil_bulk_density_moist", "soil_water_wilting_pt", "soil_water_field_cap_1", "soil_water_saturated", "soil_silt_fraction", "soil_sand_fraction", "soil_clay_fraction", "soil_organic_matter_layer", "soil_organic_C_perc_layer",
+            "chemical_applic_material"
+        ].includes(propertyId)) {            
             event[propertyId] = [property];
             property = event[propertyId];
         }
+        // Combine multiple array properties into a single array of objects with properties, with the id we figured out earlier.
         if (Array.isArray(property)) {
             if (event[listId] === undefined) {
                 event[listId] = Array.from({length:property.length}, Object);                                                        
@@ -2618,6 +2706,7 @@ function makeManagementEventCompatibleWithSchema(event) {
             delete event[propertyId];
         }
     }
+    // Calculate totals
     for (let [propertyId, property] of Object.entries(event)) {
         if (propertyId === "harvest_list") {
             let recalculate = {};

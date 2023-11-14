@@ -719,6 +719,7 @@
     padding-right: 0px;
     align-items:center;
     grid-row-gap: 5px;
+    grid-column-gap: 5px
 }
 
 .FOJSONViewer ol {
@@ -792,7 +793,8 @@
     font-weight: normal;
     grid-column-start: 1;
     grid-column-end: 2;
-    display: grid;    
+    display: grid;
+    width: 250px;
 }
 
 .FOJSONViewer .UnknownJSONProperty {
@@ -803,6 +805,7 @@
     grid-column-end: 2;
     display: grid;
     margin-bottom: auto;
+    line-break: anywhere;
 }
 
 .FOJSONViewer .MissingJSONProperty {
@@ -813,6 +816,7 @@
     grid-column-end: 2;
     display: grid;
     margin-bottom: auto;
+    line-break: anywhere;
 }
 
 .FOJSONViewer .ValueTitle {
@@ -829,6 +833,7 @@
     grid-column-start: 2;
     grid-column-end: 3;
     display: grid;    
+    line-break: anywhere;
 }
 
 .FOJSONViewer .MissingJSONValue {
@@ -838,6 +843,7 @@
     grid-column-start: 2;
     grid-column-end: 3;
     display: grid;    
+    line-break: anywhere;
 }
 
 .FOJSONViewer .ValueString {
