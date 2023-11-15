@@ -941,12 +941,6 @@
                                         "title": "sugar beet harvester",
                                         "title_fi": "juurikkaannostokone",
                                         "const": "HM010"
-                                    },
-                                    {
-                                        "title": "method unknown/not given",
-                                        "title_fi": "tapa ei tiedossa",
-                                        "title_sv": "okänd metod",
-                                        "const": "HM999"
                                     }
                                 ]
                             },
@@ -2649,11 +2643,6 @@
                             "title": "subsurface (buried) drip",
                             "title_fi": "maanalainen tihkukastelu",
                             "const": "IR012"
-                        },
-                        {
-                            "title": "unknown/not given",
-                            "title_fi": "ei tiedossa",
-                            "const": "IR999"
                         }
                     ]
                 },
@@ -3736,12 +3725,6 @@
                     "title": "injected",
                     "title_fi": "ruiskutettu pinnan alle",
                     "const": "AP009"
-                },
-                {
-                    "title": "method unknown/not given",
-                    "title_fi": "tapa ei tiedossa",
-                    "title_sv": "känd metod",
-                    "const": "AP999"
                 }
             ]
         },
@@ -3797,11 +3780,6 @@
                     "title": "photodegradable plastic",
                     "title_fi": "valohajoava muovi",
                     "const": "MT010"
-                },
-                {
-                    "title": "not given/unknown",
-                    "title_fi": "ei tiedossa",
-                    "const": "MT999"
                 }
             ]
         }

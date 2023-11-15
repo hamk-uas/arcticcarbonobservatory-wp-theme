@@ -2649,6 +2649,18 @@ function makeManagementEventCompatibleWithSchema(event) {
     let value_replacements = {
         "mgmt_operations_event": {
             "organic_material": "fertilizer" // organic material application is considered a "fertilizer" event
+        },
+        "fertilizer_applic_method": {
+            "AP999": "-99.0"
+        },
+        "mulch_type": {            
+            "MT999": "-99.0"
+        },
+        "irrigation_operation": {
+            "IR999": "-99.0"
+        },
+        "harvest_method": {
+            "HM999": "-99.0"
         }
     }
     for (const [property, dict] of Object.entries(value_replacements)) {
