@@ -77,11 +77,11 @@ function compileJsonSchema(schemaJson, rootSchema = schemaJson, path = "#") {
 function resolveJsonSchema(json, resolvedSchema, schema, rootJson = json, rootSchema = schema, titleIds = undefined, jsonPath = "event") {
     let errors = false;
     //console.log(`Validating ${jsonPath} with ${schema.path}`);
-    // Copy titles, copy to valuetitle if a title already exists
+    // Copy titles, copy to valuetitle if the schema has a "const" and a title already exists
     for (const titleId of Object.keys(rootSchema.titleIds)) {
         if (schema[titleId] !== undefined) {
             //console.log(`Add title ${titleId}: ${schema[titleId]}`);
-            if (resolvedSchema[titleId] === undefined) {
+            if (schema["const"] === undefined || resolvedSchema[titleId] === undefined) {
                 resolvedSchema[titleId] = schema[titleId];
             } else {
                 resolvedSchema[`value${titleId}`] = schema[titleId];

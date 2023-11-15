@@ -49,6 +49,10 @@ var numFailed = 0;
 var numToLoad = 0;
 var dummy;
 Promise.all(fetchPromises).then(async (values) => {
+    // Parse URL parameters
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const listAllEvents = urlParams.get('listAllEvents') === "true";
     // Load siteJson files
     let fetchPromises2 = [];
     const loaderElement = document.createElement("p");
@@ -105,6 +109,8 @@ Promise.all(fetchPromises).then(async (values) => {
             }
         }
         Promise.all(fetchPromises3).then(async () => {
+            const loaderElement = document.createElement("p");
+            debugContainerElement.appendChild(loaderElement);
             let newElement = document.createElement("div");
             newElement.innerHTML = `Modifying management events to conform to JSON Schema: <a href="${foConfig.managementEventSchemaJsonUrl}">${foConfig.managementEventSchemaJsonUrl}</a>`;
             debugContainerElement.appendChild(newElement);
@@ -127,8 +133,13 @@ Promise.all(fetchPromises).then(async (values) => {
                             makeManagementEventCompatibleWithSchema(event);
                             let resolvedSchema = {};
                             numTotal += 1;
-                            if (resolveJsonSchema(event, resolvedSchema, managementEventSchemaJson) || jsonToHTML(event, resolvedSchema, ["$schema", "mgmt_operations_event", "foUIYOffset"]).includes("(unknown property)")) {
-                                numProblematic += 1;                                
+                            let resolveResult = resolveJsonSchema(event, resolvedSchema, managementEventSchemaJson);
+                            let jsonToHTMLResult = jsonToHTML(event, resolvedSchema, ["$schema", "mgmt_operations_event", "foUIYOffset"]).includes("(unknown property)");
+                            let problematic = resolveResult || jsonToHTMLResult;
+                            if (problematic) {
+                                numProblematic += 1;
+                            }
+                            if (listAllEvents || problematic) {
                                 siteHtml += "<table><tr>";
                                 let backup_language = foConfig.language;
                                 let width = 640;
@@ -143,34 +154,39 @@ Promise.all(fetchPromises).then(async (values) => {
                                 siteHtml += `<pre><code class="language-json">${JSON.stringify(origEvent, null, "    ")}</code></pre>`;
                                 siteHtml += `was modified to:`
                                 siteHtml += `<pre><code class="language-json">${JSON.stringify(event, null, "    ")}</code></pre>`;
-                                siteHtml += `and viewed using a schema-like object:`
+                                siteHtml += `and viewed using a schema-derived object:`
                                 siteHtml += `<pre><code class="language-json">${JSON.stringify(resolvedSchema, null, "    ")}</code></pre><br>`;
                             }
+                            loaderElement.innerHTML = `Events processed: ${numTotal}`;
                         }
                     }
                 }
             }
-            newElement = document.createElement("div");
-            newElement.innerHTML = `Total number of events: ${numTotal}.`;
-            debugContainerElement.appendChild(newElement);
             if (numProblematic > 0) {                
                 newElement = document.createElement("div");
-                newElement.innerHTML = `There are still problems with the following ${numProblematic} events:`;
+                newElement.innerHTML = `There were problems with ${numProblematic} events.`;
                 debugContainerElement.appendChild(newElement);
-                const siteDivElement = document.createElement("div");
-                siteDivElement.innerHTML = siteHtml;
-                debugContainerElement.appendChild(siteDivElement);        
-                exportButtonElement.onclick = async function(e) {
-                    let blob = await downloadZip(files).blob();
-                    saveFile(blob, `modified_events_${new Date().toISOString().split("T")[0]}.zip`);
-                    e.preventDefault();
-                }                
             } else {
                 newElement = document.createElement("div");
-                newElement.innerHTML = `No problems detected.`;
+                newElement.innerHTML = `No problems were detected with the events.`;
                 debugContainerElement.appendChild(newElement);
             }
+            newElement = document.createElement("div");
+            if (listAllEvents) {
+                newElement.innerHTML = `All events: <a href=".?listAllEvents=false">List only problematic events instead</a>`;
+            } else {
+                newElement.innerHTML = `Problematic events: <a href=".?listAllEvents=true">List all events instead</a>`;
+            }
+            debugContainerElement.appendChild(newElement);
+            const siteDivElement = document.createElement("div");
+            siteDivElement.innerHTML = siteHtml;
+            debugContainerElement.appendChild(siteDivElement);
+            exportButtonElement.onclick = async function(e) {
+                let blob = await downloadZip(files).blob();
+                saveFile(blob, `modified_events_${new Date().toISOString().split("T")[0]}.zip`);
+                e.preventDefault();
+            }
             hljs.highlightAll();
-        })
-});
+        });
+    });
 });

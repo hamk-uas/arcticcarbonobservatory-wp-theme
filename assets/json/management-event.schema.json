@@ -70,8 +70,8 @@
         },
         "date": {
             "title": "date",
-            "title_en": "date",
-            "title_fi": "päivä",
+            "title_en": "the date when the activity was performed",            
+            "title_fi": "päivä jolloin tapahtuma tapahtui",
             "type": "string",
             "format": "date"
         },
@@ -79,7 +79,11 @@
             "title": "description",
             "title_en": "description",
             "title_fi": "kuvaus",
-            "type": "string"
+            "type": "string",
+            "x-ui": {
+                "placeholder": "A high level description of the event, e.g. \"first harvest of the year\" or \"spring fertilization\". This will appear on the event list.",
+                "placeholder_fi": "Yleinen kuvaus tapahtumasta, esim. “vuoden ensimmäinen sadonkorjuu” tai “kevätlannoitus”. Tämä tulee näkyviin tapahtumalistaan."
+            }
         }
     },
     "oneOf": [
@@ -444,7 +448,34 @@
                             "const": "fertilizer_type_soil_amendment"
                         }
                     },
-                    "fertilizer_material_source" : {
+                    "fertilizer_material": {
+                        "title": "soil amendment substance",
+                        "title_fi": "maanparannusaine",
+                        "type": "string",
+                        "oneOf": [
+                            {
+                                "title": "Bio char",
+                                "title_fi": "Biohiili",
+                                "const": "FE996"
+                            },
+                            {
+                                "title": "Peat",
+                                "title_fi": "Turve",
+                                "const": "FE997"
+                            },
+                            {
+                                "title": "Sawdust",
+                                "title_fi": "Sahanpuru",
+                                "const": "FE998"
+                            },
+                            {
+                                "title": "Wood chip",
+                                "title_fi": "Puulastu",
+                                "const": "FE999"
+                            }
+                        ]
+                    },
+                    "fertilizer_material_source": {
                         "title": "fertilizer material source",
                         "title_fi": "Lannoitteen alkuperä",
                         "type" : "string",
@@ -2114,6 +2145,7 @@
                 "chemical_applic_target": {
                     "title": "chemical application target",
                     "title_fi": "kemikaalinlevityksen kohde",
+                    "description": "source (in Finnish): https://www.kemidigi.fi/kasvinsuojeluainerekisteri/haku",
                     "type": "string",
                     "oneOf": [
                         {
@@ -2280,6 +2312,20 @@
                         "unitless_title": "chemical application depth",
                         "unitless_title_fi": "kemikaalinlevityssyvyys"
                     }
+                },
+                "application_ph_start" : {
+                    "title" : "pH before the application",
+                    "title_fi" : "pH ennen toimenpidettä",
+                    "type": "number",
+                    "minimum" : 0,
+                    "maximum" : 14
+                },
+                "application_ph_end" : {
+                    "title": "pH after the application",
+                    "title_fi": "pH jälkeen toimenpiteen",
+                    "type": "number",
+                    "minimum" : 0,
+                    "maximum" : 14
                 },
                 "chemical_applic_notes": {
                     "title": "chemical application notes",
@@ -2736,7 +2782,7 @@
                 },
                 "observation_notes": {
                     "title": "observations",
-                    "title_fi": "havaintoja",
+                    "title_fi": "havainnot",
                     "type": "string"
                 }
             },
