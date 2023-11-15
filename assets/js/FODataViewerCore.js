@@ -2622,7 +2622,22 @@ function makeManagementEventCompatibleWithSchema(event) {
         "soil_organic_C_perc_layr": "soil_organic_C_perc_layer",
         "org_material_appl_depth": "fertilizer_applic_method",
         "org_material_applic_amnt": "fertilizer_total_amount",
-        "harvest_notes": "harvest_comments"        
+        "mgmt_event_notes": "mgmt_event_short_notes",
+        "harvest_notes": "mgmt_event_long_notes",
+        "harvest_comments": "mgmt_event_long_notes",
+        "planting_notes": "mgmt_event_long_notes",
+        "fertilizer_notes": "mgmt_event_long_notes",
+        "tillage_treatment_notes": "mgmt_event_long_notes",
+        "chemical_applic_notes": "mgmt_event_long_notes",
+        "grazing_notes": "mgmt_event_long_notes",
+        "weeding_notes": "mgmt_event_long_notes",
+        "irrigation_notes": "mgmt_event_long_notes",
+        "mowing_notes": "mgmt_event_long_notes",
+        "observation_notes": "mgmt_event_long_notes",
+        "bed_prep_notes": "mgmt_event_long_notes",
+        "mulch_placement_notes": "mgmt_event_long_notes",
+        "mulch_removal_notes": "mgmt_event_long_notes",
+        "other_notes": "mgmt_event_long_notes"
     };
     for (const [from, to] of Object.entries(replacements)) {
         if (event[from] !== undefined) {
@@ -2645,8 +2660,7 @@ function makeManagementEventCompatibleWithSchema(event) {
     let removables = [
         "soil_layer_count",
         "harv_operat_size_categor", // Should we make a note when discarding this information?
-        "organic_material_N_conc", // Should we make a note when discarding this information?
-        "org_material_c_to_n" // Should we make a note when discarding this information?
+        "organic_material_N_conc" // Should we make a note when discarding this information?
     ];
     for (const removable of removables) {
         delete event[removable];

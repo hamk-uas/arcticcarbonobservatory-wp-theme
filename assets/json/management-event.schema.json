@@ -75,16 +75,16 @@
             "type": "string",
             "format": "date"
         },
-        "mgmt_event_notes": {
+        "mgmt_event_short_notes": {
             "title": "description",
             "title_en": "description",
             "title_fi": "kuvaus",
             "type": "string",
             "x-ui": {
                 "placeholder": "A high level description of the event, e.g. \"first harvest of the year\" or \"spring fertilization\". This will appear on the event list.",
-                "placeholder_fi": "Yleinen kuvaus tapahtumasta, esim. “vuoden ensimmäinen sadonkorjuu” tai “kevätlannoitus”. Tämä tulee näkyviin tapahtumalistaan."
+                "placeholder_fi": "Yleinen kuvaus tapahtumasta, esim. \"vuoden ensimmäinen sadonkorjuu\" tai \"kevätlannoitus\". Tämä tulee näkyviin tapahtumalistaan."
             }
-        }
+        }        
     },
     "oneOf": [
         {
@@ -172,7 +172,7 @@
                     },
                     "minItems": 1
                 },
-                "planting_notes": {
+                "mgmt_event_long_notes": {
                     "title": "sowing notes",
                     "title2": "planting notes",
                     "title_fi": "kylvömuistiinpanoja",
@@ -410,7 +410,7 @@
                         "unitless_title_sv": "totala mändgen gödsel"
                     }
                 },
-                "fertilizer_notes": {
+                "mgmt_event_long_notes": {
                     "title": "notes on fertilizer application",
                     "title_fi": "muistiinpanoja lannoitteen levityksestä",
                     "type": "string",
@@ -642,7 +642,7 @@
                             "maximum" : 100
                         },          
                         "org_matter_carbon_conc" : {
-                            "title": "carbon (C) concentration (%)",
+                            "title": "carbon (C) concentration in material (%)",
                             "title_fi": "hiilen (C) määrä aineessa (%)",
                             "x-ui": {
                                 "unitless_title": "carbon (C) concentration",
@@ -652,6 +652,12 @@
                             "type": "number",
                             "min" : 0,
                             "max" : 100
+                        },
+                        "org_material_c_to_n": {
+                            "title": "C:N ratio in material",
+                            "title_fi": "C:N suhde aineessa",
+                            "type": "number",
+                            "min": 0
                         },
                         "fertilizer_material_source" : {
                             "title": "fertilizer material source",
@@ -814,7 +820,7 @@
                         "unitless_title_sv": "bearbetningsdjup"
                     }
                 },
-                "tillage_treatment_notes": {
+                "mgmt_event_long_notes": {
                     "title": "tillage notes",
                     "title_fi": "muistiinpanot muokkauksesta",
                     "title_sv": "anteckningar på bearbetning",
@@ -1153,7 +1159,7 @@
                         "unitless_title_sv": "totala mängden kol (C) i skörden"
                     }
                 },
-                "harvest_comments": {
+                "mgmt_event_long_notes": {
                     "title": "harvest comments",
                     "title2": "comments",
                     "title_fi": "sadonkorjuukommentit",
@@ -2327,7 +2333,7 @@
                     "minimum" : 0,
                     "maximum" : 14
                 },
-                "chemical_applic_notes": {
+                "mgmt_event_long_notes": {
                     "title": "chemical application notes",
                     "title_fi": "kemikaalinlevitysmuistiinpanot",
                     "type": "string",
@@ -2551,7 +2557,7 @@
                         "unitless_title_fi": "lopetuspituus"
                     }
                 },
-                "grazing_notes": {
+                "mgmt_event_long_notes": {
                     "title": "grazing notes",
                     "title_fi": "laidunnusmuistiinpanot",
                     "type": "string",
@@ -2580,7 +2586,7 @@
                     "title_sv": "rensning av ogräs",
                     "const": "weeding"
                 },
-                "weeding_notes": {
+                "mgmt_event_long_notes": {
                     "title": "notes on the extraction of weeds",
                     "title_fi": "muistiinpanot rikkakasvien kitkemisestä",
                     "type": "string",
@@ -2673,7 +2679,7 @@
                         "unitless_title_fi": "kastelusyvyys"
                     }
                 },
-                "irrigation_notes": {
+                "mgmt_event_long_notes": {
                     "title": "irrigation notes",
                     "title_fi": "kastelumuistiinpanot",
                     "type": "string",
@@ -2747,7 +2753,7 @@
                         "unitless_title_fi": "leikkuukorkeus"
                     }
                 },
-                "mowing_notes": {
+                "mgmt_event_long_notes": {
                     "title": "mowing notes",
                     "title_fi": "muistiinpanot leikkuusta",
                     "type": "string",
@@ -2780,7 +2786,7 @@
                     "title_fi": "havainnon tyyppi",
                     "type": "string"
                 },
-                "observation_notes": {
+                "mgmt_event_long_notes": {
                     "title": "observations",
                     "title_fi": "havainnot",
                     "type": "string"
@@ -3280,7 +3286,7 @@
                     "title_sv": "upphöjd odlingsbädd",
                     "const": "bed_prep"
                 },
-                "bed_prep_notes": {
+                "mgmt_event_long_notes": {
                     "title": "notes on the preparation of raised beds",
                     "title_fi": "muistiinpanot kasvatuslaatikoiden valmistelusta",
                     "type": "string",
@@ -3380,7 +3386,7 @@
                         }
                     ]
                 },
-                "mulch_placement_notes": {
+                "mgmt_event_long_notes": {
                     "title": "mulch placement notes",
                     "title_fi": "katteenlevitysmuistiinpanot",
                     "type": "string",
@@ -3421,7 +3427,7 @@
                         }
                     ]
                 },
-                "mulch_removal_notes": {
+                "mgmt_event_long_notes": {
                     "title": "mulch removal notes",
                     "title_fi": "katteenpoistomuistiinpanot",
                     "type": "string",
@@ -3485,7 +3491,7 @@
                     "title_sv": "annan åtgärd",
                     "const": "other"
                 },
-                "other_notes": {
+                "mgmt_event_long_notes": {
                     "title": "notes",
                     "title_fi": "muistiinpanot",
                     "type": "string"
@@ -3493,7 +3499,7 @@
             },
             "required": [
                 "date",
-                "other_notes"
+                "mgmt_event_long_notes"
             ]
         }
     ],
