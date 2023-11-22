@@ -391,7 +391,7 @@ var t = {
     },
     plaintext_titles: {
         "management": "Management",
-        "management_fi": "Hiiliviljelymenetelmä",
+        "management_fi": "Viljelymenetelmä",
         "management_sv": "Åtgärd",
         "species": "Species",
         "species_fi": "Lajike",
