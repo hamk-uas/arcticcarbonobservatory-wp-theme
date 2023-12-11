@@ -1115,6 +1115,7 @@ var mapbackgrounds;
 //const versionHash = (new URL(document.getElementById("versioned_js").src)).searchParams.get('v');
 const FODataViewerWorkerJsUrl = document.getElementById("fieldobservatory-FODataViewerWorkerJs-js").src;
 const FODataViewerCoreJsUrl = document.getElementById("fieldobservatory-FODataViewerCoreJs-js").src;
+const markdownItJsUrl = document.getElementById("fieldobservatory-markdown-it-js").src;
 
 function refreshChart(chartId, refreshIndex, xAxisHtml, drawingHtmls) {
     if (chartId === undefined) {
@@ -1556,6 +1557,10 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     
     worker.postMessage({
         command: "importScript",
+        script: markdownItJsUrl
+    });
+    worker.postMessage({
+        command: "importScript",
         script: FODataViewerCoreJsUrl
     });
 
@@ -1816,7 +1821,7 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
             }
             document.getElementById(`chart_legend_div_${chartId}`).innerHTML = legend;
             document.getElementById(`chart_description_div_${chartId}`).innerHTML = 
-            `${translate(v.charts[chartId], "description", null) != null ? `<p>${translate(v.charts[chartId], "description")}</p>` : ''}`;
+            `${unsanitaryTranslate(v.charts[chartId], "description", null) != null ? `<p>${unsanitaryTranslate(v.charts[chartId], "description")}</p>` : ''}`;            
             nonspecialChartId = chartId;
         }
     });

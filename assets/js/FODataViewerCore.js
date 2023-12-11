@@ -1,4 +1,6 @@
-﻿// Compile JSON Schema to expand each $ref and to flatten each allOf
+﻿var md = markdownit();
+
+// Compile JSON Schema to expand each $ref and to flatten each allOf
 function compileJsonSchema(schemaJson, rootSchema = schemaJson, path = "#") {
     schemaJson.path = path; // To help with debugging elsewhere
     //console.log(`${path}`);
@@ -499,6 +501,33 @@ var t = {
 function translate(object, property, fallback = property, language = foConfig.language) {
     if (property == null) {
         return translate(t.plaintext, "unknown", "unknown", language);        
+    }
+    if (language !== 'en') {
+        let translationKey = `${property}_${language}`;
+        if (object[translationKey] !== undefined && object[translationKey] != null) {
+            if (object[translationKey] === null || object[translationKey] === undefined) {
+                return object[translationKey];
+            } else {
+                return md.renderInline(object[translationKey]);
+            }
+        }
+    }
+    // Fall back to English
+    if (object[property] != null) {
+        if (object[property] === null || object[property] === undefined) {
+            return object[property];
+        } else {
+            return md.renderInline(object[property]);
+        }
+    } else {
+        return fallback;
+    }
+}
+
+// translate but using untouched translations
+function unsanitaryTranslate(object, property, fallback = property, language = foConfig.language) {
+    if (property == null) {
+        return unsanitaryTranslate(t.plaintext, "unknown", "unknown", language);        
     }
     if (language !== 'en') {
         let translationKey = `${property}_${language}`;
@@ -1361,7 +1390,7 @@ function getChartSvgInnerHtml(v, chartId, standalone = false) {
             ${getZoomOutSymbolHtml(`chart_zoom_x_out_${chartId}`, zoomInX, controlYPostfixAdd(60), translate(t.tooltip, 'zoomXOut'))}
             ${(chart.timeAggregationSettings !== undefined) ? getTimeAggregationSymbolHtml(chartId, zoomInX, controlYPostfixAdd(63), translate(t.tooltip, 'timeAggregation')) : ""}
             ${(chartId !== "satelliteImages") ? getDownloadSymbolHtml(`chart_download_${chartId}`, zoomInX, controlYPostfixAdd(60), translate(t.tooltip, 'chartDownload')) : ""}
-            ${(chartId !== "satelliteImages") ? getAutoZoomSymbolHtml(chartId, v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth + 15, 0, translate(t.tooltip, 'autoZoomY')) : ""}
+            ${(chartId !== "satelliteImages") ? getAutoZoomSymbolHtml(chartId, v.dimensions.leftMargin + v.dimensions.yAxisAreaWidth + 15, 0, unsanitaryTranslate(t.tooltip, 'autoZoomY')) : ""}
         </g>`
     )}`;
 }
@@ -2107,7 +2136,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                         }
                         let dateObject = new Date(date);
                         let circleId = `chart_${chartId}_sourceCategory_${sourceCategory}_index_${index}`;
-                        let tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ numImages: numImages, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                        let tooltipString = unsanitaryTranslate(t.tooltip, 'toggleSatelliteImages')({ numImages: numImages, dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
                         drawingHtml += `<circle id="${circleId}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 2 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${height / 2}" r="${18 - ((selected) ? 1 : 0)}"><title>${tooltipString}</title></circle>`;
                         drawingHtml += `<text pointer-events="none" font-family="sans-serif" font-size="18px" ${(selected) ? 'font-weight="bold"' : ''} fill="${color}" text-anchor="middle" dominant-baseline="middle" x="${x.toFixed(1)}" y="${height / 2 + 2}">${numImages}</text>`;
                         if (date === v.satelliteImageDate && !cursorDrawn) {
@@ -2265,7 +2294,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                 let geoTiffList = v.charts["satelliteImages"].sourceCategories[chart.relatedSatelliteImage.sourceCategoryId].dateToGeoTiffList[date];                                
                                 if (geoTiffList !== undefined) {
                                     clickStr = `cursor="pointer" onclick="selectNearestSatelliteImage('${chart.relatedSatelliteImage.sourceCategoryId}', ${v.startDate + useDate / pixelsPerMillisecond}, event)" onmousedown = "preventDefault(event)"`;
-                                    tooltipString = translate(t.tooltip, 'toggleSatelliteImages')({ dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                                    tooltipString = unsanitaryTranslate(t.tooltip, 'toggleSatelliteImages')({ dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
                                 }
                             }                            
                             if (tooltipString !== undefined) {
@@ -2450,7 +2479,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
         // Indicate current time
         if (foConfig.now >= v.startDate) {
             let dateObject = new Date(foConfig.now);
-            let tooltipString = translate(t.tooltip, 'now')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+            let tooltipString = unsanitaryTranslate(t.tooltip, 'now')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
             drawingBackgroundHtml += `<line pointer-events="none" x1="${nowX.toFixed(1)}" y1="0" x2="${nowX.toFixed(1)}" y2="${height}" stroke="${v.disabledColor}" stroke-width="1" stroke-dasharray="4" />`;
             drawingBackgroundHtml += `<text pointer-events="none" font-family="sans-serif" font-size="12px" font-weight="bold" fill="${v.disabledColor}" text-anchor="middle" dominant-baseline="middle" x="${nowX.toFixed(1)}" y="${-9}">✓</text>`;
             drawingBackgroundHtml += getCalendarSymbolHtml(`chart_${chart.id}_now`, nowX.toFixed(1), 0, v.disabledColor, tooltipString);
@@ -2501,7 +2530,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${ex.toFixed(1)}" y1="0" x2="${ex.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         drawingBackgroundHtml += `<path d="M ${sx.toFixed(1)} ${-14 + yOffset} C ${(sx + (ex - sx) * 0.5).toFixed(1)} ${-14 + yOffset + 19}, ${ex.toFixed(1)} ${-7}, ${ex.toFixed(1)} ${0}" fill="none" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         let r = 13 - 1 - ((selected) ? 0.5 : 0);
-                                        let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`});
+                                        let tooltipString = unsanitaryTranslate(t.tooltip, 'toggleEvent')({dateString: `${startDateObject.getUTCDate()}.${startDateObject.getUTCMonth() + 1}.${startDateObject.getUTCFullYear()} UTC`});
                                         drawingHtml += `<circle id="chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${sx.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = sx;
                                     }
@@ -2529,7 +2558,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                                         onView = true
                                         drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="-2" x2="${x.toFixed(1)}" y2="${height}" stroke="${color}" stroke-width="${1 + ((selected) ? 1 : 0)}" />`;
                                         let dateObject = new Date(event.date)
-                                        let tooltipString = translate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
+                                        let tooltipString = unsanitaryTranslate(t.tooltip, 'toggleEvent')({dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC`});
                                         drawingHtml += `<circle id="chart_${chartId}_global_${source.id}_${jsonIndex}_${eventIndex}" style="cursor:pointer" stroke-width="${2 + ((selected) ? 1 : 0)}" stroke="${color}" fill="#ffffff" cx="${x.toFixed(1)}" cy="${-14 + yOffset}" r="${13 - 1 - ((selected) ? 0.5 : 0)}"><title>${tooltipString}</title></circle>`;
                                         iconX = x;
                                     }
@@ -2572,7 +2601,7 @@ function getDrawingHtmls(v, chartId, standalone = false) {
                 drawingBackgroundHtml += `<line pointer-events="none" x1="${x.toFixed(1)}" y1="${-v.dimensions.topMargin/2}" x2="${x.toFixed(1)}" y2="${height}" stroke="${v.chartColors[0]}" stroke-width="1" stroke-dasharray="4" />`;
             }
             let dateObject = new Date(v.satelliteImageDate);
-            let tooltipString = translate(t.tooltip, "satellite")({ dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC` });
+            let tooltipString = unsanitaryTranslate(t.tooltip, "satellite")({ dateString: `${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()} UTC` });
             drawingBackgroundHtml += getSatelliteSymbolHtml(x.toFixed(1), -v.dimensions.topMargin, v.chartColors[1], tooltipString);
             //drawingBackgroundHtml += `<text pointer-events="none" style="font: 14px sans-serif;" text-anchor="start" dominant-baseline="middle" x="${(x + 18).toFixed(1)}" y="${-v.dimensions.topMargin*3/4}">${dateObject.getUTCDate()}.${dateObject.getUTCMonth() + 1}.${dateObject.getUTCFullYear()}</text>`;
             cursorDrawn = true;
