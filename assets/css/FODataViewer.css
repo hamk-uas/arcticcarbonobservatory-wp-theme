@@ -269,16 +269,14 @@
 
 .chart_gridcontainer .fieldInfoDiv :is(th, td) {
     color: #5E5E5E;
-    padding-left: 10px;
-}
-
-.chart_gridcontainer .fieldInfoDiv .block_name {
-    color: #000;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-left: none;
 }
 
 .chart_gridcontainer .fieldInfoDiv th {
     font-weight: normal;
-    color: #000;
+    color: #000;    
 }
 
 .chart_gridcontainer .fieldInfoDiv table * {
@@ -290,17 +288,47 @@
     text-align: center;
 }
 
-.chart_gridcontainer .fieldInfoDiv :is(th,td):first-child {
-    padding-left: 0px;
-}
-
 .chart_gridcontainer .fieldInfoDiv table + table {
     margin-top: 10px;
 }
 
-.chart_gridcontainer .fieldInfoDiv tr.propertyTableRow :is(th,td) {
+.chart_gridcontainer .fieldInfoDiv tr :is(th,td) {
     padding-top: 3px;
 }
+
+.chart_gridcontainer .fieldInfoDiv tr:first-child :is(th,td) {
+    padding-top: 0px;
+}
+
+.chart_gridcontainer .fieldInfoDiv tr :is(th,td):is(:first-child) {
+    padding-left: 0px;
+}
+
+.chart_gridcontainer .fieldInfoDiv tr :is(th,td):is(:last-child) {
+    padding-right: 0px;
+}
+
+.chart_gridcontainer .fieldInfoDiv .block_name {
+    color: #000;
+    border-left: none;
+}
+
+.chart_gridcontainer .fieldInfoDiv #blockPropertyTable :is(th,td) {
+    border-left: 2px solid #f8f8f8;
+}
+
+.chart_gridcontainer .fieldInfoDiv #blockPropertyTable :is(th,td):first-child {
+    border-left: none;
+}
+
+.chart_gridcontainer .fieldInfoDiv #blockPropertyTable .block_name {
+    border-left: none;
+}
+
+.chart_gridcontainer .fieldInfoDiv #blockPropertyTable tr:first-child :is(th,td){
+    border-left: none;
+}
+
 .chart_grid {
     stroke: #000000;
     stroke-opacity: 0.08;
