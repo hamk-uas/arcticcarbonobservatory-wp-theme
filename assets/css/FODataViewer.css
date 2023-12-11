@@ -250,7 +250,7 @@
 
 .chart_gridcontainer_item p,
 #dataCredits p,
-.chart_gridcontainer_item p * {
+.chart_gridcontainer_item p *:not(a) {
     font-size: calc(18px*0.98);
     color: #5E5E5E;
     font-weight: 400;
