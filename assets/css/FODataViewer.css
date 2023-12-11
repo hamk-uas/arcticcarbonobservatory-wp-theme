@@ -282,6 +282,7 @@
 .chart_gridcontainer .fieldInfoDiv table * {
     text-align: start;
     vertical-align: top;
+    line-height: 1.25;
 }
 
 .chart_gridcontainer .fieldInfoDiv .blockPropertyTableElement {
@@ -293,7 +294,7 @@
 }
 
 .chart_gridcontainer .fieldInfoDiv tr :is(th,td) {
-    padding-top: 3px;
+    padding-top: 5px;
 }
 
 .chart_gridcontainer .fieldInfoDiv tr:first-child :is(th,td) {
@@ -327,6 +328,10 @@
 
 .chart_gridcontainer .fieldInfoDiv #blockPropertyTable tr:first-child :is(th,td){
     border-left: none;
+}
+
+.chart_gridcontainer .fieldInfoDiv #blockPropertyTable tr:nth-child(2) :is(th,td) {
+    padding-top: 0px;
 }
 
 .chart_grid {
