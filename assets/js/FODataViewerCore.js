@@ -1721,7 +1721,10 @@ function getCreditStr(credit, isHtml, enableSitePI) {
         case "datasense":
             creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data from ${linkify("https://www.datasense.fi/", "Datasense", isHtml)}) sensors.`;
             break;
-    }
+        case "lonzee":
+            creditStr += `${chartsStr} contain${(chartTitles.length > 1) ? "" : "s"} data from Bodson, B., Chopin, H., De Ligne, A., Demoulin, L., Douxfils, B., Engelmann, T., Faurès, A., Heinesch, B., Longdoz, B., Manise, T., Piret, A., Thyrion, T., Ecosystem Thematic Centre (2021). Fluxnet Product, Lonzee, 2003-12-31–2020-12-31, Miscellaneous, ${linkify("https://hdl.handle.net/11676/ql2ZkJ2Xx4a4yOyG3cd5lsBS", "https://hdl.handle.net/11676/ql2ZkJ2Xx4a4yOyG3cd5lsBS", isHtml)}. ICOS data is ${linkify("https://data.icos-cp.eu/licence", "licensed", isHtml)} under a ${linkify("https://creativecommons.org/licenses/by/4.0/", "Creative Commons Attribution 4.0 International license (CC BY 4.0)", isHtml)}.`;
+            break;
+        }
     if (isHtml) {
         creditStr += "</p>";
     }

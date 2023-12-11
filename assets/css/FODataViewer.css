@@ -283,6 +283,7 @@
 
 .chart_gridcontainer .fieldInfoDiv table * {
     text-align: start;
+    vertical-align: top;
 }
 
 .chart_gridcontainer .fieldInfoDiv .blockPropertyTableElement {

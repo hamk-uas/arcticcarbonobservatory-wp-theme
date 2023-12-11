@@ -40,6 +40,7 @@ var siteTypeColors = {
     'lantmannen': "#23A73F",
     'ACA-UVIDI': "#417400",
     'fmi-icos': "#303193",
+    'icos-site': "#e41b64",
     'default': '#000000'
 };
 
@@ -52,19 +53,6 @@ function getSiteTypeColor(siteType) {
     return color;
 }
 
-var siteTypeCountries = {
-    'Svensk Kolinlagring Site': 'SE',
-    'default': 'FI'
-}
-
-//Get country by siteType
-function getSiteTypeCountry(siteType) {
-    let color = siteTypeCountries[siteType];
-    if (color === undefined) {
-        color = siteTypeCountries["default"];
-    }
-    return color;
-}
 // Prepare map
 initStateFromLocationUrl(); // Parse browser URL parameters
 
@@ -1724,7 +1712,11 @@ async function viewSiteAfterLoadingEssentials(zoomDuration) {
     }
     let countryMapElement = document.getElementById('countryMap');
     if (countryMapElement !== null) {
-        countryMapElement.innerHTML = getCountryMapSVG(countryBorders[getSiteTypeCountry(v.site.site_type)], v.site.geometry.coordinates, foConfig.countryMapSiteStyle !== undefined ? foConfig.countryMapSiteStyle : `fill: ${getSiteTypeColor(v.site.site_type)}`, countryMapElement.getAttribute("width"), countryMapElement.getAttribute("height"));
+        if (countryBorders[v.site.country_code] !== undefined) {
+            countryMapElement.innerHTML = getCountryMapSVG(countryBorders[v.site.country_code], v.site.geometry.coordinates, foConfig.countryMapSiteStyle !== undefined ? foConfig.countryMapSiteStyle : `fill: ${getSiteTypeColor(v.site.site_type)}`, countryMapElement.getAttribute("width"), countryMapElement.getAttribute("height"));
+        } else {
+            countryMapElement.innerHTML = "";
+        }
     }
     if (foConfig.mapEnabled) {
         if (v.site.demo) {
