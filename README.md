@@ -1,15 +1,12 @@
-# fieldobservatory-wp-theme
-![Screenshot](screenshot.png)
-# Field Observatory theme for WordPress
-
+# Arctic Carbon Observatory theme for WordPress 
+Child theme of Field Carbon observatory https://github.com/hamk-uas/fieldobservatory-wp-theme
 Visit Field Observatory at https://www.fieldobservatory.org.
 
 ## Authors:
-Antti Juntunen, Olli Niemitalo (Olli.Niemitalo@hamk.fi), Juuso Saarinen (Juuso.Saarinen@hamk.fi)
+Janne Nurmela (janne.nurmela@fmi.fi)
 
 ## Copyright
-Copyright Häme University of Applied Sciences
+Copyright Finnish Meteorological Institute
 
 ## License
-The code will later be released under MIT license.
-None of the photos will be released under an open license.
+The repository is released under MIT license.
