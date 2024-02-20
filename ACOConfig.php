@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<?php get_theme_file_uri("/assets/js/ACOConfig.js")?>?ver=<?php echo wp_get_theme()->version ?>"></script>
