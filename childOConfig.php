@@ -285,19 +285,27 @@
     }
 
     var childOConfig = {
-        mapExtraParams: {projection: {
-                            name: 'globe',
-                            // center: [90, 0],
-                            // parallels: [30, 30]
-                            
-        }},
+        mapExtraParams: {
+            projection: {
+                name: 'globe',
+                center: [90, 0],
+                parallels: [30, 30]
+            },
+            language: "en"
+        },
         storageUrl: 'https://fmi-arctic-carbon-observatory-data.lake.fmi.fi',
         sitesGeojsonFilename: 'sites.geojson',
         blocksGeojsonFilename: 'blocks.geojson',
         siteMapView: {
+            center: [0, 90],
+            zoom: 2,
             minZoom: 1,
             maxZoom: 17
         },
+        siteSelectorMapView: {
+            center: [0, 90],
+            zoom: 2
+        },        
         hideSiteInfo: true,
         chartsJson: {
             "charts": [
