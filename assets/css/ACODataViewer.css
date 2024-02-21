@@ -1,0 +1,7 @@
+.Site #map {
+    min-height: 480px;
+}
+
+.fieldInfoDiv, .EditSite {
+    display: none !important;
+}
