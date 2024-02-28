@@ -5,3 +5,11 @@
 .fieldInfoDiv, .EditSite {
     display: none !important;
 }
+
+.chart_colorbar_container {
+    margin-left: 5px;
+}
+
+#afterMapDiv {
+    margin-top: 10px;
+}
