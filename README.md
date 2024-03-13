@@ -1,5 +1,5 @@
-# Arctic Carbon Observatory theme for WordPress 
-Child theme of Field Carbon observatory https://github.com/hamk-uas/fieldobservatory-wp-theme
+# Arctic Carbon Observatory child theme for WordPress 
+Must be used together with Observatory parent theme https://github.com/hamk-uas/observatory-wp-theme.
 Visit Field Observatory at https://www.fieldobservatory.org.
 
 ## Authors:

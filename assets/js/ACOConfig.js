@@ -303,6 +303,8 @@ var childOConfig = {
                         "id": "tropomi_ch4_image",
                         "title": "tropomi daily methane",
                         "description": "Tropomi data.",
+                        "yLabel": "CH₄",
+                        "yUnit": "ppb"
                     }
                 ],
                 "sourceTypes": [
@@ -317,5 +319,6 @@ var childOConfig = {
     },
     colormaps: {
         'tropomi_ch4_image': getColormap(plasma.reverse(), 1600, 2000)
-    }
+    },
+    siteId: "global"
 }
