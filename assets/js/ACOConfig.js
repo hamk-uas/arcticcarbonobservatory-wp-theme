@@ -298,7 +298,7 @@ var childOConfig = {
             {
                 "id": "satelliteImages",
                 "title": "Satellite images",
-                "sourceCategoryList": [
+                "legendItemTypeList": [
                     {
                         "id": "tropomi_ch4_image",
                         "title": "tropomi daily methane",
@@ -310,7 +310,7 @@ var childOConfig = {
                 "sourceTypes": [
                     {
                         "id": "tropomi_ch4",
-                        "sourceCategoryId": "tropomi_ch4_image",
+                        "legendItemTypeId": "tropomi_ch4_image",
                         "satelliteImages": true
                     }
                 ],
