@@ -273,6 +273,11 @@ var childOConfig = {
     sitesGeojsonFilename: 'sites.geojson',
     blocksGeojsonFilename: 'blocks.geojson',
     siteSelectorMapView: {
+        fitBoundsOptions: {
+            padding: 40,
+        },
+        minZoom: 3,
+        maxZoom: 10,
         center: [0, 90],
         zoom: 1.5
     },
