@@ -282,41 +282,39 @@ var childOConfig = {
         minZoom: 1,
         maxZoom: 17
     },
-    chartsJson: {
-        "charts": [
-            {
-                "id": "global",
-                "title": "Every chart",
-                "hidden": true,
-                "sourceTypes": [
-                    {
-                        "id": "mgmt_event",
-                        "events": true
-                    }
-                ]
-            },
-            {
-                "id": "satelliteImages",
-                "title": "Satellite images",
-                "legendItemTypeList": [
-                    {
-                        "id": "tropomi_ch4_image",
-                        "title": "tropomi daily methane",
-                        "description": "Tropomi data.",
-                        "yLabel": "CH₄",
-                        "yUnit": "ppb"
-                    }
-                ],
-                "sourceTypes": [
-                    {
-                        "id": "tropomi_ch4",
-                        "legendItemTypeId": "tropomi_ch4_image",
-                        "satelliteImages": true
-                    }
-                ],
-            }
-        ]
-    },
+    charts: [
+        {
+            "id": "global",
+            "title": "Every chart",
+            "hidden": true,
+            "sourceTypes": [
+                {
+                    "id": "mgmt_event",
+                    "events": true
+                }
+            ]
+        },
+        {
+            "id": "satelliteImages",
+            "title": "Satellite images",
+            "legendItemTypeList": [
+                {
+                    "id": "tropomi_ch4_image",
+                    "title": "tropomi daily methane",
+                    "description": "Tropomi data.",
+                    "yLabel": "CH₄",
+                    "yUnit": "ppb"
+                }
+            ],
+            "sourceTypes": [
+                {
+                    "id": "tropomi_ch4",
+                    "legendItemTypeId": "tropomi_ch4_image",
+                    "satelliteImages": true
+                }
+            ],
+        }
+    ],
     colormaps: {
         'tropomi_ch4_image': getColormap(plasma.reverse(), 1600, 2000)
     },
