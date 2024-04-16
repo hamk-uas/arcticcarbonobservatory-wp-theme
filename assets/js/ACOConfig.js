@@ -1,5 +1,3 @@
-console.log("ACOConfig.js");
-
 // plasma colormap data from https://github.com/BIDS/colormap/tree/master
 const plasma = [
     [0.050383, 0.029803, 0.527975],
@@ -260,19 +258,21 @@ const plasma = [
     [0.940015, 0.975158, 0.131326]
 ];
 
-var childOConfig = {
-    mapExtraParams: {
-        projection: {
-            name: 'globe',
-            center: [90, 0],
-            parallels: [30, 30]
-        },
-        language: "en"
-    },
-    storageUrl: 'https://fmi-arctic-carbon-observatory-data.lake.fmi.fi',
+let aCOMapOptions = {
+    language: oConfig.language,
+    projection: {
+        name: 'globe',
+        center: [90, 0],
+        parallels: [30, 30]
+    }
+};
+
+oConfig = {
+    ...oConfig,
     sitesGeojsonFilename: 'sites.geojson',
     blocksGeojsonFilename: 'blocks.geojson',
     siteSelectorMapView: {
+        ...aCOMapOptions,
         fitBoundsOptions: {
             padding: 40,
         },
@@ -282,6 +282,7 @@ var childOConfig = {
         zoom: 1.5
     },
     siteMapView: {
+        ...aCOMapOptions,
         center: [0, 90],
         zoom: 1.5,
         minZoom: 1,

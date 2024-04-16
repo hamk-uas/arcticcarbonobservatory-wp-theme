@@ -10,13 +10,11 @@ $mapinfotext = "mapInfoText-" . get_locale();
         <div id="chart_container" class="chart_gridcontainer">
             <div class="map_container">
                 <div id="mapInfoDiv">
-                    <h1><?php echo get_post_meta($post->ID, $maintitle, true) ?></h1>
-                    <p>
-                        <?php echo get_post_meta($post->ID, $maincontent, true); ?>
-                    </p>
-                    <h4>
-                        <?php echo get_post_meta($post->ID, $mapinfotext, true); ?>
-                    </h4>
+                    <?php
+                    $current_page = get_queried_object();
+                    $content      = apply_filters( 'the_content', $current_page->post_content );
+                    echo $content;
+                    ?>
                 </div>
                 <div id="map" class="mapBoxMap">
                     <div id="attribution" class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-ctrl-top-left" style="position: absolute; bottom: 0; height: 50px;"></div>
@@ -44,14 +42,8 @@ $mapinfotext = "mapInfoText-" . get_locale();
     ?>
 </div>
 
-<?php include get_template_directory().'/oConfig.php' ?>
 <script type="text/javascript">
     document.body.classList.add('mapLoading');
     document.body.classList.add('layoutNotReady');
+    oDataViewerStart();    
 </script>
-<script id="observatory-markdown-it-js" src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js" integrity="sha512-SYfDUYPg5xspsG6OOpXU366G8SZsdHOhqk/icdrYJ2E/WKZxPxze7d2HD3AyXpT7U22PZ5y74xRpqZ6A2bJ+kQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- https://github.com/markdown-it/markdown-it -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.min.js" integrity="sha512-Nwp3XMQKRvqr376bCa50Hs4X4z5zbsefo63QLa62poTx5o/GhYgjnToCoBZk7bxjeP2y84oEgKNUrpK2+2Czyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- https://github.com/proj4js/proj4js -->
-<script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.4/dist-browser/geotiff.min.js"></script> <!-- see https://cdn.jsdelivr.net/npm/geotiff@2.0.4/README.md -->
-<script type="text/js-worker" id="observatory-ODataViewerWorkerJs-js" src="<?php echo get_parent_theme_file_uri('/assets/js/ODataViewerWorker.js?ver=').wp_get_theme()->parent->version ?>"></script>
-<script type="text/javascript" id="observatory-ODataViewerCoreJs-js" src="<?php echo get_parent_theme_file_uri('/assets/js/ODataViewerCore.js?ver=').wp_get_theme()->parent->version ?>"></script>
-<script type="text/javascript" src="<?php echo get_parent_theme_file_uri('/assets/js/ODataViewerDom.js?ver=').wp_get_theme()->parent->version ?>"></script>
