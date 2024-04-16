@@ -305,8 +305,15 @@ oConfig = {
             "title": "Satellite images",
             "legendItemTypeList": [
                 {
-                    "id": "tropomi_ch4_image",
+                    "id": "tropomi_ch4_image_daily",
                     "title": "tropomi daily methane",
+                    "description": "Tropomi data.",
+                    "yLabel": "CH₄",
+                    "yUnit": "ppb"
+                },
+                {
+                    "id": "tropomi_ch4_image_monthly",
+                    "title": "tropomi monthly methane",
                     "description": "Tropomi data.",
                     "yLabel": "CH₄",
                     "yUnit": "ppb"
@@ -314,15 +321,69 @@ oConfig = {
             ],
             "sourceTypes": [
                 {
-                    "id": "tropomi_ch4",
-                    "legendItemTypeId": "tropomi_ch4_image",
+                    "id": "tropomi_ch4_daily",
+                    "legendItemTypeId": "tropomi_ch4_image_daily",
+                    "satelliteImages": true
+                },
+                {
+                    "id": "tropomi_ch4_monthly",
+                    "legendItemTypeId": "tropomi_ch4_image_monthly",
                     "satelliteImages": true
                 }
             ],
+        },
+        {
+            "id": "CO2concentration",
+            "title": "CO₂ concentration",
+            "yLabel": "CO₂ concentration",
+            "yUnit": "ppm",
+            "minMaxIncludesZero": true,
+            "timeAggregationSettings": [
+                {
+                    "enabled": false
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 86400000
+                }
+            ],
+            "defaults": {
+                "yMin": 0,
+                "yMax": 1000,
+                "timeAggregationSettingIndex": 0
+            },
+            "sourceTypes": [
+                {
+                    "id": "ec_fluxres",
+                    "integrationTime": -1800000,
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "period_end (v 2.19)",
+                        "val": "avg(CO2_DRY) [ppm]"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    }
+                }
+            ]
         }
     ],
     colormaps: {
         'tropomi_ch4_image': getColormap(plasma.reverse(), 1600, 2000)
     },
-    siteId: "global"
+    // siteId: "global",
+    getCredit: (creditId, chartTitles, years) => {
+        let chartsStr = formatChartTitles(chartTitles);
+        let yearsStr = formatYears(years);
+        switch (creditId) {
+            // Add more of these cases for more credits
+            case "tropomi":
+                return `${chartsStr} contain${chartTitles.length > 1 ? "" : "s"} TROPOMI data (${yearsStr}). [License](link).`;
+            case "fmi":
+                return `${chartsStr} contain${chartTitles.length > 1 ? "" : "s"} data produced by the [Finnish Meteorological Institute](https://en.ilmatieteenlaitos.fi/) under the [Creative Commons Attribution 4.0 International license (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) and provided without warranty of any kind. Please note that the data are provisional and will be subject to further quality control.`;
+        }
+        console.warn(`Missing credit text for ${creditId}`);
+        return "";
+    }
 }
