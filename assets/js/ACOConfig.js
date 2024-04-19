@@ -370,7 +370,8 @@ oConfig = {
         }
     ],
     colormaps: {
-        'tropomi_ch4_image': getColormap(plasma.reverse(), 1600, 2000)
+        'tropomi_ch4_image_daily': getColormap(plasma.reverse(), 1600, 2000),
+        'tropomi_ch4_image_monthly': getColormap(plasma.reverse(), 1600, 2000)
     },
     // siteId: "global",
     getCredit: (creditId, chartTitles, years) => {
