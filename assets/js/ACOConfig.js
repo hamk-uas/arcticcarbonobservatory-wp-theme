@@ -374,8 +374,8 @@ oConfig = {
         }
     ],
     colormaps: {
-        'tropomi_ch4_image_daily': getColormap(plasma, 1780, 1910),
-        'tropomi_ch4_image_monthly': getColormap(plasma, 1780, 1910)
+        'tropomi_ch4_image_daily': getColormap(plasma, 1650, 1900),
+        'tropomi_ch4_image_monthly': getColormap(plasma, 1650, 1900)
     },
     // siteId: "global",
     getCredit: (creditId, chartTitles, years) => {
