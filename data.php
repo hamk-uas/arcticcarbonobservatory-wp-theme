@@ -45,5 +45,5 @@ $mapinfotext = "mapInfoText-" . get_locale();
 <script type="text/javascript">
     document.body.classList.add('mapLoading');
     document.body.classList.add('layoutNotReady');
-    oDataViewerStart();    
+    let oDataViewer = new ODataViewer(oConfig);
 </script>

@@ -288,6 +288,10 @@ oConfig = {
         minZoom: 1,
         maxZoom: 17
     },
+    siteTypeColors: {
+        "global": "#4daf4a",
+        'fmi-icos': "#e41b64"
+    },
     charts: [
         {
             "id": "global",
@@ -370,8 +374,8 @@ oConfig = {
         }
     ],
     colormaps: {
-        'tropomi_ch4_image_daily': getColormap(plasma.reverse(), 1600, 2000),
-        'tropomi_ch4_image_monthly': getColormap(plasma.reverse(), 1600, 2000)
+        'tropomi_ch4_image_daily': getColormap(plasma, 1780, 1910),
+        'tropomi_ch4_image_monthly': getColormap(plasma, 1780, 1910)
     },
     // siteId: "global",
     getCredit: (creditId, chartTitles, years) => {
