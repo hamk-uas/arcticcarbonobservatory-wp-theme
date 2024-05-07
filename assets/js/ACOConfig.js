@@ -354,7 +354,7 @@ oConfig = {
             ],
             "defaults": {
                 "yMin": 0,
-                "yMax": 1000,
+                "yMax": 800,
                 "timeAggregationSettingIndex": 0
             },
             "sourceTypes": [
@@ -365,6 +365,42 @@ oConfig = {
                     "seriesCSVFields": {
                         "date": "period_end (v 2.19)",
                         "val": "avg(CO2_DRY) [ppm]"
+                    },
+                    "parameters": {
+                        "height_cm": "+"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "CH4concentration",
+            "title": "CH₄ concentration",
+            "yLabel": "CH₄ concentration",
+            "yUnit": "ppm",
+            "minMaxIncludesZero": true,
+            "timeAggregationSettings": [
+                {
+                    "enabled": false
+                },
+                {
+                    "enabled": true,
+                    "statistic": "mean",
+                    "period": 86400000
+                }
+            ],
+            "defaults": {
+                "yMin": 0,
+                "yMax": 3,
+                "timeAggregationSettingIndex": 0
+            },
+            "sourceTypes": [
+                {
+                    "id": "picarro_methane",
+                    "integrationTime": -1800000,
+                    "lines": true,
+                    "seriesCSVFields": {
+                        "date": "dt",
+                        "val": "CH4_dry"
                     },
                     "parameters": {
                         "height_cm": "+"
@@ -384,7 +420,7 @@ oConfig = {
         switch (creditId) {
             // Add more of these cases for more credits
             case "tropomi":
-                return `${chartsStr} contain${chartTitles.length > 1 ? "" : "s"} TROPOMI data (${yearsStr}). [License](link).`;
+                return `${chartsStr} contain${chartTitles.length > 1 ? "" : "s"} modified Copernicus Sentinel-5P/TROPOMI data processed by the Finnish Meteorological Institute. doi:[10.5270/S5P-9bnp8q8](https://doi.org/10.5270/S5P-9bnp8q8).`; //${yearsStr}
             case "fmi":
                 return `${chartsStr} contain${chartTitles.length > 1 ? "" : "s"} data produced by the [Finnish Meteorological Institute](https://en.ilmatieteenlaitos.fi/) under the [Creative Commons Attribution 4.0 International license (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) and provided without warranty of any kind. Please note that the data are provisional and will be subject to further quality control.`;
         }
