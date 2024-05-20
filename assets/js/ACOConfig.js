@@ -292,6 +292,8 @@ oConfig = {
         "global": "#4daf4a",
         'fmi-icos': "#e41b64"
     },
+    startDate: "auto",
+    endDate: "auto",
     charts: [
         {
             "id": "global",
@@ -428,3 +430,13 @@ oConfig = {
         return "";
     }
 }
+
+// Custom user-facing texts and translations
+oConfig.translationDict.plaintext_titles = {
+    ...oConfig.translationDict.plaintext_titles,
+    "site_type_Name": "Site type"
+};
+oConfig.translationDict.tooltip = {
+    ...oConfig.translationDict.tooltip,
+    "mapFilterSiteType": "Show/hide a site type"
+};
